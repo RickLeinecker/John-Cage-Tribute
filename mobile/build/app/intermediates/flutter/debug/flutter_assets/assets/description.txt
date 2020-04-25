@@ -1,0 +1,2 @@
+What is the John Cage Tribute?
+Anyone can create music with use of our app! Users can record their surroundings via microphone with other users, combining them and generating John Cage-esque music in return. Other users may listen to this music as it's being created in real-time!
