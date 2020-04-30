@@ -12,34 +12,34 @@
 12         to allow setting breakpoints, to provide hot reload, etc.
 13    -->
 14    <uses-permission android:name="android.permission.INTERNET" />
-14-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:9:5-67
-14-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:9:22-64
+14-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:9:5-67
+14-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:9:22-64
 15
 16    <application
-16-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:10:5-48:19
+16-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:10:5-48:19
 17        android:name="io.flutter.app.FlutterApplication"
-17-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:11:9-57
+17-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:11:9-57
 18        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-18-->[androidx.core:core:1.1.0] C:\Users\Yoan\.gradle\caches\transforms-2\files-2.1\a528b13ac93e64cafa3d0480e2c93207\core-1.1.0\AndroidManifest.xml:24:18-86
+18-->[androidx.core:core:1.1.0] /Users/yoan/.gradle/caches/transforms-2/files-2.1/a528b13ac93e64cafa3d0480e2c93207/core-1.1.0/AndroidManifest.xml:24:18-86
 19        android:debuggable="true"
 20        android:icon="@mipmap/ic_launcher"
-20-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:13:9-43
+20-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:13:9-43
 21        android:label="John Cage Tribute" >
-21-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:12:9-42
+21-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:12:9-42
 22        <activity
-22-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:14:9-42:20
+22-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:14:9-42:20
 23            android:name="com.example.jct.MainActivity"
-23-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:15:13-41
+23-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:15:13-41
 24            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-24-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:18:13-163
+24-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:18:13-163
 25            android:hardwareAccelerated="true"
-25-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:19:13-47
+25-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:19:13-47
 26            android:launchMode="singleTop"
-26-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:16:13-43
+26-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:16:13-43
 27            android:theme="@style/LaunchTheme"
-27-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:17:13-47
+27-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:17:13-47
 28            android:windowSoftInputMode="adjustResize" >
-28-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:20:13-55
+28-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:20:13-55
 29
 30            <!--
 31                 Specifies an Android theme to apply to this Activity as soon as
@@ -48,11 +48,11 @@
 34                 to determine the Window background behind the Flutter UI.
 35            -->
 36            <meta-data
-36-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:25:13-28:17
+36-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:25:13-28:17
 37                android:name="io.flutter.embedding.android.NormalTheme"
-37-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:26:15-70
+37-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:26:15-70
 38                android:resource="@style/NormalTheme" />
-38-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:27:15-52
+38-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:27:15-52
 39            <!--
 40                 Displays an Android View that continues showing the launch screen
 41                 Drawable until Flutter paints its first frame, then this splash
@@ -61,21 +61,21 @@
 44                 Flutter's first frame.
 45            -->
 46            <meta-data
-46-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:34:13-37:17
+46-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:34:13-37:17
 47                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-47-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:35:15-79
+47-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:35:15-79
 48                android:resource="@drawable/launch_background" />
-48-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:36:15-61
+48-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:36:15-61
 49
 50            <intent-filter>
-50-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:38:13-41:29
+50-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:38:13-41:29
 51                <action android:name="android.intent.action.MAIN" />
-51-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:39:17-68
-51-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:39:25-66
+51-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:39:17-68
+51-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:39:25-66
 52
 53                <category android:name="android.intent.category.LAUNCHER" />
-53-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:40:17-76
-53-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:40:27-74
+53-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:40:17-76
+53-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:40:27-74
 54            </intent-filter>
 55        </activity>
 56        <!--
@@ -83,11 +83,11 @@
 58             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java
 59        -->
 60        <meta-data
-60-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:45:9-47:33
+60-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:45:9-47:33
 61            android:name="flutterEmbedding"
-61-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:46:13-44
+61-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:46:13-44
 62            android:value="2" />
-62-->C:\Users\Yoan\jct\mobile\android\app\src\main\AndroidManifest.xml:47:13-30
+62-->/Users/yoan/jct/mobile/android/app/src/main/AndroidManifest.xml:47:13-30
 63    </application>
 64
 65</manifest>
