@@ -1,6 +1,7 @@
 # jct
 
-A new Flutter project.
+Mobile component of the John Cage Tribute project.
+Developed using Dart+Flutter.
 
 ## Getting Started
 
