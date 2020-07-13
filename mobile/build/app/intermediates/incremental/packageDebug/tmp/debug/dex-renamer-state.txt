@@ -1,4 +1,4 @@
-#Wed Apr 29 15:14:34 EDT 2020
-base.0=/Users/yoan/jct/mobile/build/app/intermediates/dex/debug/mergeDexDebug/out/classes.dex
+#Sun Jul 12 19:37:53 EDT 2020
+base.0=/Users/yoan/dev/John-Cage-Tribute/mobile/build/app/intermediates/dex/debug/mergeDexDebug/out/classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

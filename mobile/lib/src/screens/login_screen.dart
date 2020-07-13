@@ -1,24 +1,95 @@
 import 'package:flutter/material.dart';
+import '../blocs/auth/bloc.dart';
+import '../models/user_model.dart';
+import '../widgets/loading_user.dart';
 
-class LoginScreen extends StatefulWidget {
-  createState() => LoginScreenState();
-}
+// TODO: No error when incorrect password typed in. Fix please.
+class LoginScreen extends StatelessWidget {
+  Widget build(context) {
+    final AuthBloc bloc = AuthProvider.of(context);
 
-class LoginScreenState extends State<LoginScreen> {
-  TextEditingController _emailController;
-  TextEditingController _usernameController;
-  TextEditingController _passwordController;
+    return StreamBuilder(
+        stream: bloc.user,
+        builder: (context, AsyncSnapshot<UserModel> snapshot) {
+          if (!snapshot.hasData) {
+            return LoadingUser();
+          }
 
-  initState() {
-    super.initState();
-    _emailController = TextEditingController();
-    _usernameController = TextEditingController();
-    _passwordController = TextEditingController();
+          if (snapshot.data.username != null) {
+            return Scaffold(
+                body: SizedBox.expand(
+                    child: Container(
+                        color: Theme.of(context).primaryColor,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                'Not ${snapshot.data.username}?\n Feel free to log out below.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.headline6),
+                            RaisedButton(
+                                color: Theme.of(context).accentColor,
+                                onPressed: () async {
+                                  await bloc.logout();
+                                },
+                                child: Text('Log out',
+                                    style: TextStyle(color: Colors.white)))
+                          ],
+                        ))));
+          } else {
+            return DefaultTabController(
+                length: 2,
+                child: Scaffold(
+                    appBar: AppBar(
+                        backgroundColor: Theme.of(context).accentColor,
+                        title: Text('Account'),
+                        centerTitle: true,
+                        bottom: TabBar(
+                          labelColor: Colors.white,
+                          unselectedLabelColor:
+                              Theme.of(context).unselectedWidgetColor,
+                          indicatorColor: Colors.white,
+                          tabs: [
+                            Tab(text: 'Login'),
+                            Tab(text: 'Sign Up'),
+                          ],
+                        )),
+                    body: TabBarView(
+                      children: [
+                        loginView(context, bloc),
+                        signupView(context, bloc),
+                      ],
+                    )));
+          }
+        });
   }
 
-  Widget build(context) {
-    return Scaffold(
-        body: Stack(
+  Widget loginView(BuildContext context, AuthBloc bloc) {
+    return Stack(
+      children: [
+        SizedBox.expand(
+            child: Container(
+          color: Theme.of(context).primaryColor,
+        )),
+        Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Get your persona going.',
+                textAlign: TextAlign.center,
+              ),
+              usernameField(bloc),
+              passwordField(bloc),
+              loginButton(bloc),
+            ])
+      ],
+    );
+  }
+
+  Widget signupView(BuildContext context, AuthBloc bloc) {
+    return Stack(
       children: [
         SizedBox.expand(
           child: Container(
@@ -33,44 +104,104 @@ class LoginScreenState extends State<LoginScreen> {
                 'Tired of acting as a guest?\nSign up below.',
                 textAlign: TextAlign.center,
               ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(hintText: 'Email'),
-              ),
-              //
-              TextFormField(
-                controller: _usernameController,
-                decoration: InputDecoration(hintText: 'Username'),
-              ),
-              //
-              TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(hintText: 'Password'),
-                  obscureText: true),
-              //
-              RaisedButton(
-                  child: Text('Sign up'),
-                  onPressed: () => print('Signup button pressed')),
+              emailField(bloc),
+              usernameField(bloc),
+              passwordField(bloc),
+              signupButton(bloc),
             ]),
       ],
-    ));
-    // return SizedBox.expand(
-    //   child: Container(
-    //       color: Theme.of(context).primaryColor,
-    //       child: Center(
-    //           child: Text(
-    //         'Login Screen',
-    //         textAlign: TextAlign.center,
-    //         style: Theme.of(context).textTheme.headline6,
-    //       ))),
-    // );
+    );
   }
 
-  void dispose() {
-    _emailController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
+  Widget emailField(AuthBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.email,
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          return TextField(
+            onChanged: bloc.changeEmail,
+            keyboardType: TextInputType.emailAddress,
+            decoration: InputDecoration(
+              labelText: 'Email Address',
+              hintText: 'johndoe@example.com',
+              errorText: snapshot.error,
+            ),
+          );
+        });
+  }
 
-    super.dispose();
+  Widget usernameField(AuthBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.username,
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          return TextField(
+            onChanged: bloc.changeUsername,
+            decoration: InputDecoration(
+              labelText: 'Username',
+              hintText: 'ThreeOrMoreCharacters',
+              errorText: snapshot.error,
+            ),
+          );
+        });
+  }
+
+  Widget passwordField(AuthBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.password,
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          return TextField(
+            obscureText: true,
+            onChanged: bloc.changePassword,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              hintText: 'UseCapitalsAndNumbers!',
+              errorText: snapshot.error,
+            ),
+          );
+        });
+  }
+
+  Widget signupButton(AuthBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.signupValid,
+        builder: (context, snapshot) {
+          return RaisedButton(
+              onPressed:
+                  snapshot.hasData ? () => onSignup(context, bloc) : null,
+              color: Theme.of(context).accentColor,
+              child: Text('Sign Up', style: TextStyle(color: Colors.white)));
+        });
+  }
+
+  Widget loginButton(AuthBloc bloc) {
+    return StreamBuilder(
+        stream: bloc.loginValid,
+        builder: (context, snapshot) {
+          return RaisedButton(
+              onPressed: snapshot.hasData ? () => onLogin(context, bloc) : null,
+              color: Theme.of(context).accentColor,
+              child: Text('Login', style: TextStyle(color: Colors.white)));
+        });
+  }
+
+  void onSignup(BuildContext context, AuthBloc bloc) async {
+    bool success = await bloc.submitAndSignup();
+
+    if (success) {
+      print('Signup successful!');
+    } else {
+      // Display signup error on screen
+      print('Signup error, bruv.');
+    }
+  }
+
+  void onLogin(BuildContext context, AuthBloc bloc) async {
+    bool success = await bloc.submitAndLogin();
+
+    if (success) {
+      print('Login successful!');
+    } else {
+      // Display login error on screen
+      print('Login error, bruv.');
+    }
   }
 }

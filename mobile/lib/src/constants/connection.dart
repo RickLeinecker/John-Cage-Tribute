@@ -1,0 +1,1 @@
+enum Connection { CONNECTED, MUTED, DISCONNECTED }

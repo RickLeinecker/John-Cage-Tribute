@@ -1,13 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// class FadeTextTile extends StatefulWidget {
-//   createState() => FadeTextTileState();
-// }
-
-// class FadeTextTileState extends State<FadeTextTile> {
-                        // with TickerProviderStateMixin {
-  class FadeTextTile extends StatelessWidget {
+class FadeTextTile extends StatelessWidget {
   final String title;
   final String body;
 
@@ -23,14 +17,16 @@ import 'package:flutter/material.dart';
               left: 20.0,
               right: 20.0,
             ),
-            child: Text('$title', 
+            child: Text(
+              '$title',
               style: Theme.of(context).textTheme.headline6,
               textAlign: TextAlign.center,
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: Text('$body',
+            child: Text(
+              '$body',
               style: Theme.of(context).textTheme.bodyText2,
               textAlign: TextAlign.center,
             ),

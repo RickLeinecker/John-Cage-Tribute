@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jct/src/widgets/fade_text_tile.dart';
-import 'package:transparent_image/transparent_image.dart';
-import '../models/image_model.dart';
-import '../resources/image_api_provider.dart';
+// import 'package:transparent_image/transparent_image.dart';
+// import '../models/unsplash/unsplash_image_model.dart';
+// import '../resources/image_api_provider.dart';
 import 'library_screen.dart';
 import 'login_screen.dart';
 import 'search_screen.dart';
 import 'appointment_screen.dart';
+import '../blocs/auth/bloc.dart';
 
 class Dashboard extends StatefulWidget {
   createState() => DashboardState();
@@ -17,8 +18,8 @@ class Dashboard extends StatefulWidget {
 class DashboardState extends State<Dashboard> {
   static const int kNumTiles = 3;
 
-  ImageApiProvider imageProvider;
-  Future rndImgFuture;
+  // ImageApiProvider imageProvider;
+  // Future rndImgFuture;
   int currentIndex = 0;
 
   // Retrieve text files from assets folder
@@ -28,21 +29,24 @@ class DashboardState extends State<Dashboard> {
 
   initState() {
     super.initState();
-    imageProvider = ImageApiProvider();
-    rndImgFuture = imageProvider.getPhoto();
+    // imageProvider = ImageApiProvider();
+    // rndImgFuture = imageProvider.getPhoto();
 
-    // Text from files
+    // Text assets
     biographyFuture = rootBundle.loadString('assets/biography.txt');
     descriptionFuture = rootBundle.loadString('assets/description.txt');
     howtoFuture = rootBundle.loadString('assets/howto.txt');
   }
 
   Widget build(context) {
+    final AuthBloc bloc = AuthProvider.of(context);
+
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         activeColor: Theme.of(context).primaryColor,
         inactiveColor: Theme.of(context).unselectedWidgetColor,
         backgroundColor: Theme.of(context).accentColor,
+        onTap: (index) {},
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home)),
           BottomNavigationBarItem(icon: Icon(Icons.assignment)),
@@ -54,29 +58,49 @@ class DashboardState extends State<Dashboard> {
       tabBuilder: (context, index) {
         switch (index) {
           case 0: // Dashboard
-            return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(
-                child: dashboardFutureBuilder(),
-              );
-            });
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                  child: dashboardFutureBuilder(),
+                );
+              },
+            );
             break;
           case 1: // Appointments/Host
-            return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: AppointmentScreen());
-            });
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                  child: AppointmentScreen(user: bloc.user),
+                );
+              },
+              // routes: {
+              //   '/session': (context) =>
+              //       SessionScreen(user: bloc.currentUser.username),
+              // },
+            );
           case 2: // Search
-            return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: SearchScreen());
-            });
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(child: SearchScreen());
+              },
+            );
           case 3: // Library
-            return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: LibraryScreen());
-            });
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                  child: LibraryScreen(/*user: bloc.user*/),
+                );
+              },
+            );
             break;
-          case 4:
-            return CupertinoTabView(builder: (context) {
-              return CupertinoPageScaffold(child: LoginScreen());
-            });
+          case 4: // Login
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                  child: LoginScreen(),
+                );
+              },
+            );
             break;
           default: // Error screen
             return const CupertinoTabView();
@@ -87,83 +111,86 @@ class DashboardState extends State<Dashboard> {
 
   Widget dashboardFutureBuilder() {
     return FutureBuilder(
-        future: Future.wait(
-            [rndImgFuture, biographyFuture, descriptionFuture, howtoFuture]),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (!snapshot.hasData) {
-            return defaultBackground(
-              containerChild: Center(
-                  child:
-                      CircularProgressIndicator(backgroundColor: Colors.white)),
-            );
-          }
-
-          final ImageModel image = snapshot.data[0];
-          final String imageUrl = image.urls.full;
-
-          Widget background = Container(
-            child: FadeInImage.memoryNetwork(
-              placeholder: kTransparentImage,
-              image: imageUrl,
-              fit: BoxFit.cover,
-              height: double.infinity,
-              width: double.infinity,
-            ),
+      future: Future.wait(
+        [/*rndImgFuture,*/ biographyFuture, descriptionFuture, howtoFuture],
+      ),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        if (!snapshot.hasData) {
+          return defaultBackground(
+            containerChild: Center(
+                child:
+                    CircularProgressIndicator(backgroundColor: Colors.white)),
           );
+        }
 
-          final List<String> biography = snapshot.data[1].split('\n');
-          final List<String> description = snapshot.data[2].split('\n');
-          final List<String> howto = snapshot.data[3].split('\n');
+        // final UnsplashImageModel image = snapshot.data[0];
+        // final String imageUrl = image.urls.full;
 
-          return Stack(
-            children: <Widget>[
-              defaultBackground(containerChild: null),
-              background,
-              ListView.separated(
-                  itemCount: kNumTiles,
-                  itemBuilder: (context, int index) {
-                    Widget homeTextTile;
+        // Widget background = Container(
+        //   child: FadeInImage.memoryNetwork(
+        //     placeholder: kTransparentImage,
+        //     image: imageUrl,
+        //     fit: BoxFit.cover,
+        //     height: double.infinity,
+        //     width: double.infinity,
+        //   ),
+        // );
 
-                    switch (index) {
-                      case 0:
-                        homeTextTile = FadeTextTile(
-                          title: biography[0],
-                          body: biography[1],
-                        );
-                        break;
-                      case 1:
-                        homeTextTile = FadeTextTile(
-                          title: description[0],
-                          body: description[1],
-                        );
-                        break;
-                      case 2:
-                        homeTextTile = FadeTextTile(
-                          title: howto[0],
-                          body: howto[1],
-                        );
-                        break;
-                      default:
-                        homeTextTile = FadeTextTile(
-                          title: 'Title',
-                          body: 'Body',
-                        );
-                    }
+        final List<String> biography = snapshot.data[0].split('\n');
+        final List<String> description = snapshot.data[1].split('\n');
+        final List<String> howto = snapshot.data[2].split('\n');
 
-                    return Column(
-                      children: [
-                        Divider(height: 200.0, color: Colors.transparent),
-                        homeTextTile,
-                      ],
+        return Stack(
+          children: <Widget>[
+            defaultBackground(containerChild: null),
+            // background,
+            ListView.separated(
+              itemCount: kNumTiles,
+              itemBuilder: (context, int index) {
+                Widget homeTextTile;
+
+                switch (index) {
+                  case 0:
+                    homeTextTile = FadeTextTile(
+                      title: biography[0],
+                      body: biography[1],
                     );
-                  },
-                  padding: EdgeInsets.all(20.0),
-                  separatorBuilder: (context, index) {
-                    return Divider(height: 300.0, color: Colors.transparent);
-                  }),
-            ],
-          );
-        });
+                    break;
+                  case 1:
+                    homeTextTile = FadeTextTile(
+                      title: description[0],
+                      body: description[1],
+                    );
+                    break;
+                  case 2:
+                    homeTextTile = FadeTextTile(
+                      title: howto[0],
+                      body: howto[1],
+                    );
+                    break;
+                  default:
+                    homeTextTile = FadeTextTile(
+                      title: 'Title',
+                      body: 'Body',
+                    );
+                }
+
+                return Column(
+                  children: [
+                    Divider(height: 200.0, color: Colors.transparent),
+                    homeTextTile,
+                  ],
+                );
+              },
+              padding: EdgeInsets.all(20.0),
+              separatorBuilder: (context, index) {
+                return Divider(height: 300.0, color: Colors.transparent);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget defaultBackground({containerChild}) {

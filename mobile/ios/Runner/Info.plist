@@ -41,5 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSMicrophoneUsageDescription</key>
+    <string>Microphone use is required for recording your surroundings.</string>
 </dict>
 </plist>

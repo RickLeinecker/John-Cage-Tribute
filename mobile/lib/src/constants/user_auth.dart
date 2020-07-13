@@ -1,0 +1,1 @@
+enum UserAuth { LOGIN, SIGNUP }

@@ -1,3 +1,7 @@
 # This is a generated file; do not edit or check into version control.
+flutter_secure_storage=/Users/yoan/.pub-cache/hosted/pub.dartlang.org/flutter_secure_storage-3.3.3/
 path_provider=/Users/yoan/.pub-cache/hosted/pub.dartlang.org/path_provider-1.6.7/
 path_provider_macos=/Users/yoan/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-0.0.4+1/
+permission_handler=/Users/yoan/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1/
+audio_buffer_player=/Users/yoan/dev/audio_buffer_player/
+audio_streamer=/Users/yoan/dev/audio_streamer/

@@ -8,10 +8,28 @@
       "languageVersion": "2.2"
     },
     {
+      "name": "audio_buffer_player",
+      "rootUri": "../../../audio_buffer_player",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "audio_streamer",
+      "rootUri": "../../../audio_streamer",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
       "name": "boolean_selector",
       "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.4"
+    },
+    {
+      "name": "characters",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/characters-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
     },
     {
       "name": "charcode",
@@ -38,6 +56,18 @@
       "languageVersion": "2.0"
     },
     {
+      "name": "email_validator",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/email_validator-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "1.24"
+    },
+    {
+      "name": "equatable",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/equatable-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
       "name": "fake_async",
       "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/fake_async-1.1.0",
       "packageUri": "lib/",
@@ -45,19 +75,19 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///Users/yoan/flutter/packages/flutter",
+      "rootUri": "file:///Users/yoan/dev/flutter/packages/flutter",
       "packageUri": "lib/",
-      "languageVersion": "2.2"
+      "languageVersion": "2.9"
     },
     {
-      "name": "flutter_platform_widgets",
-      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/flutter_platform_widgets-0.32.5",
+      "name": "flutter_secure_storage",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/flutter_secure_storage-3.3.3",
       "packageUri": "lib/",
-      "languageVersion": "2.6"
+      "languageVersion": "1.19"
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///Users/yoan/flutter/packages/flutter_test",
+      "rootUri": "file:///Users/yoan/dev/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
@@ -72,6 +102,12 @@
       "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.4",
       "packageUri": "lib/",
       "languageVersion": "2.3"
+    },
+    {
+      "name": "logging",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/logging-0.11.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
     },
     {
       "name": "matcher",
@@ -116,6 +152,24 @@
       "languageVersion": "2.1"
     },
     {
+      "name": "permission_handler",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.0.1+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "permission_handler_platform_interface",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/permission_handler_platform_interface-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
+    },
+    {
+      "name": "pinput",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/pinput-0.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
       "name": "platform",
       "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/platform-2.2.1",
       "packageUri": "lib/",
@@ -135,9 +189,21 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///Users/yoan/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///Users/yoan/dev/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "1.11"
+    },
+    {
+      "name": "socket_io_client",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/socket_io_client-0.9.10",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
+      "name": "socket_io_common",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/socket_io_common-0.9.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
     },
     {
       "name": "source_span",
@@ -171,9 +237,9 @@
     },
     {
       "name": "test_api",
-      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.15",
+      "rootUri": "file:///Users/yoan/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.16",
       "packageUri": "lib/",
-      "languageVersion": "2.4"
+      "languageVersion": "2.7"
     },
     {
       "name": "transparent_image",
@@ -200,7 +266,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2020-04-28T00:35:31.201121Z",
+  "generated": "2020-06-27T21:08:33.479013Z",
   "generator": "pub",
-  "generatorVersion": "2.9.0-3.0.dev.flutter-a69cb6d700"
+  "generatorVersion": "2.9.0-14.0.dev.flutter-2b917f5b6a"
 }
