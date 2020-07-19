@@ -91,7 +91,8 @@ class AppointmentScreen extends StatelessWidget {
                       itemCount: snapshot.data.length,
                       scrollDirection: Axis.vertical,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2),
+                        crossAxisCount: 2,
+                      ),
                       itemBuilder: (BuildContext context, int index) {
                         final String key = snapshot.data.keys.elementAt(index);
                         return RoomTile(

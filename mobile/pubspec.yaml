@@ -1,5 +1,5 @@
 name: jct
-description: A new Flutter project.
+description: John Cage-inspired application that allows audio composition in the likeness of John Cage. iOS/Android
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -26,8 +26,7 @@ dependencies:
 
   # bloc: ^4.0.0
   # flutter_bloc: ^4.0.0
-  audio_buffer_player:
-    path: ../../audio_buffer_player
+  audio_buffer_player: ^0.0.1
   audio_streamer:
     path: ../../audio_streamer
   email_validator: ^1.0.4

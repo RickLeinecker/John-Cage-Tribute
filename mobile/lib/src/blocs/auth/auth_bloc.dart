@@ -8,7 +8,8 @@ class AuthBloc with AuthValidators {
   final _email = BehaviorSubject<String>();
   final _username = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
-  // final _submitError = BehaviorSubject<String>();
+  final _submitLogin = BehaviorSubject<String>();
+  final _submitSignup = BehaviorSubject<String>();
   final _user = BehaviorSubject<UserModel>();
 
   AuthBloc() {
@@ -30,12 +31,13 @@ class AuthBloc with AuthValidators {
   Function(String) get changeEmail => _email.sink.add;
   Function(String) get changeUsername => _username.sink.add;
   Function(String) get changePassword => _password.sink.add;
-  // Function(String) get changeSubmitError => _submitError.sink.add;
 
   Stream<String> get email => _email.stream.transform(validateEmail);
   Stream<String> get username => _username.stream.transform(validateUsername);
   Stream<String> get password => _password.stream.transform(validatePassword);
   Stream<UserModel> get user => _user.stream;
+  Stream<String> get submitLogin => _submitLogin.stream;
+  Stream<String> get submitSignup => _submitSignup.stream;
 
   // Broadcast allows for tabview changes to listen as many times as desired
   Stream<bool> get signupValid =>
@@ -55,33 +57,43 @@ class AuthBloc with AuthValidators {
   }
 
   Future<bool> submitAndLogin() async {
-    final UserModel existingUser = await validateLogin(<String, dynamic>{
-      'username': '${_username.value}',
-      'password': '${_password.value}'
-    });
+    final parsedJson = await validateLogin(
+      <String, dynamic>{
+        'username': '${_username.value}',
+        'password': '${_password.value}'
+      },
+    );
 
-    if (existingUser == null) {
+    if (parsedJson['username'] == null) {
       _user.sink.add(GUEST_USER);
+      _submitLogin.sink.addError(parsedJson['error']);
       return false;
     }
 
+    final existingUser = UserModel.fromJson(parsedJson);
     _user.sink.add(existingUser);
+    _submitLogin.sink.add('');
     return true;
   }
 
   Future<bool> submitAndSignup() async {
-    final UserModel existingUser = await validateSignup(<String, dynamic>{
-      'email': '${_email.value}',
-      'username': '${_username.value}',
-      'password': '${_password.value}'
-    });
+    final parsedJson = await validateSignup(
+      <String, dynamic>{
+        'email': '${_email.value}',
+        'username': '${_username.value}',
+        'password': '${_password.value}'
+      },
+    );
 
-    if (existingUser == null) {
+    if (parsedJson['username'] == null) {
       _user.sink.add(GUEST_USER);
+      _submitSignup.sink.addError(parsedJson['error']);
       return false;
     }
 
+    final existingUser = UserModel.fromJson(parsedJson);
     _user.sink.add(existingUser);
+    _submitSignup.sink.add('');
     return true;
   }
 
@@ -90,5 +102,7 @@ class AuthBloc with AuthValidators {
     _username.close();
     _password.close();
     _user.close();
+    _submitLogin.close();
+    _submitSignup.close();
   }
 }

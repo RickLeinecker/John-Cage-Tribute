@@ -146,41 +146,75 @@ class LoginScreen extends StatelessWidget {
 
   Widget passwordField(AuthBloc bloc) {
     return StreamBuilder(
-        stream: bloc.password,
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          return TextField(
-            obscureText: true,
-            onChanged: bloc.changePassword,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: 'UseCapitalsAndNumbers!',
-              errorText: snapshot.error,
-            ),
-          );
-        });
+      stream: bloc.password,
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return TextField(
+          obscureText: true,
+          onChanged: bloc.changePassword,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            hintText: 'UseCapitalsAndNumbers!',
+            errorText: snapshot.error,
+          ),
+        );
+      },
+    );
   }
 
   Widget signupButton(AuthBloc bloc) {
     return StreamBuilder(
-        stream: bloc.signupValid,
-        builder: (context, snapshot) {
-          return RaisedButton(
-              onPressed:
-                  snapshot.hasData ? () => onSignup(context, bloc) : null,
-              color: Theme.of(context).accentColor,
-              child: Text('Sign Up', style: TextStyle(color: Colors.white)));
-        });
+      stream: bloc.signupValid,
+      builder: (context, snapshot) {
+        return Column(
+          children: [
+            StreamBuilder(
+              stream: bloc.submitSignup,
+              builder: (context, AsyncSnapshot<String> snapshot) {
+                return Text(
+                  snapshot.hasError ? snapshot.error : '',
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                );
+              },
+            ),
+            RaisedButton(
+                onPressed:
+                    snapshot.hasData ? () => onSignup(context, bloc) : null,
+                color: Theme.of(context).accentColor,
+                child: Text('Sign Up', style: TextStyle(color: Colors.white))),
+          ],
+        );
+      },
+    );
   }
 
   Widget loginButton(AuthBloc bloc) {
     return StreamBuilder(
-        stream: bloc.loginValid,
-        builder: (context, snapshot) {
-          return RaisedButton(
-              onPressed: snapshot.hasData ? () => onLogin(context, bloc) : null,
-              color: Theme.of(context).accentColor,
-              child: Text('Login', style: TextStyle(color: Colors.white)));
-        });
+      stream: bloc.loginValid,
+      builder: (context, snapshot) {
+        return Column(
+          children: [
+            StreamBuilder(
+              stream: bloc.submitLogin,
+              builder: (context, AsyncSnapshot<String> snapshot) {
+                return Text(
+                  snapshot.hasError ? snapshot.error : '',
+                  style: TextStyle(
+                    color: Colors.red[700],
+                  ),
+                );
+              },
+            ),
+            RaisedButton(
+                onPressed:
+                    snapshot.hasData ? () => onLogin(context, bloc) : null,
+                color: Theme.of(context).accentColor,
+                child: Text('Login', style: TextStyle(color: Colors.white))),
+          ],
+        );
+      },
+    );
   }
 
   void onSignup(BuildContext context, AuthBloc bloc) async {
@@ -189,7 +223,6 @@ class LoginScreen extends StatelessWidget {
     if (success) {
       print('Signup successful!');
     } else {
-      // Display signup error on screen
       print('Signup error, bruv.');
     }
   }
@@ -200,7 +233,6 @@ class LoginScreen extends StatelessWidget {
     if (success) {
       print('Login successful!');
     } else {
-      // Display login error on screen
       print('Login error, bruv.');
     }
   }

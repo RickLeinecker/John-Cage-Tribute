@@ -17,32 +17,33 @@ class RoomTile extends StatelessWidget {
     final RoomBloc bloc = RoomProvider.of(context);
 
     return Card(
-        child: Container(
-      color: Theme.of(context).accentColor,
-      child: ListTile(
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Host: ${room.host}',
-              style: Theme.of(context).textTheme.headline6,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              'Performers: ${room.currentPerformers}/${room.maxPerformers}',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-            Text(
-              'Listeners: ${room.currentListeners}/${room.maxListeners}',
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-          ],
+      child: Container(
+        color: Theme.of(context).accentColor,
+        child: ListTile(
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Host: ${room.host}',
+                style: Theme.of(context).textTheme.headline6,
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                'Performers: ${room.currentPerformers}/${room.maxPerformers}',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              Text(
+                'Listeners: ${room.currentListeners}/${room.maxListeners}',
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+            ],
+          ),
+          onTap: () {
+            onTilePressed(context, bloc);
+          },
         ),
-        onTap: () {
-          onTilePressed(context, bloc);
-        },
       ),
-    ));
+    );
   }
 
   void onTilePressed(BuildContext context, RoomBloc bloc) async {

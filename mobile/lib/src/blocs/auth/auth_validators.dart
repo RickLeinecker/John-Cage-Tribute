@@ -2,44 +2,41 @@ import 'dart:async';
 import 'package:email_validator/email_validator.dart';
 import '../../models/user_model.dart';
 import '../../resources/user_api_retriever.dart';
+import '../../../src/constants/guest_user.dart';
 
 class AuthValidators {
   static final _userApiRetriever = UserApiRetriever();
 
   Future<UserModel> verifyJwt() async {
-    final UserModel returningUser = await _userApiRetriever.jwtOrEmpty;
-    return returningUser;
+    final parsedJson = await _userApiRetriever.jwtOrEmpty;
+    if (parsedJson != null) {
+      return UserModel.fromJson(parsedJson);
+    } else {
+      return GUEST_USER;
+    }
   }
 
   Future<void> deleteJwt() async {
     await _userApiRetriever.storage.delete(key: 'jwt');
   }
 
-  Future<UserModel> validateSignup(Map<String, dynamic> user) async {
-    final UserModel newUser = await _userApiRetriever.signup(user);
-    return newUser;
+  Future<Map<String, dynamic>> validateSignup(Map<String, dynamic> user) async {
+    final parsedJson = await _userApiRetriever.signup(user);
+    return parsedJson;
   }
 
-  Future<UserModel> validateLogin(Map<String, dynamic> user) async {
-    final UserModel returningUser = await _userApiRetriever.login(user);
-
-    return returningUser;
+  Future<Map<String, dynamic>> validateLogin(Map<String, dynamic> user) async {
+    final parsedJson = await _userApiRetriever.login(user);
+    return parsedJson;
   }
 
   final validateEmail = StreamTransformer<String, String>.fromHandlers(
       handleData: (enteredEmail, sink) async {
     if (EmailValidator.validate(enteredEmail) == false) {
       sink.addError('Invalid email.');
+    } else {
+      sink.add(enteredEmail);
     }
-
-    List<String> emailList = await _userApiRetriever.fetchEmailList();
-    for (String existingEmail in emailList) {
-      if (enteredEmail == existingEmail) {
-        sink.addError('This email is already taken.');
-        return;
-      }
-    }
-    sink.add(enteredEmail);
   });
 
   final validateUsername = StreamTransformer<String, String>.fromHandlers(
@@ -52,15 +49,16 @@ class AuthValidators {
   });
 
   final validatePassword = StreamTransformer<String, String>.fromHandlers(
-      handleData: (enteredPassword, sink) {
-    final RegExp capLetterNumberSixDigits =
-        RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$');
+    handleData: (enteredPassword, sink) {
+      final RegExp capLetterNumberSixDigits =
+          RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$');
 
-    if (capLetterNumberSixDigits.hasMatch(enteredPassword)) {
-      sink.add(enteredPassword);
-    } else {
-      sink.addError(
-          'Must be 6 characters, have lowercase, capital, and digits.');
-    }
-  });
+      if (capLetterNumberSixDigits.hasMatch(enteredPassword)) {
+        sink.add(enteredPassword);
+      } else {
+        sink.addError(
+            'Must be 6 characters, have lowercase and capital letters, and digits.');
+      }
+    },
+  );
 }

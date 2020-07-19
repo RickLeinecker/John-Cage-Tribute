@@ -2,17 +2,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'blocs/auth/bloc.dart';
 import 'blocs/room/bloc.dart';
+import 'blocs/search/bloc.dart';
 import 'screens/dashboard.dart';
 
 class App extends StatelessWidget {
   Widget build(BuildContext context) {
-    return AuthProvider(
-      child: RoomProvider(
-        child: MaterialApp(
-          title: 'John Cage Tribute',
-          home: Dashboard(),
-          onGenerateRoute: routes,
-          theme: appTheme(),
+    return SearchProvider(
+      child: AuthProvider(
+        child: RoomProvider(
+          child: MaterialApp(
+            title: 'John Cage Tribute',
+            home: Dashboard(),
+            onGenerateRoute: routes,
+            theme: appTheme(),
+          ),
         ),
       ),
     );
@@ -22,6 +25,7 @@ class App extends StatelessWidget {
     return ThemeData(
       primaryColor: Colors.blue[800],
       accentColor: Colors.blue[700],
+      highlightColor: Colors.blue[900],
       fontFamily: 'Cambria',
       textTheme: TextTheme(
         headline6: TextStyle(

@@ -1,0 +1,1 @@
+enum FilterOption { NONE, TAGS, COMPOSED_BY, PERFORMED_BY }
