@@ -1,4 +1,8 @@
 PODS:
+  - assets_audio_player (0.0.1):
+    - Flutter
+  - assets_audio_player_web (0.0.1):
+    - Flutter
   - audio_buffer_player (0.0.1):
     - Flutter
   - audio_streamer (0.0.1):
@@ -12,6 +16,8 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - assets_audio_player (from `.symlinks/plugins/assets_audio_player/ios`)
+  - assets_audio_player_web (from `.symlinks/plugins/assets_audio_player_web/ios`)
   - audio_buffer_player (from `.symlinks/plugins/audio_buffer_player/ios`)
   - audio_streamer (from `.symlinks/plugins/audio_streamer/ios`)
   - Flutter (from `Flutter`)
@@ -20,6 +26,10 @@ DEPENDENCIES:
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
 
 EXTERNAL SOURCES:
+  assets_audio_player:
+    :path: ".symlinks/plugins/assets_audio_player/ios"
+  assets_audio_player_web:
+    :path: ".symlinks/plugins/assets_audio_player_web/ios"
   audio_buffer_player:
     :path: ".symlinks/plugins/audio_buffer_player/ios"
   audio_streamer:
@@ -34,6 +44,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
 
 SPEC CHECKSUMS:
+  assets_audio_player: edee322b9cb625571b830b35872ead1a295fd917
+  assets_audio_player_web: 19826380c44375761aa0b9053665c1e3fbc3b86b
   audio_buffer_player: 1895bc96eec708b9eb4340f965238530c14dc640
   audio_streamer: af49e73eb66f71c4eeabb4bbcb05f122d03a6709
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec

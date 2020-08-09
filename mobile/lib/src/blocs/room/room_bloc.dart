@@ -7,8 +7,10 @@ import 'package:rxdart/rxdart.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import '../../constants/base_url.dart';
 import '../../constants/role.dart';
+import '../../constants/screen_type.dart';
 import '../../models/member_model.dart';
 import '../../models/room_model.dart';
+import '../../models/status_model.dart';
 
 class RoomBloc {
   // AppointmentScreen
@@ -28,7 +30,7 @@ class RoomBloc {
   String currentRoom;
   Socket socket;
   Role currentRole;
-  MemberModel currentMember;
+  Map<String, dynamic> composition;
   AudioStreamer _audioStreamer;
   AudioBufferPlayer _bufferPlayer;
   bool _isRecording;
@@ -62,6 +64,8 @@ class RoomBloc {
       'autoConnect': false,
     });
 
+    composition = {};
+
     onSocketConnections();
     socket.connect();
   }
@@ -71,6 +75,7 @@ class RoomBloc {
   void onSocketConnections() {
     // Updates list of available rooms in host screen
     socket.on('updaterooms', (data) {
+      print('Updated rooms!');
       final Map<String, RoomModel> roomMap = Map();
 
       for (String key in data.keys) {
@@ -89,7 +94,9 @@ class RoomBloc {
         membersMap[key] = MemberModel.fromJson(data[key]);
       }
 
-      if (data.length == _numPerformers.value) {
+      // TODO: Change back from 1 back to number of Performers
+      // if (data.length >= _numPerformers.value) {
+      if (data.length >= 1) {
         _sessionReady.sink.add(true);
       } else {
         _sessionReady.addError('');
@@ -107,9 +114,26 @@ class RoomBloc {
       }
     });
 
+    // Socket event for when an audio recording session finally begins.
+    // We capture the list of performers in our composition at this stage.
     socket.on('audiostart', (data) {
-      print('(audiostart socket) _isRecording: $_isRecording');
       _isRecording = true;
+      print('(audiostart socket) _isRecording: $_isRecording');
+
+      final performers = List<String>();
+
+      for (String user in _members.value.keys) {
+        final MemberModel member = _members.value[user];
+
+        if (member.role == Role.PERFORMER) {
+          performers.add(member.username);
+        }
+      }
+
+      // Save this here for establishing this composition's list of performer
+      // info (or composition metadata).
+      composition['performers'] = performers;
+
       if (currentRole == Role.LISTENER) {
         _bufferPlayer.init();
       } else {
@@ -129,7 +153,9 @@ class RoomBloc {
 
     socket.on('audiostop', (data) {
       _isRecording = false;
+      print('(audiostop socket) _isRecording: $_isRecording');
       endAudioBehavior();
+      _members.sink.addError(data);
 
       _bufferPlayer = null;
       _audioStreamer = null;
@@ -194,15 +220,26 @@ class RoomBloc {
     setupAudioBehavior();
   }
 
-  // The button that activates this is only visible to the host.
+  /// Starts the audio recording session between the members of the room.
+  /// The button that activates this is only visible to the host.
+  ///
+  /// A timer begins counting down, as recordings can only last up to a
+  /// maximum of 10 minutes (600 seconds).
   void startSession() {
     print('(startSession method) _isRecording: $_isRecording');
     socket.emit('startsession', currentRoom);
   }
 
-  // Start Session button changes to an "end session" button.
-  void endSession(String roomId) {
-    socket.emit('endsession', roomId);
+  /// Ends the session between the members of the room.
+  /// Any immediately important composition metadata is passed via an API call.
+  /// (Examples: Composer name, composition length in seconds)
+  ///
+  /// The button that activates this is only visible to the host.
+  void endSession(int lengthInSeconds) {
+    // Pass composition data here
+    print('Time elapsed: $lengthInSeconds seconds.');
+
+    socket.emit('endsession', currentRoom);
   }
 
   void leaveRoom(String roomId) {
@@ -254,6 +291,23 @@ class RoomBloc {
         _audioStreamer.stop();
       }
     }
+  }
+
+  Future<StatusModel> submitCompositionInfo(String composer,
+      {String title, String description, List<String> tags}) async {
+    final compositionInfo = <String, dynamic>{
+      'composer': composer,
+      'title': title ?? null,
+      'description': description ?? null,
+      'tags': tags ?? null
+    };
+
+    // TODO: Send this compositionInfo to DB!
+    await Future.delayed(Duration(seconds: 1));
+    // return StatusModel.fromJson({'code': 200, 'message': 'Success!'});
+
+    // TODO: Perform a test to see if this loads to CompositionInfoScreen.
+    return StatusModel.fromJson({'code': 400, 'message': 'Invalid stuff.'});
   }
 
   void dispose() {

@@ -8,17 +8,24 @@ class CompositionApiRetriever {
   final Client client = MockClient(
     (request) async {
       // if (request.body == "search") {
-      // TODO: Should this have a "url" field? Or perhaps an "MP3 data" field?
       final List<Map<String, dynamic>> mockCompositions = [
         {
           'title': 'A Really Short Song (jk)',
           'composer': 'topdoggo',
-          'secs': 400,
+          'time': 400,
+          'filename': '4a5b5e73cced3c0fd3f9f990b1aa112b.mp3',
+          'performers': ['(GUEST)', 'mercedes11', 'idkkkBoutThat', 'bonnh4t'],
+          'tags': ['funny', 'nonsense', 'asdfghjkl'],
+          'description': 'All of these are the exact same account, lol.'
         },
         {
           'title': '4\'33',
           'composer': 'John Cage',
-          'secs': 273,
+          'time': 273,
+          'filename': '4a5b5e73cced3c0fd3f9f990b1aa112b.mp3',
+          'performers': ['(GUEST)', '(GUEST)', '(GUEST)', '(GUEST)'],
+          'tags': ['no'],
+          'description': 'We stayed perfectly quiet.'
         }
       ];
 
@@ -55,7 +62,6 @@ class CompositionApiRetriever {
 
     final response = await client.get(url);
     final List<dynamic> compositions = jsonDecode(response.body);
-
     final List<Map<String, dynamic>> mapList = new List();
 
     for (Map<String, dynamic> map in compositions) {

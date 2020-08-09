@@ -32,6 +32,8 @@ class UserApiRetriever {
     final response = await client.post('$baseUrl/api/signup',
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(user));
 
+    print('response: $response');
+    print('response body: ${response.body}');
     final parsedJson = jsonDecode(response.body);
     if (response.statusCode == 200) {
       await storage.write(key: 'jwt', value: parsedJson['token']);

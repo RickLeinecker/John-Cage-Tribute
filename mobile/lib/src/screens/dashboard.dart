@@ -8,7 +8,7 @@ import 'package:jct/src/widgets/fade_text_tile.dart';
 import 'library_screen.dart';
 import 'login_screen.dart';
 import 'search_screen.dart';
-import 'appointment_screen.dart';
+import 'room_screen.dart';
 import '../blocs/auth/bloc.dart';
 
 class Dashboard extends StatefulWidget {
@@ -70,13 +70,9 @@ class DashboardState extends State<Dashboard> {
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: AppointmentScreen(user: bloc.user),
+                  child: RoomScreen(user: bloc.user),
                 );
               },
-              // routes: {
-              //   '/session': (context) =>
-              //       SessionScreen(user: bloc.currentUser.username),
-              // },
             );
           case 2: // Search
             return CupertinoTabView(

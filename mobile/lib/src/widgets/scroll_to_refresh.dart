@@ -24,20 +24,3 @@ class ScrollToRefresh extends StatelessWidget {
     );
   }
 }
-// TODO: Should I use this or not!?
-// This should serve well for Search Screen
-// // TODO: Include some widget that tells users they can swipe down to
-// // refresh. As a result, this may become a full-fledged ListView.
-// return Stack(children: [
-//   // RefreshIndicator(
-//   //     onRefresh: () async =>
-//   //         await Future.delayed(Duration(seconds: 1)),
-//   // child: ListView(
-//   ListView(
-//     children: [
-//       // scrollToRefreshWidget(),
-//       // Divider(height: 200.0, color: Colors.transparent),
-//       NoAppointments(),
-//     ],
-//   ),
-//   // ),

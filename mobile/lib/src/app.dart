@@ -4,6 +4,7 @@ import 'blocs/auth/bloc.dart';
 import 'blocs/room/bloc.dart';
 import 'blocs/search/bloc.dart';
 import 'screens/dashboard.dart';
+import 'screens/composition_info_screen.dart';
 
 class App extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -52,14 +53,18 @@ class App extends StatelessWidget {
   Route routes(RouteSettings settings) {
     switch (settings.name) {
       case '/':
-        return CupertinoPageRoute(builder: (context) {
-          return Dashboard();
-        });
+        return CupertinoPageRoute(
+          builder: (context) {
+            return Dashboard();
+          },
+        );
       // Invalid screen
       default:
-        return CupertinoPageRoute(builder: (context) {
-          return Text('ERROR SCREEN!!!!!!!');
-        });
+        return CupertinoPageRoute(
+          builder: (context) {
+            return Text('ERROR SCREEN!!!!!!!');
+          },
+        );
     }
   }
 }

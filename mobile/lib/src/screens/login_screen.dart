@@ -1,89 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:jct/src/constants/guest_user.dart';
 import '../blocs/auth/bloc.dart';
 import '../models/user_model.dart';
 import '../widgets/loading_user.dart';
 
-// TODO: No error when incorrect password typed in. Fix please.
+// TODO: Make view and button methods into separate widget classes.
 class LoginScreen extends StatelessWidget {
   Widget build(context) {
     final AuthBloc bloc = AuthProvider.of(context);
 
     return StreamBuilder(
-        stream: bloc.user,
-        builder: (context, AsyncSnapshot<UserModel> snapshot) {
-          if (!snapshot.hasData) {
-            return LoadingUser();
-          }
+      stream: bloc.user,
+      builder: (context, AsyncSnapshot<UserModel> snapshot) {
+        if (!snapshot.hasData) {
+          return LoadingUser();
+        }
 
-          if (snapshot.data.username != null) {
-            return Scaffold(
-                body: SizedBox.expand(
-                    child: Container(
-                        color: Theme.of(context).primaryColor,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                                'Not ${snapshot.data.username}?\n Feel free to log out below.',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.headline6),
-                            RaisedButton(
-                                color: Theme.of(context).accentColor,
-                                onPressed: () async {
-                                  await bloc.logout();
-                                },
-                                child: Text('Log out',
-                                    style: TextStyle(color: Colors.white)))
-                          ],
-                        ))));
-          } else {
-            return DefaultTabController(
-                length: 2,
-                child: Scaffold(
-                    appBar: AppBar(
-                        backgroundColor: Theme.of(context).accentColor,
-                        title: Text('Account'),
-                        centerTitle: true,
-                        bottom: TabBar(
-                          labelColor: Colors.white,
-                          unselectedLabelColor:
-                              Theme.of(context).unselectedWidgetColor,
-                          indicatorColor: Colors.white,
-                          tabs: [
-                            Tab(text: 'Login'),
-                            Tab(text: 'Sign Up'),
-                          ],
-                        )),
-                    body: TabBarView(
-                      children: [
-                        loginView(context, bloc),
-                        signupView(context, bloc),
-                      ],
-                    )));
-          }
-        });
+        if (snapshot.data != GUEST_USER) {
+          return Scaffold(
+            body: logoutView(context, bloc, snapshot.data.username),
+          );
+        } else {
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).accentColor,
+                title: Text('Account'),
+                centerTitle: true,
+                bottom: TabBar(
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(text: 'Login'),
+                    Tab(text: 'Sign Up'),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                children: [
+                  loginView(context, bloc),
+                  signupView(context, bloc),
+                ],
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget logoutView(BuildContext context, AuthBloc bloc, String username) {
+    return SizedBox.expand(
+      child: Container(
+        color: Theme.of(context).primaryColor,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Not $username?\n Feel free to log out below.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headline6),
+            RaisedButton(
+              color: Theme.of(context).accentColor,
+              onPressed: () async {
+                await bloc.logout();
+              },
+              child: Text('Log out', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget loginView(BuildContext context, AuthBloc bloc) {
     return Stack(
       children: [
         SizedBox.expand(
-            child: Container(
-          color: Theme.of(context).primaryColor,
-        )),
+          child: Container(
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
         Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Get your persona going.',
-                textAlign: TextAlign.center,
-              ),
-              usernameField(bloc),
-              passwordField(bloc),
-              loginButton(bloc),
-            ])
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Get your persona going.',
+              textAlign: TextAlign.center,
+            ),
+            usernameField(bloc),
+            passwordField(bloc),
+            loginButton(bloc),
+          ],
+        ),
       ],
     );
   }
@@ -97,51 +109,54 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
         Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Tired of acting as a guest?\nSign up below.',
-                textAlign: TextAlign.center,
-              ),
-              emailField(bloc),
-              usernameField(bloc),
-              passwordField(bloc),
-              signupButton(bloc),
-            ]),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'Tired of acting as a guest?\nSign up below.',
+              textAlign: TextAlign.center,
+            ),
+            emailField(bloc),
+            usernameField(bloc),
+            passwordField(bloc),
+            signupButton(bloc),
+          ],
+        ),
       ],
     );
   }
 
   Widget emailField(AuthBloc bloc) {
     return StreamBuilder(
-        stream: bloc.email,
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          return TextField(
-            onChanged: bloc.changeEmail,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email Address',
-              hintText: 'johndoe@example.com',
-              errorText: snapshot.error,
-            ),
-          );
-        });
+      stream: bloc.email,
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return TextField(
+          onChanged: bloc.changeEmail,
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            labelText: 'Email Address',
+            hintText: 'johndoe@example.com',
+            errorText: snapshot.error,
+          ),
+        );
+      },
+    );
   }
 
   Widget usernameField(AuthBloc bloc) {
     return StreamBuilder(
-        stream: bloc.username,
-        builder: (context, AsyncSnapshot<String> snapshot) {
-          return TextField(
-            onChanged: bloc.changeUsername,
-            decoration: InputDecoration(
-              labelText: 'Username',
-              hintText: 'ThreeOrMoreCharacters',
-              errorText: snapshot.error,
-            ),
-          );
-        });
+      stream: bloc.username,
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return TextField(
+          onChanged: bloc.changeUsername,
+          decoration: InputDecoration(
+            labelText: 'Username',
+            hintText: 'ThreeOrMoreCharacters',
+            errorText: snapshot.error,
+          ),
+        );
+      },
+    );
   }
 
   Widget passwordField(AuthBloc bloc) {
@@ -179,10 +194,11 @@ class LoginScreen extends StatelessWidget {
               },
             ),
             RaisedButton(
-                onPressed:
-                    snapshot.hasData ? () => onSignup(context, bloc) : null,
-                color: Theme.of(context).accentColor,
-                child: Text('Sign Up', style: TextStyle(color: Colors.white))),
+              onPressed:
+                  snapshot.hasData ? () => onSignup(context, bloc) : null,
+              color: Theme.of(context).accentColor,
+              child: Text('Sign Up', style: TextStyle(color: Colors.white)),
+            ),
           ],
         );
       },
@@ -207,10 +223,10 @@ class LoginScreen extends StatelessWidget {
               },
             ),
             RaisedButton(
-                onPressed:
-                    snapshot.hasData ? () => onLogin(context, bloc) : null,
-                color: Theme.of(context).accentColor,
-                child: Text('Login', style: TextStyle(color: Colors.white))),
+              onPressed: snapshot.hasData ? () => onLogin(context, bloc) : null,
+              color: Theme.of(context).accentColor,
+              child: Text('Login', style: TextStyle(color: Colors.white)),
+            ),
           ],
         );
       },

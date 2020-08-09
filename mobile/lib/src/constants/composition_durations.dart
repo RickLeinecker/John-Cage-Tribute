@@ -1,0 +1,2 @@
+const int MIN_COMPOSITION_TIME = 120;
+const int MAX_COMPOSITION_TIME = 600;

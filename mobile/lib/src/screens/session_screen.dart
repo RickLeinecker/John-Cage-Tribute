@@ -63,9 +63,7 @@ class SessionScreen extends StatelessWidget {
                               width: 20.0,
                               color: Colors.transparent,
                             ),
-                            (isHost
-                                ? StartSessionButton(roomId: roomId)
-                                : Container()),
+                            (isHost ? StartSessionButton() : Container()),
                           ],
                         ),
                       ),
