@@ -302,6 +302,10 @@ class RoomBloc {
       'tags': tags ?? null
     };
 
+    if (compositionInfo['composer'] == null) {
+      compositionInfo['composer'] = 'Untitled';
+    }
+
     // TODO: Send this compositionInfo to DB!
     await Future.delayed(Duration(seconds: 1));
     // return StatusModel.fromJson({'code': 200, 'message': 'Success!'});
