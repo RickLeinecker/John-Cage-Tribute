@@ -7,13 +7,12 @@ import 'package:rxdart/rxdart.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import '../../constants/base_url.dart';
 import '../../constants/role.dart';
-import '../../constants/screen_type.dart';
 import '../../models/member_model.dart';
 import '../../models/room_model.dart';
 import '../../models/status_model.dart';
 
 class RoomBloc {
-  // AppointmentScreen
+  // RoomScreen
   final pinText = TextEditingController();
   final _rooms = BehaviorSubject<Map<String, RoomModel>>();
   final _pin = BehaviorSubject<String>();
@@ -94,9 +93,7 @@ class RoomBloc {
         membersMap[key] = MemberModel.fromJson(data[key]);
       }
 
-      // TODO: Change back from 1 back to number of Performers
-      // if (data.length >= _numPerformers.value) {
-      if (data.length >= 1) {
+      if (data.length >= _numPerformers.value) {
         _sessionReady.sink.add(true);
       } else {
         _sessionReady.addError('');
@@ -231,13 +228,16 @@ class RoomBloc {
   }
 
   /// Ends the session between the members of the room.
+  // TODO: Do API stuff here, performers n stuff
   /// Any immediately important composition metadata is passed via an API call.
   /// (Examples: Composer name, composition length in seconds)
   ///
   /// The button that activates this is only visible to the host.
   void endSession(int lengthInSeconds) {
-    // Pass composition data here
+    // TODO: Pass composition data to API here
     print('Time elapsed: $lengthInSeconds seconds.');
+
+    // TODO: Exclude any (GUEST)s in memberList to be passed to API
 
     socket.emit('endsession', currentRoom);
   }
@@ -302,16 +302,13 @@ class RoomBloc {
       'tags': tags ?? null
     };
 
-    if (compositionInfo['composer'] == null) {
-      compositionInfo['composer'] = 'Untitled';
+    if (title == null) {
+      compositionInfo['title'] = 'Untitled';
     }
 
     // TODO: Send this compositionInfo to DB!
     await Future.delayed(Duration(seconds: 1));
-    // return StatusModel.fromJson({'code': 200, 'message': 'Success!'});
-
-    // TODO: Perform a test to see if this loads to CompositionInfoScreen.
-    return StatusModel.fromJson({'code': 400, 'message': 'Invalid stuff.'});
+    return StatusModel.fromJson({'code': 200, 'message': 'Success!'});
   }
 
   void dispose() {

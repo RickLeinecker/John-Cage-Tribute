@@ -17,6 +17,7 @@ class CompositionInfoScreen extends StatefulWidget {
 }
 
 class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
+  final int maxTitleLen = 64;
   TextEditingController _title;
   TextEditingController _description;
   List<String> _items;
@@ -26,11 +27,19 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
 
   void initState() {
     super.initState();
-    _title = TextEditingController.fromValue(
-        TextEditingValue(text: widget.composition.title ?? ''));
-    _description = TextEditingController.fromValue(
-        TextEditingValue(text: widget.composition.description ?? ''));
-    _items = widget.composition.tags ?? List();
+
+    if (widget.composition == null) {
+      _title = TextEditingController();
+      _description = TextEditingController();
+      _items = List();
+    } else {
+      _title = TextEditingController.fromValue(
+          TextEditingValue(text: widget.composition.title));
+      _description = TextEditingController.fromValue(
+          TextEditingValue(text: widget.composition.description));
+      _items = widget.composition.tags;
+    }
+
     submitError = '';
     maxTagsReached = _items.length >= MAX_TAGS;
     isSubmitting = false;
@@ -68,6 +77,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           ),
           TextFormField(
             controller: _title,
+            maxLength: maxTitleLen,
             decoration: InputDecoration(
               hintText: 'Untitled',
               fillColor: Theme.of(context).primaryColor,

@@ -8,6 +8,7 @@ class AuthBloc with AuthValidators {
   final _email = BehaviorSubject<String>();
   final _username = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
+  final _confirmPassword = BehaviorSubject<String>();
   final _submitLogin = BehaviorSubject<String>();
   final _submitSignup = BehaviorSubject<String>();
   final _user = BehaviorSubject<UserModel>();
@@ -31,18 +32,26 @@ class AuthBloc with AuthValidators {
   Function(String) get changeEmail => _email.sink.add;
   Function(String) get changeUsername => _username.sink.add;
   Function(String) get changePassword => _password.sink.add;
+  Function(String) get changeConfirmPassword => _confirmPassword.sink.add;
 
   Stream<String> get email => _email.stream.transform(validateEmail);
   Stream<String> get username => _username.stream.transform(validateUsername);
   Stream<String> get password => _password.stream.transform(validatePassword);
+  Stream<String> get confirmPassword => _confirmPassword.stream;
   Stream<UserModel> get user => _user.stream;
   Stream<String> get submitLogin => _submitLogin.stream;
   Stream<String> get submitSignup => _submitSignup.stream;
 
   // Broadcast allows for tabview changes to listen as many times as desired
   Stream<bool> get signupValid =>
-      Rx.combineLatest3(email, username, password, (em, us, pw) => true)
-          .asBroadcastStream();
+      Rx.combineLatest4(email, username, password, confirmPassword,
+          (em, us, pw, cpw) {
+        if (pw == cpw) {
+          return true;
+        } else {
+          _confirmPassword.sink.addError('Passwords do not match.');
+        }
+      }).asBroadcastStream();
 
   Stream<bool> get loginValid =>
       Rx.combineLatest2(username, password, (us, pw) => true)
@@ -81,7 +90,8 @@ class AuthBloc with AuthValidators {
       <String, dynamic>{
         'email': '${_email.value}',
         'username': '${_username.value}',
-        'password': '${_password.value}'
+        'password': '${_password.value}',
+        'confirmPassword': '${_confirmPassword.value}'
       },
     );
 
@@ -101,6 +111,7 @@ class AuthBloc with AuthValidators {
     _email.close();
     _username.close();
     _password.close();
+    _confirmPassword.close();
     _user.close();
     _submitLogin.close();
     _submitSignup.close();

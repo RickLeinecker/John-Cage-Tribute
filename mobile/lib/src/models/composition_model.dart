@@ -11,6 +11,7 @@ class CompositionModel {
   final List<String> performers;
   final List<String> tags;
   final String description;
+  // TODO: final bool isPublic;
 
   CompositionModel.fromJson(Map<String, dynamic> parsedJson)
       : title = parsedJson['title'],
@@ -18,6 +19,6 @@ class CompositionModel {
         time = parsedJson['time'],
         url = parsedJson['filename'],
         performers = List<String>.from(parsedJson['performers']),
-        tags = List<String>.from(parsedJson['tags']),
-        description = parsedJson['description'];
+        tags = List<String>.from(parsedJson['tags']) ?? List(),
+        description = parsedJson['description'] ?? '';
 }

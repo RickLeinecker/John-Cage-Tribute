@@ -50,6 +50,7 @@ class AuthValidators {
 
   final validatePassword = StreamTransformer<String, String>.fromHandlers(
     handleData: (enteredPassword, sink) {
+      print('validatePassword');
       final RegExp capLetterNumberSixDigits =
           RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$');
 

@@ -24,7 +24,7 @@ class LibraryScreen extends StatelessWidget {
         }
 
         if (snapshot.data == GUEST_USER) {
-          // TODO: Should look like appointment screen, but prompts the user to make an account.
+          // TODO: Should look like room screen, but prompts the user to make an account.
           return Scaffold(
             body: SizedBox.expand(
               child: Container(

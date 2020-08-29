@@ -119,6 +119,7 @@ class LoginScreen extends StatelessWidget {
             emailField(bloc),
             usernameField(bloc),
             passwordField(bloc),
+            confirmPasswordField(bloc),
             signupButton(bloc),
           ],
         ),
@@ -169,6 +170,23 @@ class LoginScreen extends StatelessWidget {
           decoration: InputDecoration(
             labelText: 'Password',
             hintText: 'UseCapitalsAndNumbers!',
+            errorText: snapshot.error,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget confirmPasswordField(AuthBloc bloc) {
+    return StreamBuilder(
+      stream: bloc.confirmPassword,
+      builder: (context, AsyncSnapshot<String> snapshot) {
+        return TextField(
+          obscureText: true,
+          onChanged: bloc.changeConfirmPassword,
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            hintText: 'Confirm your password here!',
             errorText: snapshot.error,
           ),
         );

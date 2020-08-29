@@ -58,8 +58,8 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     if (!sessionStarted) {
       bloc.startSession();
 
-      _timer = Timer(Duration(seconds: 10 /*MAX_COMPOSITION_TIME*/),
-          () => finishSession(bloc));
+      _timer = Timer(
+          Duration(seconds: MAX_COMPOSITION_TIME), () => finishSession(bloc));
 
       _watch = Stopwatch()..start();
 
