@@ -4,7 +4,6 @@ import '../blocs/auth/bloc.dart';
 import '../models/user_model.dart';
 import '../widgets/loading_user.dart';
 
-// TODO: Make view and button methods into separate widget classes.
 class LoginScreen extends StatelessWidget {
   Widget build(context) {
     final AuthBloc bloc = AuthProvider.of(context);

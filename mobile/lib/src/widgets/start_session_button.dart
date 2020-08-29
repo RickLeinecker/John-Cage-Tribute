@@ -69,7 +69,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
           'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min.');
 
       changeToggleSession(await Future.delayed(
-          Duration(seconds: 3 /*MIN_COMPOSITION_TIME*/), () => true));
+          Duration(seconds: MIN_COMPOSITION_TIME), () => true));
     } else {
       finishSession(bloc);
     }

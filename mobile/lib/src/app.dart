@@ -4,7 +4,6 @@ import 'blocs/auth/bloc.dart';
 import 'blocs/room/bloc.dart';
 import 'blocs/search/bloc.dart';
 import 'screens/dashboard.dart';
-import 'screens/composition_info_screen.dart';
 
 class App extends StatelessWidget {
   Widget build(BuildContext context) {
