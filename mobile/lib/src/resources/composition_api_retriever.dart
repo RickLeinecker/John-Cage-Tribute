@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
-import '../../src/constants/base_url.dart';
-import '../../src/constants/filter_option.dart';
+
+import 'package:jct/src/constants/base_url.dart';
+import 'package:jct/src/constants/filter_option.dart';
 
 class CompositionApiRetriever {
   final Client client = MockClient(

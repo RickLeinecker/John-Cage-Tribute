@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/constants/guest_user.dart';
-import '../blocs/auth/bloc.dart';
-import '../models/user_model.dart';
-import '../widgets/loading_user.dart';
+import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/widgets/loading_user.dart';
 
 class LoginScreen extends StatelessWidget {
   Widget build(context) {

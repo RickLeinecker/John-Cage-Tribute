@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'room_bloc.dart';
+
+import 'package:jct/src/blocs/room/room_bloc.dart';
 
 class RoomProvider extends InheritedWidget {
   final RoomBloc bloc = RoomBloc();

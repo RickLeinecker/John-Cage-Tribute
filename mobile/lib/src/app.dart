@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'blocs/auth/bloc.dart';
-import 'blocs/room/bloc.dart';
-import 'blocs/search/bloc.dart';
-import 'screens/dashboard.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/screens/dashboard.dart';
 
 class App extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -13,7 +14,6 @@ class App extends StatelessWidget {
           child: MaterialApp(
             title: 'John Cage Tribute',
             home: Dashboard(),
-            onGenerateRoute: routes,
             theme: appTheme(),
           ),
         ),
@@ -47,23 +47,5 @@ class App extends StatelessWidget {
       ),
       unselectedWidgetColor: Colors.blue[300],
     );
-  }
-
-  Route routes(RouteSettings settings) {
-    switch (settings.name) {
-      case '/':
-        return CupertinoPageRoute(
-          builder: (context) {
-            return Dashboard();
-          },
-        );
-      // Invalid screen
-      default:
-        return CupertinoPageRoute(
-          builder: (context) {
-            return Text('ERROR SCREEN!!!!!!!');
-          },
-        );
-    }
   }
 }

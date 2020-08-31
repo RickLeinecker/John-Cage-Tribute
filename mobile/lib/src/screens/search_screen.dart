@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../src/blocs/search/bloc.dart';
-import '../../src/constants/screen_type.dart';
-import '../../src/models/composition_model.dart';
-import '../../src/widgets/composition_tile.dart';
-import '../../src/widgets/no_results.dart';
-import '../../src/widgets/filter_buttons.dart';
-import '../../src/widgets/search_field.dart';
+
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/widgets/composition_tile.dart';
+import 'package:jct/src/widgets/no_results.dart';
+import 'package:jct/src/widgets/filter_buttons.dart';
+import 'package:jct/src/widgets/search_field.dart';
 
 class SearchScreen extends StatelessWidget {
   Widget build(context) {

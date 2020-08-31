@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../constants/screen_type.dart';
-import '../models/composition_model.dart';
-import '../screens/composition_info_screen.dart';
-import '../screens/player_screen.dart';
+
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/screens/composition_info_screen.dart';
+import 'package:jct/src/screens/player_screen.dart';
 
 class CompositionTile extends StatelessWidget {
   final CompositionModel composition;

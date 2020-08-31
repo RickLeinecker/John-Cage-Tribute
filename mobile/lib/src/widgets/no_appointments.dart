@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/guest_user.dart';
-import '../models/user_model.dart';
+
+import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/models/user_model.dart';
 
 class NoAppointments extends StatelessWidget {
   final UserModel user;

@@ -1,6 +1,6 @@
-import 'unsplash_link_model.dart';
-import 'unsplash_url_model.dart';
-import 'unsplash_user_model.dart';
+import 'package:jct/src/models/unsplash/unsplash_link_model.dart';
+import 'package:jct/src/models/unsplash/unsplash_url_model.dart';
+import 'package:jct/src/models/unsplash/unsplash_user_model.dart';
 
 class UnsplashImageModel {
   final String id;

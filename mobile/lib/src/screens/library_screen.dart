@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../blocs/auth/bloc.dart';
-import '../blocs/search/bloc.dart';
-import '../constants/screen_type.dart';
-import '../models/composition_model.dart';
-import '../models/user_model.dart';
-import '../../src/constants/guest_user.dart';
-import '../../src/widgets/composition_tile.dart';
-import '../../src/widgets/filter_buttons.dart';
-import '../../src/widgets/loading_user.dart';
-import '../../src/widgets/search_field.dart';
-import '../../src/widgets/no_results.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/widgets/composition_tile.dart';
+import 'package:jct/src/widgets/filter_buttons.dart';
+import 'package:jct/src/widgets/loading_user.dart';
+import 'package:jct/src/widgets/not_registered.dart';
+import 'package:jct/src/widgets/search_field.dart';
+import 'package:jct/src/widgets/no_results.dart';
 
 class LibraryScreen extends StatelessWidget {
   Widget build(context) {
@@ -24,21 +26,7 @@ class LibraryScreen extends StatelessWidget {
         }
 
         if (snapshot.data == GUEST_USER) {
-          // TODO: Should look like room screen, but prompts the user to make an account.
-          return Scaffold(
-            body: SizedBox.expand(
-              child: Container(
-                color: Theme.of(context).primaryColor,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Hello, Guest!'),
-                  ],
-                ),
-              ),
-            ),
-          );
+          return NotRegistered();
         }
 
         return nonGuestScaffold(context, searchBloc);

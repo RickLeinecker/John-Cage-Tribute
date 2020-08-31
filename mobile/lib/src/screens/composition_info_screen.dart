@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_tags/flutter_tags.dart';
-import '../blocs/auth/bloc.dart';
-import '../blocs/room/bloc.dart';
-import '../constants/screen_type.dart';
-import '../constants/tag_data.dart';
-import '../models/composition_model.dart';
-import '../models/status_model.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/constants/tag_data.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/models/status_model.dart';
 
 class CompositionInfoScreen extends StatefulWidget {
   final ScreenType screen;
@@ -228,6 +230,8 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
       setState(() => submitError = status.message);
       return;
     }
+
+    roomBloc.disconnectSocket();
 
     switch (widget.screen) {
       case ScreenType.LIBRARY:

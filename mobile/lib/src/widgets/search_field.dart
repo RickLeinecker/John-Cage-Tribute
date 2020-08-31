@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../blocs/auth/bloc.dart';
-import '../blocs/search/bloc.dart';
-import '../constants/screen_type.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/constants/screen_type.dart';
 
 /// [TextField]-esque widget reserved at the top of the [AppBar].
 ///

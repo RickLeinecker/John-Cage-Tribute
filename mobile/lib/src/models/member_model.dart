@@ -1,4 +1,4 @@
-import '../constants/role.dart';
+import 'package:jct/src/constants/role.dart';
 
 class MemberModel {
   final String username;

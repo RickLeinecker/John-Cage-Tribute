@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
-import 'auth_validators.dart';
-import '../../constants/guest_user.dart';
-import '../../models/user_model.dart';
+
+import 'package:jct/src/blocs/auth/auth_validators.dart';
+import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/models/user_model.dart';
 
 class AuthBloc with AuthValidators {
   final _email = BehaviorSubject<String>();

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+
 import 'package:jct/src/widgets/start_session_button.dart';
-import '../blocs/room/bloc.dart';
-import '../constants/role.dart';
-import '../models/member_model.dart';
+import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/constants/role.dart';
+import 'package:jct/src/models/member_model.dart';
 
 class SessionScreen extends StatelessWidget {
   final String user;

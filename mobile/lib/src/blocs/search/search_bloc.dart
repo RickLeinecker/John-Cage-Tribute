@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jct/src/resources/composition_api_retriever.dart';
+
 import 'package:rxdart/subjects.dart';
-import '../../../src/constants/filter_option.dart';
-import '../../../src/constants/screen_type.dart';
-import '../../../src/models/composition_model.dart';
+
+import 'package:jct/src/constants/filter_option.dart';
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/resources/composition_api_retriever.dart';
 
 /// BLoC that houses the search composition behavior of the John Cage Tribute.
 ///

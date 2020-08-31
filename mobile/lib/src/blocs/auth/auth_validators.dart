@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:email_validator/email_validator.dart';
-import '../../models/user_model.dart';
-import '../../resources/user_api_retriever.dart';
-import '../../../src/constants/guest_user.dart';
+
+import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/resources/user_api_retriever.dart';
+import 'package:jct/src/constants/guest_user.dart';
 
 class AuthValidators {
   static final _userApiRetriever = UserApiRetriever();

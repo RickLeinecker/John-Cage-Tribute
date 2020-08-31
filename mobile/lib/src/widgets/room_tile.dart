@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+
 import 'package:permission_handler/permission_handler.dart';
+
 import 'package:pinput/pin_put/pin_put.dart';
-import '../../src/constants/role.dart';
-import '../blocs/room/bloc.dart';
-import '../models/room_model.dart';
-import '../screens/session_screen.dart';
-import '../widgets/role_buttons.dart';
+
+import 'package:jct/src/constants/role.dart';
+import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/models/room_model.dart';
+import 'package:jct/src/screens/session_screen.dart';
+import 'package:jct/src/widgets/role_buttons.dart';
 
 class RoomTile extends StatelessWidget {
   final String joiningUser;

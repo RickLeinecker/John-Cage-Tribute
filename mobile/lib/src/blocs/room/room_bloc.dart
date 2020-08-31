@@ -1,15 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:audio_buffer_player/audio_buffer_player.dart';
+
 import 'package:audio_streamer/audio_streamer.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:rxdart/rxdart.dart';
+
 import 'package:socket_io_client/socket_io_client.dart';
-import '../../constants/base_url.dart';
-import '../../constants/role.dart';
-import '../../models/member_model.dart';
-import '../../models/room_model.dart';
-import '../../models/status_model.dart';
+
+import 'package:jct/src/constants/base_url.dart';
+import 'package:jct/src/constants/role.dart';
+import 'package:jct/src/models/member_model.dart';
+import 'package:jct/src/models/room_model.dart';
+import 'package:jct/src/models/status_model.dart';
 
 class RoomBloc {
   // RoomScreen
@@ -66,7 +72,22 @@ class RoomBloc {
     composition = {};
 
     onSocketConnections();
+  }
+
+  /// Method that opens a socket connection to the server.
+  ///
+  /// Its purpose is best suited for situations where room functionality will
+  /// be expected.
+  void connectSocket() {
     socket.connect();
+  }
+
+  /// Method that closes the socket connection from the server.
+  ///
+  /// It should be reserved for situations where room functionality is no
+  /// longer needed, whether temporary or not.
+  void disconnectSocket() {
+    socket.disconnect();
   }
 
   /// Encompasses all socket.on connections required for the
@@ -93,7 +114,7 @@ class RoomBloc {
         membersMap[key] = MemberModel.fromJson(data[key]);
       }
 
-      if (data.length >= _numPerformers.value) {
+      if (data.length >= 2 /*_numPerformers.value*/) {
         _sessionReady.sink.add(true);
       } else {
         _sessionReady.addError('');

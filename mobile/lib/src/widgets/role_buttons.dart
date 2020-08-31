@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../blocs/room/bloc.dart';
-import '../constants/role.dart';
+
+import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/constants/role.dart';
 
 class RoleButtons extends StatelessWidget {
   Widget build(BuildContext context) {

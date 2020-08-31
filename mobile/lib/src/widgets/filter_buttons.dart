@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../src/constants/filter_option.dart';
-import '../../src/constants/screen_type.dart';
-import '../../src/blocs/search/bloc.dart';
+
+import 'package:jct/src/constants/filter_option.dart';
+import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
 
 class FilterButtons extends StatelessWidget {
   final ScreenType screen;

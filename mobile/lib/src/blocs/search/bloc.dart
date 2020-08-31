@@ -1,2 +1,2 @@
-export 'search_bloc.dart';
-export 'search_provider.dart';
+export 'package:jct/src/blocs/search/search_bloc.dart';
+export 'package:jct/src/blocs/search/search_provider.dart';

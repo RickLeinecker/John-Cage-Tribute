@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jct/src/widgets/fade_text_tile.dart';
 // import 'package:transparent_image/transparent_image.dart';
 // import '../models/unsplash/unsplash_image_model.dart';
 // import '../resources/image_api_provider.dart';
-import 'library_screen.dart';
-import 'login_screen.dart';
-import 'search_screen.dart';
-import 'room_screen.dart';
-import '../blocs/auth/bloc.dart';
+
+import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/widgets/fade_text_tile.dart';
+import 'package:jct/src/screens/library_screen.dart';
+import 'package:jct/src/screens/login_screen.dart';
+import 'package:jct/src/screens/pre_room_screen.dart';
+import 'package:jct/src/screens/search_screen.dart';
 
 class Dashboard extends StatefulWidget {
   createState() => DashboardState();
@@ -66,11 +67,11 @@ class DashboardState extends State<Dashboard> {
               },
             );
             break;
-          case 1: // Appointments/Host
+          case 1: // Session Rooms
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: RoomScreen(user: bloc.user),
+                  child: PreRoomScreen(user: bloc.user),
                 );
               },
             );

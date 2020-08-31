@@ -1,9 +1,11 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
+
 import 'package:flutter/material.dart';
-import '../../src/constants/base_url.dart';
-import '../../src/constants/guest_user.dart';
-import '../../src/widgets/no_appointments.dart';
-import '../models/composition_model.dart';
+
+import 'package:jct/src/constants/base_url.dart';
+import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/widgets/no_appointments.dart';
 
 class PlayerScreen extends StatefulWidget {
   final CompositionModel composition;
