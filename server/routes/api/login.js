@@ -33,7 +33,7 @@ router.post("/", (req, res) => {
                 jwt.sign(
                     { id: user.id },
                     process.env.JWT_SECRET,
-                    { expiresIn: 3600000000000000 },
+                    { expiresIn: 3600 },
                     (err, token) => {
                         if (err) throw err
                         res.json({
