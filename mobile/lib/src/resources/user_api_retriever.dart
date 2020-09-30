@@ -17,12 +17,14 @@ class UserApiRetriever {
       return null;
     }
 
-    final response = await client.post(
-      '$baseUrl/api/login/existing',
+    final response = await client.get(
+      '$baseUrl/api/auth',
       headers: {'x-auth-token': '$jwt'},
     );
 
     if (response.statusCode == 200) {
+      print('Valid JWT received!');
+
       final parsedJson = jsonDecode(response.body);
       return parsedJson;
     }
@@ -32,37 +34,41 @@ class UserApiRetriever {
   }
 
   Future<Map<String, dynamic>> signup(Map<String, dynamic> user) async {
-    final response = await client.post('$baseUrl/api/signup',
+    final response = await client.post('$baseUrl/api/users',
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(user));
 
-    print('response: $response');
-    print('response body: ${response.body}');
     final parsedJson = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
       await storage.write(key: 'jwt', value: parsedJson['token']);
-
-      return parsedJson['user'];
-    } else {
-      return {
+      return <String, dynamic>{
         'statusCode': response.statusCode,
-        'error': parsedJson['msg'],
+        ...parsedJson['user']
+      };
+    } else {
+      return <String, dynamic>{
+        'statusCode': response.statusCode,
+        'error': parsedJson['errors'][0]['msg'],
       };
     }
   }
 
   Future<Map<String, dynamic>> login(Map<String, dynamic> user) async {
-    final response = await client.post('$baseUrl/api/login',
+    final response = await client.post('$baseUrl/api/auth',
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(user));
 
     final parsedJson = jsonDecode(response.body);
     if (response.statusCode == 200) {
       await storage.write(key: 'jwt', value: parsedJson['token']);
 
-      return parsedJson['user'];
-    } else {
-      return {
+      return <String, dynamic>{
         'statusCode': response.statusCode,
-        'error': parsedJson['msg'],
+        ...parsedJson['user'],
+      };
+    } else {
+      return <String, dynamic>{
+        'statusCode': response.statusCode,
+        'error': parsedJson['errors'][0]['msg'],
       };
     }
   }

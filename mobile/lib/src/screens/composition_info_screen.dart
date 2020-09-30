@@ -26,7 +26,10 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   String submitError;
   bool maxTagsReached;
   bool isSubmitting;
+  bool isPrivate;
 
+  // TODO: If arrived from library screen, provide comp. info
+  // TODO: Else, provide default values
   void initState() {
     super.initState();
 
@@ -45,6 +48,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
     submitError = '';
     maxTagsReached = _items.length >= MAX_TAGS;
     isSubmitting = false;
+    isPrivate = false;
   }
 
   Widget build(context) {
@@ -81,7 +85,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             controller: _title,
             maxLength: maxTitleLen,
             decoration: InputDecoration(
-              hintText: 'Untitled',
+              hintText: 'Title',
               fillColor: Theme.of(context).primaryColor,
               filled: true,
               border: InputBorder.none,
@@ -126,6 +130,28 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             style: Theme.of(context).textTheme.bodyText2,
             minLines: 3,
             maxLines: 100,
+          ),
+          Divider(
+            color: Colors.transparent,
+            height: 20.0,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'Searchable?', // TODO: Fix isPrivate text label here
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+              Checkbox(
+                value: isPrivate,
+                onChanged: (data) => setState(() => isPrivate = !isPrivate),
+              ),
+            ],
+          ),
+          Divider(
+            color: Colors.transparent,
+            height: 20.0,
           ),
           Text(
             submitError,
@@ -221,6 +247,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
       title: _title.value.text,
       description: _description.value.text,
       tags: _items,
+      isPrivate: isPrivate,
     );
 
     setState(() => isSubmitting = false);

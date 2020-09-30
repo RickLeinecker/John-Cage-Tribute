@@ -12,22 +12,22 @@ class CompositionApiRetriever {
       // if (request.body == "search") {
       final List<Map<String, dynamic>> mockCompositions = [
         {
-          'title': 'A Really Short Song (jk)',
-          'composer': 'topdoggo',
-          'time': 400,
+          'title': 'The Zoo',
+          'composer': 'jawed',
+          'time': 600,
           'filename': '4a5b5e73cced3c0fd3f9f990b1aa112b.mp3',
-          'performers': ['(GUEST)', 'mercedes11', 'idkkkBoutThat', 'bonnh4t'],
+          'performers': ['mercedes11', 'idkkkBoutThat', 'bonnh4t'],
           'tags': ['funny', 'nonsense', 'asdfghjkl'],
-          'description': 'All of these are the exact same account, lol.'
+          'description': 'First composition on JCT!',
         },
         {
           'title': '4\'33',
-          'composer': 'John Cage',
+          'composer': 'J.C.',
           'time': 273,
           'filename': '4a5b5e73cced3c0fd3f9f990b1aa112b.mp3',
-          'performers': ['(GUEST)', '(GUEST)', '(GUEST)', '(GUEST)'],
+          'performers': ['TeddyGeiger', 'AlperAydin', 'OneTaco', 'Goku4Smash'],
           'tags': ['no'],
-          'description': 'We stayed perfectly quiet.'
+          'description': 'We stayed perfectly quiet.',
         }
       ];
 

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/widgets/fade_text_tile.dart';
 import 'package:jct/src/screens/library_screen.dart';
-import 'package:jct/src/screens/login_screen.dart';
+import 'package:jct/src/screens/auth_screen.dart';
 import 'package:jct/src/screens/pre_room_screen.dart';
 import 'package:jct/src/screens/search_screen.dart';
 
@@ -90,11 +90,11 @@ class DashboardState extends State<Dashboard> {
               },
             );
             break;
-          case 4: // Login
+          case 4: // Login/Signup
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: LoginScreen(),
+                  child: AuthScreen(),
                 );
               },
             );

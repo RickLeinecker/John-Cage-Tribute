@@ -7,9 +7,11 @@ import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/models/user_model.dart';
 
 class AuthBloc with AuthValidators {
-  final _email = BehaviorSubject<String>();
+  final _signupEmail = BehaviorSubject<String>();
+  final _loginEmail = BehaviorSubject<String>();
   final _username = BehaviorSubject<String>();
-  final _password = BehaviorSubject<String>();
+  final _signupPassword = BehaviorSubject<String>();
+  final _loginPassword = BehaviorSubject<String>();
   final _confirmPassword = BehaviorSubject<String>();
   final _submitLogin = BehaviorSubject<String>();
   final _submitSignup = BehaviorSubject<String>();
@@ -21,24 +23,24 @@ class AuthBloc with AuthValidators {
 
   initBloc() async {
     final UserModel existingUser = await verifyJwt();
-
-    if (existingUser == null) {
-      _user.sink.add(GUEST_USER);
-      return false;
-    }
-
-    _user.sink.add(existingUser);
-    return true;
+    _user.sink.add(existingUser == GUEST_USER ? GUEST_USER : existingUser);
   }
 
-  Function(String) get changeEmail => _email.sink.add;
+  Function(String) get changeSignupEmail => _signupEmail.sink.add;
+  Function(String) get changeLoginEmail => _loginEmail.sink.add;
   Function(String) get changeUsername => _username.sink.add;
-  Function(String) get changePassword => _password.sink.add;
+  Function(String) get changeSignupPassword => _signupPassword.sink.add;
+  Function(String) get changeLoginPassword => _loginPassword.sink.add;
   Function(String) get changeConfirmPassword => _confirmPassword.sink.add;
 
-  Stream<String> get email => _email.stream.transform(validateEmail);
+  Stream<String> get signupEmail =>
+      _signupEmail.stream.transform(validateEmail);
+  Stream<String> get loginEmail => _loginEmail.stream.transform(validateEmail);
   Stream<String> get username => _username.stream.transform(validateUsername);
-  Stream<String> get password => _password.stream.transform(validatePassword);
+  Stream<String> get loginPassword =>
+      _loginPassword.stream.transform(validatePassword);
+  Stream<String> get signupPassword =>
+      _signupPassword.stream.transform(validatePassword);
   Stream<String> get confirmPassword => _confirmPassword.stream;
   Stream<UserModel> get user => _user.stream;
   Stream<String> get submitLogin => _submitLogin.stream;
@@ -46,7 +48,7 @@ class AuthBloc with AuthValidators {
 
   // Broadcast allows for tabview changes to listen as many times as desired
   Stream<bool> get signupValid =>
-      Rx.combineLatest4(email, username, password, confirmPassword,
+      Rx.combineLatest4(signupEmail, username, signupPassword, confirmPassword,
           (em, us, pw, cpw) {
         if (pw == cpw) {
           return true;
@@ -56,7 +58,7 @@ class AuthBloc with AuthValidators {
       }).asBroadcastStream();
 
   Stream<bool> get loginValid =>
-      Rx.combineLatest2(username, password, (us, pw) => true)
+      Rx.combineLatest2(loginEmail, loginPassword, (em, pw) => true)
           .asBroadcastStream();
 
   UserModel get currentUser => _user.value;
@@ -70,12 +72,12 @@ class AuthBloc with AuthValidators {
   Future<bool> submitAndLogin() async {
     final parsedJson = await validateLogin(
       <String, dynamic>{
-        'username': '${_username.value}',
-        'password': '${_password.value}'
+        'email': '${_loginEmail.value}',
+        'password': '${_loginPassword.value}'
       },
     );
 
-    if (parsedJson['username'] == null) {
+    if (parsedJson['statusCode'] != 200) {
       _user.sink.add(GUEST_USER);
       _submitLogin.sink.addError(parsedJson['error']);
       return false;
@@ -90,14 +92,14 @@ class AuthBloc with AuthValidators {
   Future<bool> submitAndSignup() async {
     final parsedJson = await validateSignup(
       <String, dynamic>{
-        'email': '${_email.value}',
-        'username': '${_username.value}',
-        'password': '${_password.value}',
-        'confirmPassword': '${_confirmPassword.value}'
+        'email': '${_signupEmail.value}',
+        'name': '${_username.value}',
+        'password': '${_signupPassword.value}',
+        'confirmPassword': '${_confirmPassword.value}',
       },
     );
 
-    if (parsedJson['username'] == null) {
+    if (parsedJson['statusCode'] != 200) {
       _user.sink.add(GUEST_USER);
       _submitSignup.sink.addError(parsedJson['error']);
       return false;
@@ -110,9 +112,11 @@ class AuthBloc with AuthValidators {
   }
 
   dispose() {
-    _email.close();
+    _signupEmail.close();
+    _loginEmail.close();
     _username.close();
-    _password.close();
+    _signupPassword.close();
+    _loginPassword.close();
     _confirmPassword.close();
     _user.close();
     _submitLogin.close();

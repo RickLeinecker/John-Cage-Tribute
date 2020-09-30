@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:email_validator/email_validator.dart';
 
 import 'package:jct/src/models/user_model.dart';
@@ -11,6 +10,7 @@ class AuthValidators {
 
   Future<UserModel> verifyJwt() async {
     final parsedJson = await _userApiRetriever.jwtOrEmpty;
+
     if (parsedJson != null) {
       return UserModel.fromJson(parsedJson);
     } else {
@@ -52,11 +52,10 @@ class AuthValidators {
 
   final validatePassword = StreamTransformer<String, String>.fromHandlers(
     handleData: (enteredPassword, sink) {
-      print('validatePassword');
-      final RegExp capLetterNumberSixDigits =
+      final RegExp capitalNumberSixChars =
           RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$');
 
-      if (capLetterNumberSixDigits.hasMatch(enteredPassword)) {
+      if (capitalNumberSixChars.hasMatch(enteredPassword)) {
         sink.add(enteredPassword);
       } else {
         sink.addError(

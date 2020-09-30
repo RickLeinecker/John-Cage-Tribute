@@ -44,6 +44,9 @@ class SearchField extends StatelessWidget {
                 case ScreenType.LIBRARY:
                   searchBloc.search(searchBloc.getFilter(screen), text,
                       composer: authBloc.currentUser.username);
+                  break;
+                default:
+                  break;
               }
               print('Filter $text by ${searchBloc.getFilter(screen)}');
             }

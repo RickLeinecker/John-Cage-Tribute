@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/constants/user_auth.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/widgets/loading_user.dart';
 
-class LoginScreen extends StatelessWidget {
+class AuthScreen extends StatelessWidget {
   Widget build(context) {
     final AuthBloc bloc = AuthProvider.of(context);
 
@@ -90,9 +91,10 @@ class LoginScreen extends StatelessWidget {
             Text(
               'Get your persona going.',
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
-            usernameField(bloc),
-            passwordField(bloc),
+            emailField(bloc, UserAuth.LOGIN),
+            passwordField(bloc, UserAuth.LOGIN),
             loginButton(bloc),
           ],
         ),
@@ -116,9 +118,9 @@ class LoginScreen extends StatelessWidget {
               'Tired of acting as a guest?\nSign up below.',
               textAlign: TextAlign.center,
             ),
-            emailField(bloc),
+            emailField(bloc, UserAuth.SIGNUP),
             usernameField(bloc),
-            passwordField(bloc),
+            passwordField(bloc, UserAuth.SIGNUP),
             confirmPasswordField(bloc),
             signupButton(bloc),
           ],
@@ -127,12 +129,14 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget emailField(AuthBloc bloc) {
+  Widget emailField(AuthBloc bloc, UserAuth authType) {
     return StreamBuilder(
-      stream: bloc.email,
+      stream: authType == UserAuth.LOGIN ? bloc.loginEmail : bloc.signupEmail,
       builder: (context, AsyncSnapshot<String> snapshot) {
         return TextField(
-          onChanged: bloc.changeEmail,
+          onChanged: authType == UserAuth.LOGIN
+              ? bloc.changeLoginEmail
+              : bloc.changeSignupEmail,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             labelText: 'Email Address',
@@ -152,7 +156,7 @@ class LoginScreen extends StatelessWidget {
           onChanged: bloc.changeUsername,
           decoration: InputDecoration(
             labelText: 'Username',
-            hintText: 'ThreeOrMoreCharacters',
+            hintText: 'Three or more letters or numbers.',
             errorText: snapshot.error,
           ),
         );
@@ -160,16 +164,19 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget passwordField(AuthBloc bloc) {
+  Widget passwordField(AuthBloc bloc, UserAuth authType) {
     return StreamBuilder(
-      stream: bloc.password,
+      stream:
+          authType == UserAuth.LOGIN ? bloc.loginPassword : bloc.signupPassword,
       builder: (context, AsyncSnapshot<String> snapshot) {
         return TextField(
           obscureText: true,
-          onChanged: bloc.changePassword,
+          onChanged: authType == UserAuth.LOGIN
+              ? bloc.changeLoginPassword
+              : bloc.changeSignupPassword,
           decoration: InputDecoration(
             labelText: 'Password',
-            hintText: 'UseCapitalsAndNumbers!',
+            hintText: 'Use capitals and numbers.',
             errorText: snapshot.error,
           ),
         );
@@ -186,7 +193,7 @@ class LoginScreen extends StatelessWidget {
           onChanged: bloc.changeConfirmPassword,
           decoration: InputDecoration(
             labelText: 'Confirm Password',
-            hintText: 'Confirm your password here!',
+            hintText: 'Confirm the password above.',
             errorText: snapshot.error,
           ),
         );

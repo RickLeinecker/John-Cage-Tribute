@@ -35,6 +35,7 @@ class SearchBloc {
     changeFilterLibrary(FilterOption.TAGS);
   }
 
+  // TODO: Trim spaces at start and end of search query/composer(?)
   void search(FilterOption filter, String query, {String composer}) async {
     List<Map<String, dynamic>> compositionMap;
     List<CompositionModel> compositions = List();

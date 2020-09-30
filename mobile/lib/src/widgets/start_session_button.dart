@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import '../blocs/room/bloc.dart';
 import '../../src/constants/composition_durations.dart';
@@ -29,10 +30,11 @@ class _StartSessionButtonState extends State<StartSessionButton> {
   }
 
   Widget build(BuildContext context) {
-    RoomBloc bloc = RoomProvider.of(context);
+    AuthBloc authBloc = AuthProvider.of(context);
+    RoomBloc roomBloc = RoomProvider.of(context);
 
     return StreamBuilder(
-      stream: bloc.sessionReady,
+      stream: roomBloc.sessionReady,
       builder: (BuildContext context, AsyncSnapshot<bool> allPerfsSnap) {
         return StreamBuilder(
           stream: toggleSession,
@@ -40,7 +42,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
             return RaisedButton(
               onPressed: (!timeSnap.hasData || !allPerfsSnap.hasData)
                   ? null
-                  : () => onToggleSession(bloc),
+                  : () => onToggleSession(authBloc, roomBloc),
               color: Colors.teal,
               textColor: Colors.white,
               child: Text(
@@ -54,12 +56,12 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     );
   }
 
-  void onToggleSession(RoomBloc bloc) async {
+  void onToggleSession(AuthBloc authBloc, RoomBloc roomBloc) async {
     if (!sessionStarted) {
-      bloc.startSession();
+      roomBloc.startSession();
 
-      _timer = Timer(
-          Duration(seconds: MAX_COMPOSITION_TIME), () => finishSession(bloc));
+      _timer = Timer(Duration(seconds: MAX_COMPOSITION_TIME),
+          () => finishSession(authBloc, roomBloc));
 
       _watch = Stopwatch()..start();
 
@@ -71,18 +73,18 @@ class _StartSessionButtonState extends State<StartSessionButton> {
       changeToggleSession(await Future.delayed(
           Duration(seconds: 3 /*MIN_COMPOSITION_TIME*/), () => true));
     } else {
-      finishSession(bloc);
+      finishSession(authBloc, roomBloc);
     }
 
     setState(() => sessionStarted = !sessionStarted);
   }
 
-  void finishSession(RoomBloc bloc) {
+  void finishSession(AuthBloc authBloc, RoomBloc roomBloc) {
     final lengthInSeconds = _watch.elapsed.inSeconds;
 
     _watch.stop();
     _timer.cancel();
-    bloc.endSession(lengthInSeconds);
+    roomBloc.endSession(authBloc.currentUser.username, lengthInSeconds);
 
     Navigator.push(
       context,

@@ -254,11 +254,25 @@ class RoomBloc {
   /// (Examples: Composer name, composition length in seconds)
   ///
   /// The button that activates this is only visible to the host.
-  void endSession(int lengthInSeconds) {
+  void endSession(String composer, int lengthInSeconds) {
     // TODO: Pass composition data to API here
     print('Time elapsed: $lengthInSeconds seconds.');
 
     // TODO: Exclude any (GUEST)s in memberList to be passed to API
+    final List<String> performerNames = List<String>.of(_members.value.keys);
+
+    performerNames.removeWhere((element) => element.contains('('));
+
+    // TODO: Erase what MongoDB already handles (puts its own default values).
+    final compositionInfo = <String, dynamic>{
+      'title': '(Untitled)', // this
+      'tags': List<String>(), // this
+      'description': '(No description has been added)', // this
+      'composer': composer,
+      'duration': lengthInSeconds,
+      'performers': performerNames,
+      'isPrivate': true, // this
+    };
 
     socket.emit('endsession', currentRoom);
   }
@@ -315,12 +329,16 @@ class RoomBloc {
   }
 
   Future<StatusModel> submitCompositionInfo(String composer,
-      {String title, String description, List<String> tags}) async {
+      {String title,
+      String description,
+      List<String> tags,
+      bool isPrivate}) async {
     final compositionInfo = <String, dynamic>{
       'composer': composer,
       'title': title ?? null,
       'description': description ?? null,
-      'tags': tags ?? null
+      'tags': tags ?? null,
+      'isPrivate': isPrivate,
     };
 
     if (title == null) {
