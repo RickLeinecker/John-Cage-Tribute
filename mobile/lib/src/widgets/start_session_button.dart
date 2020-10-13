@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/models/composition_model.dart';
 import 'package:rxdart/rxdart.dart';
 import '../blocs/room/bloc.dart';
 import '../../src/constants/composition_durations.dart';
@@ -29,7 +30,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     changeToggleSession(true);
   }
 
-  Widget build(BuildContext context) {
+  Widget build(context) {
     AuthBloc authBloc = AuthProvider.of(context);
     RoomBloc roomBloc = RoomProvider.of(context);
 
@@ -79,18 +80,21 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     setState(() => sessionStarted = !sessionStarted);
   }
 
-  void finishSession(AuthBloc authBloc, RoomBloc roomBloc) {
-    final lengthInSeconds = _watch.elapsed.inSeconds;
+  void finishSession(AuthBloc authBloc, RoomBloc roomBloc) async {
+    final runtimeInSeconds = _watch.elapsed.inSeconds;
 
     _watch.stop();
     _timer.cancel();
-    roomBloc.endSession(authBloc.currentUser.username, lengthInSeconds);
+    final compositionId = await roomBloc.endSession(
+        authBloc.currentUser.username, runtimeInSeconds);
 
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
-          return CompositionInfoScreen(screen: ScreenType.SESSION);
+          return CompositionInfoScreen(
+              screen: ScreenType.SESSION,
+              composition: CompositionModel.emptyModel(id: compositionId));
         },
       ),
     );

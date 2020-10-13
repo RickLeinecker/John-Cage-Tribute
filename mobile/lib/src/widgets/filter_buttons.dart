@@ -4,6 +4,7 @@ import 'package:jct/src/constants/filter_option.dart';
 import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/blocs/search/bloc.dart';
 
+// TODO: Add Title filter functionality
 class FilterButtons extends StatelessWidget {
   final ScreenType screen;
 

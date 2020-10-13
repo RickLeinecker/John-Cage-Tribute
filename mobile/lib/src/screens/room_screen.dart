@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/constants/greeting_type.dart';
+import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/models/room_model.dart';
 import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/widgets/greeting_message.dart';
 import 'package:jct/src/widgets/host_button.dart';
-import 'package:jct/src/widgets/no_appointments.dart';
 import 'package:jct/src/widgets/room_tile.dart';
 import 'package:jct/src/widgets/scroll_to_refresh.dart';
 
@@ -57,7 +59,11 @@ class RoomScreen extends StatelessWidget {
                     child: ListView(children: []),
                   ),
                   Center(
-                    child: NoAppointments(user: user),
+                    child: GreetingMessage(
+                      greeting: GreetingType.ROOM,
+                      message:
+                          'No aspiring musicians found here!${user == GUEST_USER ? '' : '\n Would you like to be one?'}',
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -91,8 +97,8 @@ class RoomScreen extends StatelessWidget {
                     ),
                     itemBuilder: (BuildContext context, int index) {
                       final String key = snapshot.data.keys.elementAt(index);
-                      return RoomTile(
-                          joiningUser: user.username, room: snapshot.data[key]);
+
+                      return RoomTile(user: user, room: snapshot.data[key]);
                     },
                   ),
                 ),

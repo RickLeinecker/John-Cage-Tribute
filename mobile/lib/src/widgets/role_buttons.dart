@@ -16,11 +16,11 @@ class RoleButtons extends StatelessWidget {
           children: [
             RaisedButton(
               color: snapshot.hasData && snapshot.data == Role.PERFORMER
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).accentColor,
+                  ? Colors.teal[800]
+                  : Colors.teal[600],
               highlightColor: Colors.white,
               child: Text('Performer',
-                  style: Theme.of(context).textTheme.bodyText2),
+                  style: Theme.of(context).textTheme.bodyText1),
               onPressed: () {
                 bloc.currentRole = Role.PERFORMER;
                 bloc.changeRole(Role.PERFORMER);
@@ -28,11 +28,11 @@ class RoleButtons extends StatelessWidget {
             ),
             RaisedButton(
               color: snapshot.hasData && snapshot.data == Role.LISTENER
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).accentColor,
+                  ? Colors.teal[800]
+                  : Colors.teal[600],
               highlightColor: Colors.white,
               child: Text('Listener',
-                  style: Theme.of(context).textTheme.bodyText2),
+                  style: Theme.of(context).textTheme.bodyText1),
               onPressed: () {
                 bloc.currentRole = Role.LISTENER;
                 bloc.changeRole(Role.LISTENER);

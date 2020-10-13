@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:audio_buffer_player/audio_buffer_player.dart';
 
@@ -7,18 +6,19 @@ import 'package:audio_streamer/audio_streamer.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:rxdart/rxdart.dart';
-
-import 'package:socket_io_client/socket_io_client.dart';
-
 import 'package:jct/src/constants/base_url.dart';
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/models/member_model.dart';
 import 'package:jct/src/models/room_model.dart';
 import 'package:jct/src/models/status_model.dart';
+import 'package:jct/src/resources/composition_api_repository.dart';
+
+import 'package:rxdart/rxdart.dart';
+
+import 'package:socket_io_client/socket_io_client.dart';
 
 class RoomBloc {
-  // RoomScreen
+  // Room Screen
   final pinText = TextEditingController();
   final _rooms = BehaviorSubject<Map<String, RoomModel>>();
   final _pin = BehaviorSubject<String>();
@@ -27,10 +27,10 @@ class RoomBloc {
   final _createRoomValid = BehaviorSubject<bool>();
   final _joinRoomValid = BehaviorSubject<bool>();
 
-  // SessionScreen
+  // Session Screen
   final _members = BehaviorSubject<Map<String, MemberModel>>();
   final _sessionReady = BehaviorSubject<bool>();
-  final _jsonEncoder = JsonEncoder();
+  final _compositionRepo = CompositionApiRepository();
 
   String currentRoom;
   Socket socket;
@@ -74,18 +74,10 @@ class RoomBloc {
     onSocketConnections();
   }
 
-  /// Method that opens a socket connection to the server.
-  ///
-  /// Its purpose is best suited for situations where room functionality will
-  /// be expected.
   void connectSocket() {
     socket.connect();
   }
 
-  /// Method that closes the socket connection from the server.
-  ///
-  /// It should be reserved for situations where room functionality is no
-  /// longer needed, whether temporary or not.
   void disconnectSocket() {
     socket.disconnect();
   }
@@ -93,7 +85,7 @@ class RoomBloc {
   /// Encompasses all socket.on connections required for the
   /// app's socket.io behavior.
   void onSocketConnections() {
-    // Updates list of available rooms in host screen
+    // Updates list of available rooms in Room Screen
     socket.on('updaterooms', (data) {
       print('Updated rooms!');
       final Map<String, RoomModel> roomMap = Map();
@@ -114,7 +106,7 @@ class RoomBloc {
         membersMap[key] = MemberModel.fromJson(data[key]);
       }
 
-      if (data.length >= 2 /*_numPerformers.value*/) {
+      if (data.length >= 1 /*_numPerformers.value*/) {
         _sessionReady.sink.add(true);
       } else {
         _sessionReady.addError('');
@@ -123,6 +115,8 @@ class RoomBloc {
       _members.sink.add(membersMap);
     });
 
+    // Compares the entered PIN to the room's PIN on the server, returning null
+    // if the two are not equal.
     socket.on('verifypin', (data) {
       print('data: $data');
       if (data != null) {
@@ -159,26 +153,32 @@ class RoomBloc {
       }
     });
 
+    // Receives mixed audio data from the server, passing them to the audio
+    // player for listening purposes.
     socket.on('playaudio', (audio) {
-      print('(playaudio socket) _isRecording: $_isRecording');
       if (_isRecording) {
         print('I hear something!');
 
-        final List<double> audioData = new List<double>.from(jsonDecode(audio));
+        final List<double> audioData = new List<double>.from(audio);
         _bufferPlayer.playAudio(audioData);
       }
     });
 
+    // Alerts the objects associated with the Performer/Listener
+    // the (Player/Streamer) and updates the Session Screen.
     socket.on('audiostop', (data) {
       _isRecording = false;
-      print('(audiostop socket) _isRecording: $_isRecording');
       endAudioBehavior();
-      _members.sink.addError(data);
+
+      // We represent the room as an empty map, containing no members.
+      // At this point, non-hosts should be greeted by a success screen!
+      _members.sink.add(Map());
 
       _bufferPlayer = null;
       _audioStreamer = null;
     });
 
+    // Ends the session due to a server error or a host leaving.
     socket.on('roomerror', (data) {
       print('Received roomerror.');
       endAudioBehavior();
@@ -186,13 +186,16 @@ class RoomBloc {
     });
   }
 
+  /// Passes audio from a performer's microphone to the server via sockets.
   void onAudio(List<double> buffer) {
     if (_isRecording) {
       print('(onAudio) buffer.length: ${buffer.length}');
-      socket.emit('sendaudio', _jsonEncoder.convert(buffer));
+      socket.emitWithBinary('sendaudio', [buffer]);
     }
   }
 
+  /// Sets up room metadata and attributes it to a user, passing it to the
+  /// server.
   void createRoom(String username) {
     currentRoom = username;
 
@@ -214,12 +217,16 @@ class RoomBloc {
       'isHost': true
     };
 
-    socket
-        .emit('createroom', <String, dynamic>{'room': room, 'member': member});
+    socket.emit('createroom', <String, dynamic>{
+      'room': room,
+      'member': member,
+    });
 
     setupAudioBehavior();
   }
 
+  /// Sends a user's metadata to the server and alerting the server about an
+  /// intent to join the specified room.
   void joinRoom(String roomId, String joiningUser) {
     currentRoom = roomId;
 
@@ -249,34 +256,35 @@ class RoomBloc {
   }
 
   /// Ends the session between the members of the room.
-  // TODO: Do API stuff here, performers n stuff
   /// Any immediately important composition metadata is passed via an API call.
-  /// (Examples: Composer name, composition length in seconds)
+  /// (Examples: Composer name, composition runtime in seconds)
   ///
   /// The button that activates this is only visible to the host.
-  void endSession(String composer, int lengthInSeconds) {
-    // TODO: Pass composition data to API here
-    print('Time elapsed: $lengthInSeconds seconds.');
+  Future<String> endSession(String composer, int runtimeInSeconds) async {
+    print('Time elapsed: $runtimeInSeconds seconds.');
 
-    // TODO: Exclude any (GUEST)s in memberList to be passed to API
-    final List<String> performerNames = List<String>.of(_members.value.keys);
+    final performerNames = List<String>();
 
-    performerNames.removeWhere((element) => element.contains('('));
+    for (String socketId in _members.value.keys) {
+      // Guests, bearing no name, are stripped from credit as performers.
+      if (!socketId.startsWith('(')) {
+        performerNames.add(_members.value[socketId].username);
+      }
+    }
 
-    // TODO: Erase what MongoDB already handles (puts its own default values).
-    final compositionInfo = <String, dynamic>{
-      'title': '(Untitled)', // this
-      'tags': List<String>(), // this
-      'description': '(No description has been added)', // this
+    final composition = <String, dynamic>{
       'composer': composer,
-      'duration': lengthInSeconds,
+      'time': runtimeInSeconds,
       'performers': performerNames,
-      'isPrivate': true, // this
     };
 
+    final compositionId = await _compositionRepo.createComposition(composition);
     socket.emit('endsession', currentRoom);
+
+    return compositionId;
   }
 
+  /// TODO: Finish comments
   void leaveRoom(String roomId) {
     socket.emit('leaveroom', roomId);
     endAudioBehavior();
@@ -328,26 +336,16 @@ class RoomBloc {
     }
   }
 
-  Future<StatusModel> submitCompositionInfo(String composer,
-      {String title,
-      String description,
-      List<String> tags,
-      bool isPrivate}) async {
+  Future<StatusModel> submitCompositionInfo(String title, String description,
+      List<String> tags, bool isPrivate) async {
     final compositionInfo = <String, dynamic>{
-      'composer': composer,
-      'title': title ?? null,
-      'description': description ?? null,
-      'tags': tags ?? null,
-      'isPrivate': isPrivate,
+      'title': title,
+      'description': description,
+      'tags': tags,
+      'private': isPrivate,
     };
 
-    if (title == null) {
-      compositionInfo['title'] = 'Untitled';
-    }
-
-    // TODO: Send this compositionInfo to DB!
-    await Future.delayed(Duration(seconds: 1));
-    return StatusModel.fromJson({'code': 200, 'message': 'Success!'});
+    return await _compositionRepo.editComposition(compositionInfo);
   }
 
   void dispose() {

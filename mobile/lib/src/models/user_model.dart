@@ -7,11 +7,11 @@ class UserModel extends Equatable {
   @override
   List<Object> get props => [email, username];
 
+  const UserModel({this.email, this.username});
+
   UserModel.fromJson(Map<String, dynamic> parsedJson)
       : email = parsedJson['email'],
         username = parsedJson['name'];
-
-  const UserModel({this.email, this.username});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{'email': email, 'name': username};

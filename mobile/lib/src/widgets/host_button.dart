@@ -38,14 +38,18 @@ class HostButton extends StatelessWidget {
         return SimpleDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          backgroundColor: Theme.of(context).accentColor,
+          backgroundColor: Colors.teal,
           contentPadding:
               EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           children: [
             Column(
               children: [
+                Divider(
+                  color: Colors.transparent,
+                  height: 20.0,
+                ),
                 Text(
-                  'Before you \nbegin...',
+                  'Before you begin...',
                   style: Theme.of(context).textTheme.headline6,
                   textAlign: TextAlign.center,
                 ),
@@ -70,9 +74,9 @@ class HostButton extends StatelessWidget {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         filled: true,
-                        fillColor: Theme.of(context).primaryColor,
+                        fillColor: Colors.teal[800],
                       ),
-                      dropdownColor: Theme.of(context).primaryColor,
+                      dropdownColor: Colors.teal[800],
                       onChanged: (int selection) =>
                           bloc.changeNumPerformers(selection),
                       items: <DropdownMenuItem<int>>[
@@ -130,10 +134,10 @@ class HostButton extends StatelessWidget {
                     stream: bloc.createRoomValid,
                     builder: (context, AsyncSnapshot<bool> snapshot) {
                       return RaisedButton(
-                        color: Theme.of(context).accentColor,
+                        color: Colors.teal[600],
                         highlightColor: Colors.white,
                         child: Text('Create Room!',
-                            style: Theme.of(context).textTheme.bodyText2),
+                            style: Theme.of(context).textTheme.bodyText1),
                         onPressed: snapshot.hasData
                             ? () => onCreateRoom(context, bloc, user)
                             : null,
@@ -177,7 +181,10 @@ class HostButton extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) {
           return SessionScreen(
-              user: user.username, roomId: user.username, isHost: true);
+              user: user,
+              roomId: user.username,
+              isHost: true,
+              role: bloc.currentRole);
         },
       ),
     );
@@ -188,7 +195,7 @@ class HostButton extends StatelessWidget {
       value: value,
       child: Text(
         '$value Performers',
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyText1,
       ),
     );
   }

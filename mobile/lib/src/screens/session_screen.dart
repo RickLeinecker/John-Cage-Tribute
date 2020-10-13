@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:jct/src/widgets/start_session_button.dart';
 import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/constants/greeting_type.dart';
+import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/models/member_model.dart';
+import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/widgets/greeting_message.dart';
+import 'package:jct/src/widgets/start_session_button.dart';
 
 class SessionScreen extends StatelessWidget {
-  final String user;
+  final UserModel user;
   final String roomId;
   final bool isHost;
+  final Role role;
 
-  SessionScreen(
-      {@required this.user, @required this.roomId, @required this.isHost});
+  SessionScreen({
+    @required this.user,
+    @required this.roomId,
+    @required this.isHost,
+    @required this.role,
+  });
 
   Widget build(context) {
     final RoomBloc bloc = RoomProvider.of(context);
@@ -48,27 +57,17 @@ class SessionScreen extends StatelessWidget {
                           backgroundColor: Colors.white,
                         ),
                       );
+
+                      // The session has successfully ended, no members remain in
+                      // the room.
+                    } else if (snapshot.data.length == 0) {
+                      return GreetingMessage(
+                        greeting: GreetingType.SUCCESS,
+                        message: successMessage(),
+                      );
                     }
 
-                    return Center(
-                      child: Container(
-                        margin: EdgeInsets.only(left: 10.0),
-                        height: 400,
-                        width: 300,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            memberListIcons(snapshot.data),
-                            VerticalDivider(
-                              width: 20.0,
-                              color: Colors.transparent,
-                            ),
-                            (isHost ? StartSessionButton() : Container()),
-                          ],
-                        ),
-                      ),
-                    );
+                    return memberListColumn(context, snapshot.data);
                   },
                 ),
               ),
@@ -81,41 +80,104 @@ class SessionScreen extends StatelessWidget {
 
   Widget confirmLeaveRoom(BuildContext context, RoomBloc bloc) {
     return AlertDialog(
-      backgroundColor: Colors.red[900],
+      backgroundColor: Colors.teal,
       content: Container(
         height: 300,
         width: 200,
-        color: Colors.red[900],
+        color: Colors.teal,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Are you sure you\'d like to leave the room?',
+            Text(
+                'Are you sure you\'d like to leave the room? \n\nIf you\'re the host, the room will close and its members will have to leave.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 20.0)),
+            Divider(
+              color: Colors.transparent,
+              height: 15.0,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RaisedButton(
-                  color: Colors.red[300],
-                  child: Text('Yes', style: TextStyle(color: Colors.white)),
+                  color: Colors.teal[600],
+                  highlightColor: Colors.white,
+                  child: Text(
+                    'Yes',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                   onPressed: () {
                     bloc.leaveRoom(roomId);
                     Navigator.of(context).pop(true);
                   },
                 ),
+                VerticalDivider(
+                  color: Colors.transparent,
+                  width: 10.0,
+                ),
                 RaisedButton(
-                  color: Colors.red[300],
-                  child: Text('No', style: TextStyle(color: Colors.white)),
-                  onPressed: () {
-                    Navigator.of(context).pop(false);
-                  },
+                  color: Colors.teal[600],
+                  highlightColor: Colors.white,
+                  child: Text(
+                    'No',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(false),
                 ),
               ],
-            )
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  String successMessage() {
+    switch (role) {
+      case Role.LISTENER:
+        return 'Thanks for tuning in, ${user == GUEST_USER ? 'guest' : user.username}!';
+
+      case Role.PERFORMER:
+        if (user == GUEST_USER) {
+          return 'Thanks for pitching in, guest! Your audio will live on!';
+        }
+
+        return 'Awesome job, ${user.username}! You\'ll be credited for this composition!';
+
+      default:
+        return '(Role not yet supported) Session complete.';
+    }
+  }
+
+  Widget memberListColumn(
+      BuildContext context, Map<String, MemberModel> members) {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Divider(
+            color: Colors.transparent,
+            height: 20.0,
+          ),
+          memberListIcons(context, members),
+          Expanded(
+            child: Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: (isHost ? StartSessionButton() : Container()),
+            ),
+          ),
+          Divider(
+            color: Colors.transparent,
+            height: 20.0,
+          ),
+        ],
       ),
     );
   }
@@ -151,27 +213,12 @@ class SessionScreen extends StatelessWidget {
     );
   }
 
-  Widget recordButton(BuildContext context) {
-    return RaisedButton(
-      child: Container(
-        child: Icon(
-          Icons.mic,
-          size: 100.0,
-        ),
-        margin: EdgeInsets.all(10.0),
-      ),
-      onPressed: () {},
-      shape: CircleBorder(),
-      highlightColor: Colors.white,
-      color: Theme.of(context).accentColor,
-    );
-  }
-
-  Widget memberListIcons(Map<String, MemberModel> members) {
+  Widget memberListIcons(
+      BuildContext context, Map<String, MemberModel> members) {
     final List<Widget> memberIconList = List();
 
     for (String key in members.keys) {
-      memberIconList.add(memberIcon(members[key]));
+      memberIconList.add(memberIcon(context, members[key]));
     }
 
     return Column(
@@ -181,11 +228,14 @@ class SessionScreen extends StatelessWidget {
     );
   }
 
-  Widget memberIcon(MemberModel member) {
+  Widget memberIcon(BuildContext context, MemberModel member) {
     return Column(
       children: [
         Icon(member.role == Role.PERFORMER ? Icons.mic : Icons.headset),
-        Text(member.isGuest ? '(GUEST)' : member.username)
+        Text(
+          member.isGuest ? '(GUEST)' : member.username,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
       ],
     );
   }

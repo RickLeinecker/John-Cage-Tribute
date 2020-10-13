@@ -22,7 +22,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   final int maxTitleLen = 64;
   TextEditingController _title;
   TextEditingController _description;
-  List<String> _items;
+  List<String> _tags;
   String submitError;
   bool maxTagsReached;
   bool isSubmitting;
@@ -33,20 +33,14 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   void initState() {
     super.initState();
 
-    if (widget.composition == null) {
-      _title = TextEditingController();
-      _description = TextEditingController();
-      _items = List();
-    } else {
-      _title = TextEditingController.fromValue(
-          TextEditingValue(text: widget.composition.title));
-      _description = TextEditingController.fromValue(
-          TextEditingValue(text: widget.composition.description));
-      _items = widget.composition.tags;
-    }
+    _title = TextEditingController.fromValue(
+        TextEditingValue(text: widget.composition.title ?? ''));
+    _description = TextEditingController.fromValue(
+        TextEditingValue(text: widget.composition.description ?? ''));
+    _tags = widget.composition.tags ?? List();
 
     submitError = '';
-    maxTagsReached = _items.length >= MAX_TAGS;
+    maxTagsReached = _tags.length >= MAX_TAGS;
     isSubmitting = false;
     isPrivate = false;
   }
@@ -84,6 +78,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           TextFormField(
             controller: _title,
             maxLength: maxTitleLen,
+            maxLengthEnforced: true,
             decoration: InputDecoration(
               hintText: 'Title',
               fillColor: Theme.of(context).primaryColor,
@@ -96,7 +91,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             height: 30.0,
           ),
           Text(
-            'Any tags to go with it? \n(${MAX_TAGS - _items.length} left.)',
+            'Any tags to go with it? \n(${MAX_TAGS - _tags.length} left.)',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline6,
           ),
@@ -126,7 +121,8 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
               filled: true,
               border: InputBorder.none,
             ),
-            maxLength: 100,
+            maxLength: 256,
+            maxLengthEnforced: true,
             style: Theme.of(context).textTheme.bodyText2,
             minLines: 3,
             maxLines: 100,
@@ -135,23 +131,18 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             color: Colors.transparent,
             height: 20.0,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Searchable?', // TODO: Fix isPrivate text label here
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              Checkbox(
-                value: isPrivate,
-                onChanged: (data) => setState(() => isPrivate = !isPrivate),
-              ),
-            ],
+          Text(
+            'Hide this composition from \nusers\' searches?',
+            style: Theme.of(context).textTheme.bodyText1,
+            textAlign: TextAlign.center,
+          ),
+          Checkbox(
+            value: isPrivate,
+            onChanged: (data) => setState(() => isPrivate = !isPrivate),
           ),
           Divider(
             color: Colors.transparent,
-            height: 20.0,
+            height: 15.0,
           ),
           Text(
             submitError,
@@ -207,13 +198,13 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
         ),
         constraintSuggestion: true,
         onSubmitted: (String str) {
-          setState(() => _items.add(str));
-          setState(() => maxTagsReached = _items.length >= MAX_TAGS);
+          setState(() => _tags.add(str));
+          setState(() => maxTagsReached = _tags.length >= MAX_TAGS);
         },
       ),
-      itemCount: _items.length,
+      itemCount: _tags.length,
       itemBuilder: (int index) {
-        final item = _items[index];
+        final item = _tags[index];
 
         return ItemTags(
           key: Key(index.toString()),
@@ -226,8 +217,8 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           ),
           removeButton: ItemTagsRemoveButton(
             onRemoved: () {
-              setState(() => _items.removeAt(index));
-              setState(() => maxTagsReached = _items.length >= MAX_TAGS);
+              setState(() => _tags.removeAt(index));
+              setState(() => maxTagsReached = _tags.length >= MAX_TAGS);
               return true;
             },
           ),
@@ -239,15 +230,12 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   }
 
   void onSubmit(AuthBloc authBloc, RoomBloc roomBloc) async {
-    String username = authBloc.currentUser.username;
-
     setState(() => isSubmitting = true);
     StatusModel status = await roomBloc.submitCompositionInfo(
-      username,
-      title: _title.value.text,
-      description: _description.value.text,
-      tags: _items,
-      isPrivate: isPrivate,
+      _title.text,
+      _description.text,
+      _tags,
+      isPrivate,
     );
 
     setState(() => isSubmitting = false);

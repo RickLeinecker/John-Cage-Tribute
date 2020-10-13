@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'package:permission_handler/permission_handler.dart';
-
-import 'package:pinput/pin_put/pin_put.dart';
-
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/blocs/room/bloc.dart';
 import 'package:jct/src/models/room_model.dart';
+import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/session_screen.dart';
 import 'package:jct/src/widgets/role_buttons.dart';
 
+import 'package:pinput/pin_put/pin_put.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 class RoomTile extends StatelessWidget {
-  final String joiningUser;
+  final UserModel user;
   final RoomModel room;
 
-  RoomTile({@required this.joiningUser, @required this.room});
+  RoomTile({@required this.user, @required this.room});
 
   Widget build(context) {
     final RoomBloc bloc = RoomProvider.of(context);
@@ -56,7 +56,7 @@ class RoomTile extends StatelessWidget {
         return SimpleDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          backgroundColor: Theme.of(context).accentColor,
+          backgroundColor: Colors.teal,
           contentPadding:
               EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           children: [
@@ -106,11 +106,13 @@ class RoomTile extends StatelessWidget {
                   stream: bloc.joinRoomValid,
                   builder: (context, AsyncSnapshot<bool> snapshot) {
                     return RaisedButton(
-                      color: Theme.of(context).primaryColor,
-                      child: Text('Join',
-                          style: Theme.of(context).textTheme.bodyText2),
+                      color: Colors.teal[600],
+                      child: Text(
+                        'Join',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                       onPressed: snapshot.hasData
-                          ? () => onJoinRoom(context, bloc, room, joiningUser)
+                          ? () => onJoinRoom(context, bloc)
                           : null,
                     );
                   },
@@ -123,8 +125,7 @@ class RoomTile extends StatelessWidget {
     );
   }
 
-  Future<void> onJoinRoom(BuildContext context, RoomBloc bloc, RoomModel room,
-      String joiningUser) async {
+  Future<void> onJoinRoom(BuildContext context, RoomBloc bloc) async {
     if (bloc.currentRole == Role.PERFORMER) {
       print('Can confirm you\'re a performer!');
       if (!await Permission.microphone.request().isGranted) {
@@ -144,14 +145,18 @@ class RoomTile extends StatelessWidget {
       }
     }
 
-    bloc.joinRoom(room.id, joiningUser);
+    bloc.joinRoom(room.id, user.username);
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
           return SessionScreen(
-              user: joiningUser, roomId: room.id, isHost: false);
+            user: user,
+            roomId: room.id,
+            isHost: false,
+            role: bloc.currentRole,
+          );
         },
       ),
     );

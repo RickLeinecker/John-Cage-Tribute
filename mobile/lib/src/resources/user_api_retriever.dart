@@ -11,7 +11,7 @@ class UserApiRetriever {
   final Client client = Client();
 
   Future<Map<String, dynamic>> get jwtOrEmpty async {
-    final String jwt = await storage.read(key: "jwt");
+    final String jwt = await storage.read(key: 'jwt');
     if (jwt == null) {
       print('No JWT found, fella.');
       return null;

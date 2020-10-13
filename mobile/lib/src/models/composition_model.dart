@@ -1,24 +1,39 @@
 /// A representation of a recorded composition.
 ///
-/// The time associated with the composition is listed in seconds.
-/// The composition's url is accessible as a resource in combination with
+/// The length of the composition is measured in seconds.
+/// The composition's filename is accessible as a resource in combination with
 /// the baseUrl and compositionUrl.
 class CompositionModel {
+  final String id;
   final String title;
   final String composer;
   final int time;
-  final String url;
+  final String filename;
   final List<String> performers;
   final List<String> tags;
   final String description;
-  // TODO: final bool isPublic;
+  final bool isPrivate;
+
+  const CompositionModel.emptyModel({
+    this.id,
+    this.title,
+    this.composer,
+    this.time,
+    this.filename,
+    this.performers,
+    this.tags,
+    this.description,
+    this.isPrivate,
+  });
 
   CompositionModel.fromJson(Map<String, dynamic> parsedJson)
-      : title = parsedJson['title'],
+      : id = parsedJson['_id'],
+        title = parsedJson['title'],
         composer = parsedJson['composer'],
-        time = parsedJson['time'],
-        url = parsedJson['filename'],
-        performers = List<String>.from(parsedJson['performers']),
+        time = parsedJson['runtime'],
+        filename = parsedJson['filename'],
+        performers = List<String>.from(parsedJson['performers']) ?? List(),
         tags = List<String>.from(parsedJson['tags']) ?? List(),
-        description = parsedJson['description'] ?? '';
+        description = parsedJson['description'] ?? '',
+        isPrivate = parsedJson['private'];
 }

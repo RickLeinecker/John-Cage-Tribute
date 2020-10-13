@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/screen_type.dart';
 
@@ -16,42 +15,30 @@ class SearchField extends StatelessWidget {
 
   Widget build(BuildContext context) {
     final searchBloc = SearchProvider.of(context);
-    final authBloc = AuthProvider.of(context);
 
     return Container(
       width: 350,
       height: 48,
       child: Container(
         child: TextFormField(
-          controller: searchBloc.searchText,
-          cursorColor: Colors.tealAccent[400],
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Search Compositions',
-            hintStyle: Theme.of(context).textTheme.bodyText1,
-            suffixIcon: IconButton(
-                icon: Icon(Icons.clear),
-                onPressed: () => searchBloc.searchText.clear(),
-                color: Colors.blue[100]),
-          ),
-          style: Theme.of(context).textTheme.bodyText1,
-          onFieldSubmitted: (text) {
-            if (text != '') {
-              switch (screen) {
-                case ScreenType.SEARCH:
-                  searchBloc.search(searchBloc.getFilter(screen), text);
-                  break;
-                case ScreenType.LIBRARY:
-                  searchBloc.search(searchBloc.getFilter(screen), text,
-                      composer: authBloc.currentUser.username);
-                  break;
-                default:
-                  break;
+            controller: searchBloc.searchText,
+            cursorColor: Colors.tealAccent[400],
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Search Compositions',
+              hintStyle: Theme.of(context).textTheme.bodyText1,
+              suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () => searchBloc.searchText.clear(),
+                  color: Colors.blue[100]),
+            ),
+            style: Theme.of(context).textTheme.bodyText1,
+            onFieldSubmitted: (text) {
+              if (text != '') {
+                searchBloc.search(searchBloc.getFilter(screen), text, screen);
               }
               print('Filter $text by ${searchBloc.getFilter(screen)}');
-            }
-          },
-        ),
+            }),
         margin: EdgeInsets.only(left: 10.0),
       ),
       decoration: BoxDecoration(

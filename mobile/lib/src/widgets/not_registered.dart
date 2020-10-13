@@ -15,7 +15,7 @@ class NotRegistered extends StatelessWidget {
             height: 20.0,
           ),
           Text(
-              'Our apologies, but only registered users may access this screen.\n\nPlease make an account to access your compositions!',
+              'Our apologies, but only registered users may access this screen.\n\nPlease make an account to access your compositions.',
               style: Theme.of(context).textTheme.bodyText2,
               textAlign: TextAlign.center),
         ],

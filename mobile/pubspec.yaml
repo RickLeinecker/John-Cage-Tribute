@@ -27,7 +27,7 @@ dependencies:
   audio_buffer_player: ^0.0.1
   audio_streamer:
     path: ../../audio_streamer
-  assets_audio_player: ^2.0.8+2
+  assets_audio_player: ^2.0.10
   email_validator: ^1.0.4
   equatable: ^1.1.1
   flutter_secure_storage: ^3.3.3
