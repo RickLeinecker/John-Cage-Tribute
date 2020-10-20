@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
+import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/composition_info_screen.dart';
 import 'package:jct/src/screens/player_screen.dart';
 
@@ -18,7 +20,8 @@ class CompositionTile extends StatelessWidget {
       @required this.index});
 
   Widget build(context) {
-    final SearchBloc bloc = SearchProvider.of(context);
+    final AuthBloc authBloc = AuthProvider.of(context);
+    final SearchBloc searchBloc = SearchProvider.of(context);
     final int compMinutes = composition.time ~/ 60;
     final int compSeconds = composition.time % 60;
     final bool addMinZero = (compMinutes < 10);
@@ -39,6 +42,8 @@ class CompositionTile extends StatelessWidget {
               ),
             );
           },
+          // TODO: Line up the metadata closer to the center if the buttons
+          // TODO: won't show up.
           title: Stack(
             children: [
               Column(
@@ -51,10 +56,14 @@ class CompositionTile extends StatelessWidget {
                   ),
                   Text(
                     'Title: ${composition.title}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
                   Text(
                     'Composer: ${composition.composer}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
                   Text(
@@ -67,7 +76,7 @@ class CompositionTile extends StatelessWidget {
                 bottom: 10.0,
                 left: 0,
                 right: 0,
-                child: optionButtons(context, bloc),
+                child: optionButtons(context, searchBloc, authBloc.currentUser),
               ),
             ],
           ),
@@ -77,27 +86,28 @@ class CompositionTile extends StatelessWidget {
   }
 
   // Composition modification can only occur from the Library screen.
-  Widget optionButtons(BuildContext context, SearchBloc bloc) {
-    // TODO: Revert when done testing.
-    // if (screen == ScreenType.LIBRARY) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        editButton(context),
-        VerticalDivider(
-          color: Colors.transparent,
-          thickness: 10.0,
-        ),
-        deleteButton(context, bloc),
-      ],
-    );
-    // }
+  Widget optionButtons(
+      BuildContext context, SearchBloc searchBloc, UserModel user) {
+    if (screen == ScreenType.LIBRARY) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          editButton(context, searchBloc, user),
+          VerticalDivider(
+            color: Colors.transparent,
+            thickness: 10.0,
+          ),
+          deleteButton(context, searchBloc, user),
+        ],
+      );
+    }
 
-    // return SizedBox.shrink();
+    return SizedBox.shrink();
   }
 
-  Widget editButton(BuildContext context) {
+  Widget editButton(
+      BuildContext context, SearchBloc searchBloc, UserModel user) {
     return SizedBox(
       height: 50.0,
       width: 50.0,
@@ -114,6 +124,7 @@ class CompositionTile extends StatelessWidget {
             CupertinoPageRoute(
               builder: (context) {
                 return CompositionInfoScreen(
+                  user: user,
                   screen: ScreenType.LIBRARY,
                   composition: composition,
                 );
@@ -125,7 +136,8 @@ class CompositionTile extends StatelessWidget {
     );
   }
 
-  Widget deleteButton(BuildContext context, SearchBloc bloc) {
+  Widget deleteButton(
+      BuildContext context, SearchBloc searchBloc, UserModel user) {
     return SizedBox(
       height: 50.0,
       width: 50.0,
@@ -134,13 +146,14 @@ class CompositionTile extends StatelessWidget {
         child: IconButton(
           iconSize: 30.0,
           icon: Icon(Icons.delete, color: Theme.of(context).accentColor),
-          onPressed: () => onDeleteComposition(context, bloc),
+          onPressed: () => onDeleteComposition(context, searchBloc, user),
         ),
       ),
     );
   }
 
-  void onDeleteComposition(BuildContext context, SearchBloc bloc) {
+  void onDeleteComposition(
+      BuildContext context, SearchBloc bloc, UserModel user) {
     showDialog(
       context: context,
       builder: (context) {
@@ -179,7 +192,7 @@ class CompositionTile extends StatelessWidget {
                   height: 30.0,
                 ),
                 errorMessage,
-                deleteProgressOrButtons(context, bloc, snapshot),
+                deleteProgressOrButtons(context, bloc, user, snapshot),
               ],
             );
           },
@@ -188,8 +201,8 @@ class CompositionTile extends StatelessWidget {
     );
   }
 
-  Widget deleteProgressOrButtons(
-      BuildContext context, SearchBloc bloc, AsyncSnapshot<bool> snapshot) {
+  Widget deleteProgressOrButtons(BuildContext context, SearchBloc bloc,
+      UserModel user, AsyncSnapshot<bool> snapshot) {
     if (snapshot.hasData && snapshot.data == true) {
       return Container(
         height: 50.0,
@@ -216,7 +229,8 @@ class CompositionTile extends StatelessWidget {
             ),
           ),
           onPressed: () async {
-            await bloc.deleteComposition(screen, composition.id, index);
+            await bloc.deleteComposition(
+                screen, user.id, composition.id, index);
             Navigator.of(context).pop();
           },
         ),

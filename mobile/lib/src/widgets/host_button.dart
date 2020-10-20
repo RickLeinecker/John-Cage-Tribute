@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:jct/src/blocs/room/bloc.dart';
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/constants/role_limits.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/session_screen.dart';
 import 'package:jct/src/widgets/role_buttons.dart';
@@ -11,6 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:pinput/pin_put/pin_put.dart';
 
+// TODO: Why the heck is iOS crashing when it makes a new room? Wtf.
 class HostButton extends StatelessWidget {
   final UserModel user;
 
@@ -79,13 +81,7 @@ class HostButton extends StatelessWidget {
                       dropdownColor: Colors.teal[800],
                       onChanged: (int selection) =>
                           bloc.changeNumPerformers(selection),
-                      items: <DropdownMenuItem<int>>[
-                        performerItem(context, 4),
-                        performerItem(context, 5),
-                        performerItem(context, 6),
-                        performerItem(context, 7),
-                        performerItem(context, 8),
-                      ],
+                      items: getPerformerItems(context),
                     );
                   },
                 ),
@@ -151,6 +147,16 @@ class HostButton extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<Widget> getPerformerItems(BuildContext context) {
+    List<DropdownMenuItem<int>> items = List();
+
+    for (int i = MIN_PERFORMERS; i <= MAX_PERFORMERS; i++) {
+      items.add(performerItem(context, i));
+    }
+
+    return items;
   }
 
   void onCreateRoom(BuildContext context, RoomBloc bloc, UserModel user) async {

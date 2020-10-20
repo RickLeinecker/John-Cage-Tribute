@@ -11,6 +11,7 @@ import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/models/member_model.dart';
 import 'package:jct/src/models/room_model.dart';
 import 'package:jct/src/models/status_model.dart';
+import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/resources/composition_api_repository.dart';
 
 import 'package:rxdart/rxdart.dart';
@@ -157,9 +158,16 @@ class RoomBloc {
     // player for listening purposes.
     socket.on('playaudio', (audio) {
       if (_isRecording) {
-        print('I hear something!');
+        print('Playing audio of length: ${audio.length}!');
 
-        final List<double> audioData = new List<double>.from(audio);
+        // List<double> audioData = List();
+        List<int> audioData = List();
+
+        for (dynamic data in audio) {
+          // audioData.add(data.toDouble());
+          audioData.add(data.toInt());
+        }
+
         _bufferPlayer.playAudio(audioData);
       }
     });
@@ -187,9 +195,10 @@ class RoomBloc {
   }
 
   /// Passes audio from a performer's microphone to the server via sockets.
-  void onAudio(List<double> buffer) {
+  // void onAudio(List<double> buffer) {
+  void onAudio(List<int> buffer) {
     if (_isRecording) {
-      print('(onAudio) buffer.length: ${buffer.length}');
+      print('Sending audio of length: ${buffer.length}');
       socket.emitWithBinary('sendaudio', [buffer]);
     }
   }
@@ -210,7 +219,7 @@ class RoomBloc {
     };
 
     final Map<String, dynamic> member = {
-      'username': username,
+      'name': username,
       'isActive': true,
       'role': _role.value == Role.LISTENER ? 0 : 1,
       'isGuest': false,
@@ -232,7 +241,7 @@ class RoomBloc {
 
     final Map<String, dynamic> member = {
       'socket': socket.id,
-      'username': joiningUser,
+      'name': joiningUser,
       'isActive': true,
       'role': _role.value == Role.LISTENER ? 0 : 1,
       'isGuest': joiningUser == null ? true : false,
@@ -260,7 +269,7 @@ class RoomBloc {
   /// (Examples: Composer name, composition runtime in seconds)
   ///
   /// The button that activates this is only visible to the host.
-  Future<String> endSession(String composer, int runtimeInSeconds) async {
+  Future<String> endSession(UserModel user, int runtimeInSeconds) async {
     print('Time elapsed: $runtimeInSeconds seconds.');
 
     final performerNames = List<String>();
@@ -272,16 +281,22 @@ class RoomBloc {
       }
     }
 
+    final String compId = await _compositionRepo.generateCompositionID(user.id);
+
     final composition = <String, dynamic>{
-      'composer': composer,
+      'id': compId,
+      'composer': user.username,
       'time': runtimeInSeconds,
       'performers': performerNames,
     };
 
-    final compositionId = await _compositionRepo.createComposition(composition);
-    socket.emit('endsession', currentRoom);
+    socket.emit('endsession', <String, dynamic>{
+      'roomId': currentRoom,
+      'composition': composition,
+      'user': user.id,
+    });
 
-    return compositionId;
+    return compId;
   }
 
   /// TODO: Finish comments
@@ -336,16 +351,23 @@ class RoomBloc {
     }
   }
 
-  Future<StatusModel> submitCompositionInfo(String title, String description,
-      List<String> tags, bool isPrivate) async {
-    final compositionInfo = <String, dynamic>{
+  Future<StatusModel> submitCompositionInfo(
+      {String userId,
+      String compositionId,
+      String title,
+      String description,
+      List<String> tags,
+      bool isPrivate}) async {
+    final data = <String, dynamic>{
+      'user': userId,
+      'id': compositionId,
       'title': title,
       'description': description,
       'tags': tags,
       'private': isPrivate,
     };
 
-    return await _compositionRepo.editComposition(compositionInfo);
+    return await _compositionRepo.editComposition(data);
   }
 
   void dispose() {

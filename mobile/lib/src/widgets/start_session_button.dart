@@ -72,7 +72,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
           'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min.');
 
       changeToggleSession(await Future.delayed(
-          Duration(seconds: 3 /*MIN_COMPOSITION_TIME*/), () => true));
+          Duration(seconds: MIN_COMPOSITION_TIME), () => true));
     } else {
       finishSession(authBloc, roomBloc);
     }
@@ -85,14 +85,15 @@ class _StartSessionButtonState extends State<StartSessionButton> {
 
     _watch.stop();
     _timer.cancel();
-    final compositionId = await roomBloc.endSession(
-        authBloc.currentUser.username, runtimeInSeconds);
+    final compositionId =
+        await roomBloc.endSession(authBloc.currentUser, runtimeInSeconds);
 
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) {
           return CompositionInfoScreen(
+              user: authBloc.currentUser,
               screen: ScreenType.SESSION,
               composition: CompositionModel.emptyModel(id: compositionId));
         },

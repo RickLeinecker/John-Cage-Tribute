@@ -12,13 +12,14 @@ class UserApiRetriever {
 
   Future<Map<String, dynamic>> get jwtOrEmpty async {
     final String jwt = await storage.read(key: 'jwt');
+
     if (jwt == null) {
       print('No JWT found, fella.');
       return null;
     }
 
     final response = await client.get(
-      '$baseUrl/api/auth',
+      '$baseUrl/$loginUrl',
       headers: {'x-auth-token': '$jwt'},
     );
 
@@ -34,7 +35,7 @@ class UserApiRetriever {
   }
 
   Future<Map<String, dynamic>> signup(Map<String, dynamic> user) async {
-    final response = await client.post('$baseUrl/api/users',
+    final response = await client.post('$baseUrl/$signupUrl',
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(user));
 
     final parsedJson = jsonDecode(response.body);
@@ -54,7 +55,7 @@ class UserApiRetriever {
   }
 
   Future<Map<String, dynamic>> login(Map<String, dynamic> user) async {
-    final response = await client.post('$baseUrl/api/auth',
+    final response = await client.post('$baseUrl/$loginUrl',
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(user));
 
     final parsedJson = jsonDecode(response.body);

@@ -1,1 +1,1 @@
-enum FilterOption { NONE, TITLE, TAGS, COMPOSED_BY, PERFORMED_BY }
+enum FilterOption { TITLE, TAGS, COMPOSED_BY, PERFORMED_BY }

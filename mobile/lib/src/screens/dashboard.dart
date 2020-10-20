@@ -85,7 +85,7 @@ class DashboardState extends State<Dashboard> {
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: LibraryScreen(/*user: bloc.user*/),
+                  child: LibraryScreen(),
                 );
               },
             );

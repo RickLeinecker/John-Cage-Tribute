@@ -6,8 +6,8 @@ import 'package:jct/src/constants/greeting_type.dart';
 import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
 import 'package:jct/src/widgets/composition_tile.dart';
+import 'package:jct/src/widgets/dropdown_filters.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
-import 'package:jct/src/widgets/filter_buttons.dart';
 import 'package:jct/src/widgets/search_field.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -25,8 +25,21 @@ class SearchScreen extends StatelessWidget {
           backgroundColor: Theme.of(context).accentColor,
           title: SearchField(screen: ScreenType.SEARCH),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50.0),
-            child: FilterButtons(screen: ScreenType.SEARCH),
+            preferredSize: Size.fromHeight(0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Filter By: ',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                SizedBox(
+                  width: 150,
+                  child: DropdownFilters(screen: ScreenType.SEARCH),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -46,7 +59,8 @@ class SearchScreen extends StatelessWidget {
                   builder: (context,
                       AsyncSnapshot<List<CompositionModel>> compSnapshot) {
                     // No searches have been performed yet.
-                    if (!searchingSnapshot.hasData) {
+                    if (!searchingSnapshot.hasData ||
+                        (compSnapshot.data == null && !compSnapshot.hasError)) {
                       return GreetingMessage(
                         greeting: GreetingType.SEARCH,
                         message: 'Musical masterpieces will display here!',

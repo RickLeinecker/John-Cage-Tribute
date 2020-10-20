@@ -8,7 +8,7 @@ import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/widgets/composition_tile.dart';
-import 'package:jct/src/widgets/filter_buttons.dart';
+import 'package:jct/src/widgets/dropdown_filters.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
 import 'package:jct/src/widgets/loading_user.dart';
 import 'package:jct/src/widgets/not_registered.dart';
@@ -30,22 +30,36 @@ class LibraryScreen extends StatelessWidget {
           return NotRegistered();
         }
 
-        return nonGuestScaffold(context, searchBloc);
+        return nonGuestScaffold(context, searchBloc, snapshot.data);
       },
     );
   }
 
-  Widget nonGuestScaffold(BuildContext context, SearchBloc bloc) {
+  Widget nonGuestScaffold(
+      BuildContext context, SearchBloc bloc, UserModel user) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(100.0),
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).accentColor,
-          title: SearchField(screen: ScreenType.LIBRARY),
+          title: SearchField(user: user, screen: ScreenType.LIBRARY),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50.0),
-            child: FilterButtons(screen: ScreenType.LIBRARY),
+            preferredSize: Size.fromHeight(0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Filter By: ',
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                SizedBox(
+                  width: 150,
+                  child: DropdownFilters(screen: ScreenType.LIBRARY),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -65,7 +79,8 @@ class LibraryScreen extends StatelessWidget {
                   builder: (context,
                       AsyncSnapshot<List<CompositionModel>> compSnapshot) {
                     // No searches have been performed yet.
-                    if (!searchingSnapshot.hasData) {
+                    if (!searchingSnapshot.hasData ||
+                        (compSnapshot.data == null && !compSnapshot.hasError)) {
                       return GreetingMessage(
                         greeting: GreetingType.LIBRARY,
                         message: 'Your glorious collection will show up here!',
@@ -73,7 +88,7 @@ class LibraryScreen extends StatelessWidget {
                     }
 
                     // A search is currently being performed.
-                    else if (searchingSnapshot.data == true) {
+                    if (searchingSnapshot.data == true) {
                       return loadingCircle(context);
                     }
 
@@ -82,7 +97,7 @@ class LibraryScreen extends StatelessWidget {
                       if (compSnapshot.hasError) {
                         return GreetingMessage(
                           greeting: GreetingType.ERROR,
-                          message: 'Oh, no!\nerrorMessage${compSnapshot.error}',
+                          message: 'Oh, no!\n${compSnapshot.error}',
                         );
                       } else {
                         if (compSnapshot.data.length == 0) {

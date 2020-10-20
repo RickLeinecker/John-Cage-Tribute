@@ -8,7 +8,7 @@ class MemberModel {
   final bool isHost;
 
   MemberModel.fromJson(Map<String, dynamic> parsedJson)
-      : username = parsedJson['username'],
+      : username = parsedJson['name'],
         role = Role.values[parsedJson['role']],
         isActive = parsedJson['isActive'],
         isGuest = parsedJson['isGuest'],

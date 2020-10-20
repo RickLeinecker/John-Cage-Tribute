@@ -13,9 +13,11 @@ class PreRoomScreen extends StatelessWidget {
   Widget build(context) {
     RoomBloc bloc = RoomProvider.of(context);
 
+    // TODO: Terms and Conditions, don't post copyrighted stuff!!!!
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        centerTitle: true,
         title: Text(
           'Ready to Witness Magic?',
         ),

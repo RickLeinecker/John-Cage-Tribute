@@ -28,6 +28,8 @@ class SessionScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () {
+        print('Popping!');
+
         return showDialog(
           context: context,
           builder: (context) {
@@ -58,12 +60,26 @@ class SessionScreen extends StatelessWidget {
                         ),
                       );
 
-                      // The session has successfully ended, no members remain in
-                      // the room.
+                      // The session has successfully ended, no members remain
+                      // in the room.
                     } else if (snapshot.data.length == 0) {
-                      return GreetingMessage(
-                        greeting: GreetingType.SUCCESS,
-                        message: successMessage(),
+                      if (!isHost) {
+                        return GreetingMessage(
+                          greeting: GreetingType.SUCCESS,
+                          message: successMessage(),
+                        );
+                      }
+
+                      return Column(
+                        children: [
+                          Text(
+                            'Please wait while we save your composition...',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                          CircularProgressIndicator(
+                            backgroundColor: Colors.white,
+                          ),
+                        ],
                       );
                     }
 
@@ -145,7 +161,7 @@ class SessionScreen extends StatelessWidget {
 
       case Role.PERFORMER:
         if (user == GUEST_USER) {
-          return 'Thanks for pitching in, guest! Your audio will live on!';
+          return 'Thanks for pitching in, guest!\nYour audio will live on!';
         }
 
         return 'Awesome job, ${user.username}! You\'ll be credited for this composition!';

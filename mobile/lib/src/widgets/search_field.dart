@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/screen_type.dart';
+import 'package:jct/src/models/user_model.dart';
 
 /// [TextField]-esque widget reserved at the top of the [AppBar].
 ///
@@ -9,9 +10,10 @@ import 'package:jct/src/constants/screen_type.dart';
 /// compositions, given the context of which screen it belongs to (currently
 /// supports [SearchScreen] or [LibraryScreen]).
 class SearchField extends StatelessWidget {
+  final UserModel user;
   final ScreenType screen;
 
-  SearchField({@required this.screen});
+  SearchField({this.user, @required this.screen});
 
   Widget build(BuildContext context) {
     final searchBloc = SearchProvider.of(context);
@@ -35,7 +37,12 @@ class SearchField extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyText1,
             onFieldSubmitted: (text) {
               if (text != '') {
-                searchBloc.search(searchBloc.getFilter(screen), text, screen);
+                searchBloc.search(
+                  user: user,
+                  filter: searchBloc.getFilter(screen),
+                  query: text,
+                  screen: screen,
+                );
               }
               print('Filter $text by ${searchBloc.getFilter(screen)}');
             }),

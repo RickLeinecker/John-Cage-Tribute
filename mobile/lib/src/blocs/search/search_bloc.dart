@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jct/src/models/status_model.dart';
+import 'package:jct/src/models/user_model.dart';
 
 import 'package:rxdart/subjects.dart';
 
@@ -24,8 +25,8 @@ class SearchBloc {
   final libraryText = TextEditingController();
   final _filterLibrary = BehaviorSubject<FilterOption>();
   final _queryLibrary = BehaviorSubject<bool>();
-  final _libraryCompList = BehaviorSubject<List<CompositionModel>>();
   final _deletingComposition = BehaviorSubject<bool>();
+  BehaviorSubject<List<CompositionModel>> _libraryCompList = BehaviorSubject();
 
   Stream<FilterOption> get filterSearch => _filterSearch.stream;
   Stream<List<CompositionModel>> get searchCompList => _searchCompList.stream;
@@ -48,7 +49,11 @@ class SearchBloc {
   /// The search itself is dependent on the current filter the user selected
   /// and the current screen they are making their searches from.
   /// The Library screen restricts its searches to a user's own compositions.
-  void search(FilterOption filter, String query, ScreenType screen) async {
+  void search(
+      {UserModel user,
+      @required FilterOption filter,
+      @required String query,
+      @required ScreenType screen}) async {
     if (screen == ScreenType.SEARCH) {
       _querySearch.add(true);
     } else if (screen == ScreenType.LIBRARY) {
@@ -57,8 +62,8 @@ class SearchBloc {
 
     final List<CompositionModel> compositions = List();
 
-    final compositionList =
-        await compositionRepo.fetchCompositions(filter, query.trim(), screen);
+    final compositionList = await compositionRepo.fetchCompositions(
+        user, filter, query.trim(), screen);
 
     // A server issue disallowed the retrieval of any compositions.
     if (compositionList == null) {
@@ -82,16 +87,24 @@ class SearchBloc {
 
       if (screen == ScreenType.SEARCH) {
         _searchCompList.sink.add(compositions);
+        _libraryCompList.sink.add(null);
         _querySearch.add(false);
       } else if (screen == ScreenType.LIBRARY) {
         _libraryCompList.sink.add(compositions);
+        _searchCompList.sink.add(null);
         _queryLibrary.add(false);
       }
     }
   }
 
+  // Simulates a lack of a search, effectively refreshing the search function
+  // of the screen. Currently supports the library screen.
+  void clearSearchHistory() {
+    _libraryCompList.sink.add(null);
+  }
+
   Future<void> deleteComposition(
-      ScreenType screen, String compositionId, int index) async {
+      ScreenType screen, String userId, String compositionId, int index) async {
     _deletingComposition.sink.add(true);
 
     final StatusModel statusModel =
@@ -105,7 +118,6 @@ class SearchBloc {
     }
 
     switch (screen) {
-      // TODO: Delete when done testing.
       case ScreenType.SEARCH:
         final List<CompositionModel> searchList = _searchCompList.value;
         searchList.removeAt(index);
@@ -144,7 +156,7 @@ class SearchBloc {
       case ScreenType.LIBRARY:
         return _filterLibrary.value;
       default:
-        return FilterOption.NONE;
+        return null;
     }
   }
 

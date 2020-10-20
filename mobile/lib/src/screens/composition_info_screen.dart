@@ -2,24 +2,26 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_tags/flutter_tags.dart';
 
-import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/blocs/room/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/screen_type.dart';
-import 'package:jct/src/constants/tag_data.dart';
+import 'package:jct/src/constants/comp_metadata.dart';
 import 'package:jct/src/models/composition_model.dart';
 import 'package:jct/src/models/status_model.dart';
+import 'package:jct/src/models/user_model.dart';
 
 class CompositionInfoScreen extends StatefulWidget {
+  final UserModel user;
   final ScreenType screen;
   final CompositionModel composition;
 
-  CompositionInfoScreen({@required this.screen, this.composition});
+  CompositionInfoScreen(
+      {@required this.user, @required this.screen, this.composition});
 
   State<StatefulWidget> createState() => _CompositionInfoScreenState();
 }
 
 class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
-  final int maxTitleLen = 64;
   TextEditingController _title;
   TextEditingController _description;
   List<String> _tags;
@@ -28,11 +30,10 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   bool isSubmitting;
   bool isPrivate;
 
-  // TODO: If arrived from library screen, provide comp. info
-  // TODO: Else, provide default values
   void initState() {
     super.initState();
 
+    isPrivate = widget.composition.isPrivate ?? false;
     _title = TextEditingController.fromValue(
         TextEditingValue(text: widget.composition.title ?? ''));
     _description = TextEditingController.fromValue(
@@ -42,12 +43,11 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
     submitError = '';
     maxTagsReached = _tags.length >= MAX_TAGS;
     isSubmitting = false;
-    isPrivate = false;
   }
 
   Widget build(context) {
-    AuthBloc authBloc = AuthProvider.of(context);
     RoomBloc roomBloc = RoomProvider.of(context);
+    SearchBloc searchBloc = SearchProvider.of(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).accentColor,
@@ -55,6 +55,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
         // Users cannot return to an already-ended session via Session screen.
         // They CAN return to their Library if they choose to undo any editing.
         automaticallyImplyLeading: widget.screen != ScreenType.SESSION,
+        centerTitle: true,
         title: Text(
           'About Your Composition',
           style: Theme.of(context).textTheme.bodyText1,
@@ -77,7 +78,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           ),
           TextFormField(
             controller: _title,
-            maxLength: maxTitleLen,
+            maxLength: MAX_TITLE_LENGTH,
             maxLengthEnforced: true,
             decoration: InputDecoration(
               hintText: 'Title',
@@ -121,7 +122,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
               filled: true,
               border: InputBorder.none,
             ),
-            maxLength: 256,
+            maxLength: MAX_DESCRIPTION_LENGTH,
             maxLengthEnforced: true,
             style: Theme.of(context).textTheme.bodyText2,
             minLines: 3,
@@ -154,12 +155,16 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             child: SizedBox(
               width: 150,
               child: RaisedButton(
-                onPressed: () => onSubmit(authBloc, roomBloc),
+                onPressed: () => onSubmit(roomBloc, searchBloc),
                 color: Theme.of(context).primaryColor,
                 child:
                     isSubmitting ? awaitingSubmitWidget() : allowSubmitWidget(),
               ),
             ),
+          ),
+          Divider(
+            color: Colors.transparent,
+            height: 20.0,
           ),
         ],
       ),
@@ -229,13 +234,15 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
     );
   }
 
-  void onSubmit(AuthBloc authBloc, RoomBloc roomBloc) async {
+  void onSubmit(RoomBloc roomBloc, SearchBloc searchBloc) async {
     setState(() => isSubmitting = true);
     StatusModel status = await roomBloc.submitCompositionInfo(
-      _title.text,
-      _description.text,
-      _tags,
-      isPrivate,
+      userId: widget.user.id,
+      compositionId: widget.composition.id,
+      title: _title.text,
+      description: _description.text,
+      tags: _tags,
+      isPrivate: isPrivate,
     );
 
     setState(() => isSubmitting = false);
@@ -250,6 +257,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
 
     switch (widget.screen) {
       case ScreenType.LIBRARY:
+        searchBloc.clearSearchHistory();
         Navigator.pop(context);
         break;
       case ScreenType.SESSION:
@@ -267,4 +275,4 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   }
 }
 
-final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
+GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
