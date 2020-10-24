@@ -19,7 +19,7 @@ class PreRoomScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-          'Ready to Witness Magic?',
+          'Audio Recording Disclaimer',
         ),
       ),
       body: StreamBuilder(
@@ -37,7 +37,7 @@ class PreRoomScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Click the button below to open a socket connection and interact with rooms!',
+                    'Use of this application for recording copyrighted material may result in serious legal consequences. We of John Cage Tribute\'s team are not liable for such behavior. Use this application at your own risk.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
@@ -50,7 +50,7 @@ class PreRoomScreen extends StatelessWidget {
                         loadRoomScreen(context, bloc, snapshot.data),
                     color: Theme.of(context).accentColor,
                     child: Text(
-                      'Will do!',
+                      'I agree',
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ),

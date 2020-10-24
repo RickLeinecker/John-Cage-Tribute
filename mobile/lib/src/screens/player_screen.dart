@@ -34,10 +34,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
   Widget build(context) {
     return WillPopScope(
       onWillPop: () async {
+        player.stop();
         return true;
       },
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
             'Return to Main Screen',
             style: Theme.of(context).textTheme.bodyText1,

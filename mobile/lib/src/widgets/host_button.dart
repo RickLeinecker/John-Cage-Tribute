@@ -12,7 +12,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:pinput/pin_put/pin_put.dart';
 
-// TODO: Why the heck is iOS crashing when it makes a new room? Wtf.
 class HostButton extends StatelessWidget {
   final UserModel user;
 
@@ -110,6 +109,7 @@ class HostButton extends StatelessWidget {
                     return PinPut(
                       fieldsCount: 4,
                       controller: bloc.pinText,
+                      keyboardType: TextInputType.number,
                       onChanged: (pin) {
                         print('(host) onChanged: $pin');
                         bloc.validateNewPin(pin);

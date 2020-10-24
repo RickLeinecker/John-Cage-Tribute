@@ -28,7 +28,7 @@ class SessionScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () {
-        print('Popping!');
+        print('Are you sure you wanna exit?');
 
         return showDialog(
           context: context,

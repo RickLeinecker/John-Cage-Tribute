@@ -82,6 +82,7 @@ class RoomTile extends StatelessWidget {
                       return PinPut(
                         autofocus: true,
                         controller: bloc.pinText,
+                        keyboardType: TextInputType.number,
                         inputDecoration: InputDecoration(
                           fillColor: Colors.white,
                           errorText: snapshot.hasError ? snapshot.error : null,

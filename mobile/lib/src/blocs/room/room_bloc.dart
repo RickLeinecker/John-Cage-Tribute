@@ -107,6 +107,7 @@ class RoomBloc {
         membersMap[key] = MemberModel.fromJson(data[key]);
       }
 
+      // TODO: Change performer count allowed in rooms
       if (data.length >= 1 /*_numPerformers.value*/) {
         _sessionReady.sink.add(true);
       } else {
@@ -159,16 +160,7 @@ class RoomBloc {
     socket.on('playaudio', (audio) {
       if (_isRecording) {
         print('Playing audio of length: ${audio.length}!');
-
-        // List<double> audioData = List();
-        List<int> audioData = List();
-
-        for (dynamic data in audio) {
-          // audioData.add(data.toDouble());
-          audioData.add(data.toInt());
-        }
-
-        _bufferPlayer.playAudio(audioData);
+        _bufferPlayer.playAudio(List<int>.from(audio));
       }
     });
 
@@ -275,14 +267,15 @@ class RoomBloc {
     final performerNames = List<String>();
 
     for (String socketId in _members.value.keys) {
+      print('User: ${_members.value[socketId].username}');
       // Guests, bearing no name, are stripped from credit as performers.
-      if (!socketId.startsWith('(')) {
-        performerNames.add(_members.value[socketId].username);
+      final member = _members.value[socketId];
+      if (member.role == Role.PERFORMER && !member.username.startsWith('(')) {
+        performerNames.add(member.username);
       }
     }
 
     final String compId = await _compositionRepo.generateCompositionID(user.id);
-
     final composition = <String, dynamic>{
       'id': compId,
       'composer': user.username,

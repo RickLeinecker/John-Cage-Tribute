@@ -147,6 +147,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           ),
           Text(
             submitError,
+            textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.red[900],
             ),
