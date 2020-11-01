@@ -160,13 +160,13 @@ class HostButton extends StatelessWidget {
   }
 
   void onCreateRoom(BuildContext context, RoomBloc bloc, UserModel user) async {
-    print('onCreateRoom!');
+    print('Creating room!');
     if (bloc.currentRole == Role.PERFORMER) {
       print('Can confirm you\'re a performer!');
       if (!await Permission.microphone.request().isGranted) {
-        print('Hmmm, you didn\'t grant the mic permission.');
+        print('Hmmm, you didn\'t grant the mic permission last time.');
         if (await Permission.microphone.isPermanentlyDenied) {
-          print('Permanently denied, to boot!? Meanie!');
+          print('Permanently denied? Please accept this time! :(');
           openAppSettings();
 
           if (!await Permission.microphone.isGranted) {
@@ -174,23 +174,25 @@ class HostButton extends StatelessWidget {
             return;
           }
         } else {
-          print('[host_button] (onCreateRoom) Mic permission denied.');
+          print('[host_button] Mic permission denied.');
           return;
         }
       }
     }
 
     bloc.createRoom(user.username);
+
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
           return SessionScreen(
-              user: user,
-              roomId: user.username,
-              isHost: true,
-              role: bloc.currentRole);
+            user: user,
+            roomId: user.username,
+            isHost: true,
+            role: bloc.currentRole,
+          );
         },
       ),
     );

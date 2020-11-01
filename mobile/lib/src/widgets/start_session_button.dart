@@ -15,14 +15,13 @@ class StartSessionButton extends StatefulWidget {
 }
 
 class _StartSessionButtonState extends State<StartSessionButton> {
-  Timer _timer;
-  Stopwatch _watch;
   bool sessionStarted;
   BehaviorSubject<bool> _toggleSession;
 
   Stream<bool> get toggleSession => _toggleSession.stream;
   Function(bool) get changeToggleSession => _toggleSession.sink.add;
 
+  // TODO: bloc.sessionHasBegun can probs replace sessionStarted
   void initState() {
     super.initState();
     sessionStarted = false;
@@ -35,21 +34,27 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     RoomBloc roomBloc = RoomProvider.of(context);
 
     return StreamBuilder(
-      stream: roomBloc.sessionReady,
+      stream: roomBloc.sessionHasBegun,
       builder: (BuildContext context, AsyncSnapshot<bool> allPerfsSnap) {
         return StreamBuilder(
           stream: toggleSession,
           builder: (context, AsyncSnapshot<bool> timeSnap) {
-            return RaisedButton(
-              onPressed: (!timeSnap.hasData || !allPerfsSnap.hasData)
-                  ? null
-                  : () => onToggleSession(authBloc, roomBloc),
-              color: Colors.teal,
-              textColor: Colors.white,
-              child: Text(
-                (!sessionStarted ? 'Go!' : 'Stop!'),
-                textAlign: TextAlign.center,
-              ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                RaisedButton(
+                  onPressed: (!timeSnap.hasData || !allPerfsSnap.hasData)
+                      ? null
+                      : () => onToggleSession(authBloc, roomBloc),
+                  color: Colors.teal,
+                  textColor: Colors.white,
+                  child: Text(
+                    (!sessionStarted ? 'Start!' : 'Stop!'),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             );
           },
         );
@@ -61,15 +66,15 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     if (!sessionStarted) {
       roomBloc.startSession();
 
-      _timer = Timer(Duration(seconds: MAX_COMPOSITION_TIME),
+      roomBloc.timer = Timer(Duration(seconds: MAX_COMPOSITION_TIME),
           () => finishSession(authBloc, roomBloc));
 
-      _watch = Stopwatch()..start();
+      roomBloc.watch = Stopwatch()..start();
 
       // Disables the session button from being clicked until MIN_COMPOSITION
       // time passes.
       _toggleSession.sink.addError(
-          'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min.');
+          'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min${MIN_COMPOSITION_TIME / 60 == 0 ? '' : ' and ${MIN_COMPOSITION_TIME / 60} sec'} long.');
 
       changeToggleSession(await Future.delayed(
           Duration(seconds: MIN_COMPOSITION_TIME), () => true));
@@ -81,10 +86,10 @@ class _StartSessionButtonState extends State<StartSessionButton> {
   }
 
   void finishSession(AuthBloc authBloc, RoomBloc roomBloc) async {
-    final runtimeInSeconds = _watch.elapsed.inSeconds;
+    final runtimeInSeconds = roomBloc.watch.elapsed.inSeconds;
 
-    _watch.stop();
-    _timer.cancel();
+    roomBloc.watch.stop();
+    roomBloc.timer.cancel();
     final compositionId =
         await roomBloc.endSession(authBloc.currentUser, runtimeInSeconds);
 
@@ -93,9 +98,10 @@ class _StartSessionButtonState extends State<StartSessionButton> {
       CupertinoPageRoute(
         builder: (context) {
           return CompositionInfoScreen(
-              user: authBloc.currentUser,
-              screen: ScreenType.SESSION,
-              composition: CompositionModel.emptyModel(id: compositionId));
+            user: authBloc.currentUser,
+            screen: ScreenType.SESSION,
+            composition: CompositionModel.emptyModel(id: compositionId),
+          );
         },
       ),
     );

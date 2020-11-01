@@ -42,8 +42,7 @@ class CompositionTile extends StatelessWidget {
               ),
             );
           },
-          // TODO: Line up the metadata closer to the center if the buttons
-          // TODO: won't show up.
+          // TODO: Line up the metadata closer to the center if the buttons won't show up.
           title: Stack(
             children: [
               Column(

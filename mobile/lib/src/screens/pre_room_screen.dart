@@ -13,7 +13,6 @@ class PreRoomScreen extends StatelessWidget {
   Widget build(context) {
     RoomBloc bloc = RoomProvider.of(context);
 
-    // TODO: Terms and Conditions, don't post copyrighted stuff!!!!
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -50,7 +49,7 @@ class PreRoomScreen extends StatelessWidget {
                         loadRoomScreen(context, bloc, snapshot.data),
                     color: Theme.of(context).accentColor,
                     child: Text(
-                      'I agree',
+                      'I Agree',
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ),

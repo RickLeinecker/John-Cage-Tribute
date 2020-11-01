@@ -276,4 +276,5 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   }
 }
 
-GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
+// TODO: Try with and without final for GlobalKey instantiation
+final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();

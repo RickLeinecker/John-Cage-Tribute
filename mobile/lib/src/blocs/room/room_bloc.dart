@@ -30,16 +30,18 @@ class RoomBloc {
 
   // Session Screen
   final _members = BehaviorSubject<Map<String, MemberModel>>();
-  final _sessionReady = BehaviorSubject<bool>();
+  final _sessionHasBegun = BehaviorSubject<bool>();
+  final _isActive = BehaviorSubject<bool>();
+  final _audioStopped = BehaviorSubject<bool>();
   final _compositionRepo = CompositionApiRepository();
 
   String currentRoom;
   Socket socket;
   Role currentRole;
-  Map<String, dynamic> composition;
   AudioStreamer _audioStreamer;
   AudioBufferPlayer _bufferPlayer;
-  bool _isRecording;
+  Timer timer;
+  Stopwatch watch;
 
   Function(int) get changeNumPerformers => _numPerformers.sink.add;
   Function(Role) get changeRole => _role.sink.add;
@@ -50,7 +52,8 @@ class RoomBloc {
   Stream<int> get numPerformers => _numPerformers.stream;
   Stream<Role> get role => _role.stream;
   Stream<String> get pin => _pin.stream;
-  Stream<bool> get sessionReady => _sessionReady.stream;
+  Stream<bool> get sessionHasBegun => _sessionHasBegun.stream;
+  Stream<bool> get isActive => _isActive.stream;
 
   Stream<bool> get createRoomValid => Rx.combineLatest3(
       numPerformers, role, pin, (slctPerf, slctRole, pin) => true);
@@ -59,7 +62,6 @@ class RoomBloc {
       Rx.combineLatest2(role, pin, (slctRole, pin) => true);
 
   RoomBloc() {
-    _isRecording = false;
     initSocket();
   }
 
@@ -70,8 +72,6 @@ class RoomBloc {
       'autoConnect': false,
     });
 
-    composition = {};
-
     onSocketConnections();
   }
 
@@ -81,6 +81,7 @@ class RoomBloc {
 
   void disconnectSocket() {
     socket.disconnect();
+    _rooms.sink.add(null);
   }
 
   /// Encompasses all socket.on connections required for the
@@ -101,17 +102,33 @@ class RoomBloc {
     // Updates list of members shown on a particular room
     socket.on('updatemembers', (data) {
       print('Received updatemembers from server!');
-      final Map<String, MemberModel> membersMap = Map();
 
-      for (String key in data.keys) {
-        membersMap[key] = MemberModel.fromJson(data[key]);
+      final Map<String, MemberModel> membersMap = Map();
+      final Map<String, dynamic> members = data['members'];
+      final sessionStarted = data['sessionStarted'];
+
+      for (String key in members.keys) {
+        membersMap[key] = MemberModel.fromJson(members[key]);
       }
 
-      // TODO: Change performer count allowed in rooms
-      if (data.length >= 1 /*_numPerformers.value*/) {
-        _sessionReady.sink.add(true);
-      } else {
-        _sessionReady.addError('');
+      // If the session has yet to begin, allow/disallow the host to press the
+      // start session button, given that the room's performer capacity is met.
+      if (_sessionHasBegun.value != true) {
+        if (sessionStarted == true) {
+          print('Joining in the middle of a session.');
+          _sessionHasBegun.sink.add(true);
+          _isActive.sink.add(true);
+
+          if (currentRole == Role.LISTENER) {
+            _bufferPlayer = AudioBufferPlayer();
+            _audioStreamer = null;
+          }
+        } else if (data['members'].length >= 1 /*_numPerformers.value*/) {
+          _sessionHasBegun.sink.add(false);
+          // TODO: Change back minimum performers for session
+        } else {
+          _sessionHasBegun.add(null);
+        }
       }
 
       _members.sink.add(membersMap);
@@ -121,6 +138,7 @@ class RoomBloc {
     // if the two are not equal.
     socket.on('verifypin', (data) {
       print('data: $data');
+
       if (data != null) {
         _pin.add(data);
       } else {
@@ -131,26 +149,10 @@ class RoomBloc {
     // Socket event for when an audio recording session finally begins.
     // We capture the list of performers in our composition at this stage.
     socket.on('audiostart', (data) {
-      _isRecording = true;
-      print('(audiostart socket) _isRecording: $_isRecording');
+      _sessionHasBegun.sink.add(true);
+      _isActive.sink.add(true);
 
-      final performers = List<String>();
-
-      for (String user in _members.value.keys) {
-        final MemberModel member = _members.value[user];
-
-        if (member.role == Role.PERFORMER) {
-          performers.add(member.username);
-        }
-      }
-
-      // Save this here for establishing this composition's list of performer
-      // info (or composition metadata).
-      composition['performers'] = performers;
-
-      if (currentRole == Role.LISTENER) {
-        _bufferPlayer.init();
-      } else {
+      if (currentRole == Role.PERFORMER) {
         _audioStreamer.start(onAudio);
       }
     });
@@ -158,8 +160,7 @@ class RoomBloc {
     // Receives mixed audio data from the server, passing them to the audio
     // player for listening purposes.
     socket.on('playaudio', (audio) {
-      if (_isRecording) {
-        print('Playing audio of length: ${audio.length}!');
+      if (_bufferPlayer != null) {
         _bufferPlayer.playAudio(List<int>.from(audio));
       }
     });
@@ -167,38 +168,71 @@ class RoomBloc {
     // Alerts the objects associated with the Performer/Listener
     // the (Player/Streamer) and updates the Session Screen.
     socket.on('audiostop', (data) {
-      _isRecording = false;
       endAudioBehavior();
 
       // We represent the room as an empty map, containing no members.
       // At this point, non-hosts should be greeted by a success screen!
       _members.sink.add(Map());
 
-      _bufferPlayer = null;
-      _audioStreamer = null;
+      // _bufferPlayer = null;
+      // _audioStreamer = null;
     });
 
     // Ends the session due to a server error or a host leaving.
     socket.on('roomerror', (data) {
       print('Received roomerror.');
       endAudioBehavior();
+      _sessionHasBegun.sink.add(null);
       _members.sink.addError(data);
+      socket.emit('updaterooms', null);
     });
   }
 
   /// Passes audio from a performer's microphone to the server via sockets.
-  // void onAudio(List<double> buffer) {
   void onAudio(List<int> buffer) {
-    if (_isRecording) {
+    if (_sessionHasBegun.value == true) {
       print('Sending audio of length: ${buffer.length}');
       socket.emitWithBinary('sendaudio', [buffer]);
     }
+  }
+
+  /// Handles the user's decision to mute/unmute or deafen/undeafen themselves
+  /// during a session.
+  void muteOrDeafen(String roomId, Role role, bool active) async {
+    socket.emit('muteordeafen', <String, dynamic>{
+      'roomId': roomId,
+      'isActive': active,
+    });
+
+    if (active) {
+      if (role == Role.LISTENER) {
+        _bufferPlayer.deafenAudio();
+      } else if (role == Role.PERFORMER) {
+        await _audioStreamer.stop();
+        // _audioStreamer.muteAudio();
+      } else {
+        print('Role unsupported for setting inactive.');
+      }
+    } else {
+      if (role == Role.LISTENER) {
+        _bufferPlayer.undeafenAudio();
+      } else if (role == Role.PERFORMER) {
+        await _audioStreamer.start(onAudio);
+        // _audioStreamer.unmuteAudio();
+      } else {
+        print('Role unsupported for setting active.');
+      }
+    }
+    _isActive.sink.add(!active);
   }
 
   /// Sets up room metadata and attributes it to a user, passing it to the
   /// server.
   void createRoom(String username) {
     currentRoom = username;
+    _sessionHasBegun.sink.add(null);
+    _isActive.sink.add(null);
+    _members.sink.add(null);
 
     final Map<String, dynamic> room = {
       'id': username,
@@ -231,6 +265,10 @@ class RoomBloc {
   void joinRoom(String roomId, String joiningUser) {
     currentRoom = roomId;
 
+    _isActive.sink.add(null);
+    _members.sink.add(null);
+    _sessionHasBegun.sink.add(null);
+
     final Map<String, dynamic> member = {
       'socket': socket.id,
       'name': joiningUser,
@@ -250,9 +288,8 @@ class RoomBloc {
   /// The button that activates this is only visible to the host.
   ///
   /// A timer begins counting down, as recordings can only last up to a
-  /// maximum of 10 minutes (600 seconds).
+  /// maximum of MAX_COMPOSITION_TIME.
   void startSession() {
-    print('(startSession method) _isRecording: $_isRecording');
     socket.emit('startsession', currentRoom);
   }
 
@@ -268,9 +305,9 @@ class RoomBloc {
 
     for (String socketId in _members.value.keys) {
       print('User: ${_members.value[socketId].username}');
-      // Guests, bearing no name, are stripped from credit as performers.
       final member = _members.value[socketId];
-      if (member.role == Role.PERFORMER && !member.username.startsWith('(')) {
+
+      if (!member.isGuest && member.role == Role.PERFORMER) {
         performerNames.add(member.username);
       }
     }
@@ -294,7 +331,9 @@ class RoomBloc {
 
   /// TODO: Finish comments
   void leaveRoom(String roomId) {
+    _rooms.sink.add(null);
     socket.emit('leaveroom', roomId);
+    updateRooms();
     endAudioBehavior();
   }
 
@@ -304,11 +343,9 @@ class RoomBloc {
 
   void validateExistingPin(String roomId, String enteredPin) {
     if (enteredPin.length == 4) {
-      print('TOTAL: $enteredPin');
       socket.emit('verifypin',
           <String, dynamic>{'roomId': roomId, 'enteredPin': enteredPin});
     } else {
-      print(enteredPin);
       _pin.addError('Pin must be 4 digits.');
     }
   }
@@ -322,11 +359,11 @@ class RoomBloc {
   }
 
   void setupAudioBehavior() {
-    print('currentRole: $currentRole');
-    if (currentRole == Role.LISTENER) {
+    print('Setting up user of role: $currentRole.');
+    if (currentRole == Role.LISTENER && _bufferPlayer == null) {
       _bufferPlayer = AudioBufferPlayer();
       _audioStreamer = null;
-    } else {
+    } else if (_audioStreamer == null) {
       _audioStreamer = AudioStreamer();
       _bufferPlayer = null;
     }
@@ -372,6 +409,9 @@ class RoomBloc {
     _pin.close();
     _numPerformers.close();
     _role.close();
+    _sessionHasBegun.close();
+    _isActive.close();
+    _audioStopped.close();
 
     socket.disconnect();
   }

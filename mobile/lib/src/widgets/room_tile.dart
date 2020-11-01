@@ -89,6 +89,7 @@ class RoomTile extends StatelessWidget {
                         ),
                         fieldsCount: 4,
                         onChanged: (pin) {
+                          print('RoomTile PIN: $pin');
                           bloc.validateExistingPin(room.id, pin);
                         },
                       );
