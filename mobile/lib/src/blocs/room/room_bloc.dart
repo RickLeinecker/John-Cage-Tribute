@@ -70,6 +70,9 @@ class RoomBloc {
     socket = io(baseUrl, <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
+      'upgrade': false,
+      'reconnection': false,
+      'timeout': 1200000,
     });
 
     onSocketConnections();
@@ -173,6 +176,7 @@ class RoomBloc {
       // We represent the room as an empty map, containing no members.
       // At this point, non-hosts should be greeted by a success screen!
       _members.sink.add(Map());
+      _sessionHasBegun.sink.add(false);
 
       // _bufferPlayer = null;
       // _audioStreamer = null;
