@@ -22,8 +22,8 @@ class CompositionTile extends StatelessWidget {
   Widget build(context) {
     final AuthBloc authBloc = AuthProvider.of(context);
     final SearchBloc searchBloc = SearchProvider.of(context);
-    final int compMinutes = composition.time.round() ~/ 60;
-    final int compSeconds = composition.time.round() % 60;
+    final int compMinutes = composition.time ~/ 60;
+    final int compSeconds = composition.time % 60;
     final bool addMinZero = (compMinutes < 10);
     final bool addSecZero = (compSeconds < 10);
 
@@ -164,7 +164,7 @@ class CompositionTile extends StatelessWidget {
                     'There was an issue deleting your composition. Please try again later.\n',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.red[900],
+                      color: Colors.red[700],
                       fontSize: 16.0,
                     ),
                   )
@@ -191,7 +191,7 @@ class CompositionTile extends StatelessWidget {
                   height: 30.0,
                 ),
                 errorMessage,
-                deletingOrButtons(context, bloc, user, snapshot),
+                deleteProgressOrButtons(context, bloc, user, snapshot),
               ],
             );
           },
@@ -200,7 +200,7 @@ class CompositionTile extends StatelessWidget {
     );
   }
 
-  Widget deletingOrButtons(BuildContext context, SearchBloc bloc,
+  Widget deleteProgressOrButtons(BuildContext context, SearchBloc bloc,
       UserModel user, AsyncSnapshot<bool> snapshot) {
     if (snapshot.hasData && snapshot.data == true) {
       return Container(

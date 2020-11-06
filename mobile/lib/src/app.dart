@@ -12,9 +12,8 @@ class App extends StatelessWidget {
       child: AuthProvider(
         child: RoomProvider(
           child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Dashboard(),
             title: 'John Cage Tribute',
+            home: Dashboard(),
             theme: appTheme(),
           ),
         ),
@@ -44,10 +43,6 @@ class App extends StatelessWidget {
         subtitle1: TextStyle(
           fontSize: 16.0,
           color: Colors.blue[100],
-        ),
-        subtitle2: TextStyle(
-          fontSize: 20.0,
-          color: Colors.grey,
         ),
       ),
       unselectedWidgetColor: Colors.blue[300],

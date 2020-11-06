@@ -55,9 +55,9 @@ class SearchBloc {
       @required String query,
       @required ScreenType screen}) async {
     if (screen == ScreenType.SEARCH) {
-      _querySearch.sink.add(true);
+      _querySearch.add(true);
     } else if (screen == ScreenType.LIBRARY) {
-      _queryLibrary.sink.add(true);
+      _queryLibrary.add(true);
     }
 
     final List<CompositionModel> compositions = List();
@@ -70,11 +70,11 @@ class SearchBloc {
       if (screen == ScreenType.SEARCH) {
         _searchCompList.sink
             .addError('There was a server error. Please try again later.');
-        _querySearch.sink.add(false);
+        _querySearch.add(false);
       } else if (screen == ScreenType.LIBRARY) {
         _libraryCompList.sink
             .addError('There was a server error. Please try again later.');
-        _queryLibrary.sink.add(false);
+        _queryLibrary.add(false);
       }
     }
     // Load the compositions into our search stream.
@@ -88,11 +88,11 @@ class SearchBloc {
       if (screen == ScreenType.SEARCH) {
         _searchCompList.sink.add(compositions);
         _libraryCompList.sink.add(null);
-        _querySearch.sink.add(false);
+        _querySearch.add(false);
       } else if (screen == ScreenType.LIBRARY) {
         _libraryCompList.sink.add(compositions);
         _searchCompList.sink.add(null);
-        _queryLibrary.sink.add(false);
+        _queryLibrary.add(false);
       }
     }
   }

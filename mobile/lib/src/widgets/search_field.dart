@@ -36,13 +36,11 @@ class SearchField extends StatelessWidget {
             ),
             style: Theme.of(context).textTheme.bodyText1,
             onFieldSubmitted: (text) {
-              final query = text.trim();
-
-              if (query != '') {
+              if (text != '') {
                 searchBloc.search(
                   user: user,
                   filter: searchBloc.getFilter(screen),
-                  query: query,
+                  query: text,
                   screen: screen,
                 );
               }

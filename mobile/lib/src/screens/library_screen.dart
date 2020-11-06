@@ -78,12 +78,6 @@ class LibraryScreen extends StatelessWidget {
                   stream: bloc.libraryCompList,
                   builder: (context,
                       AsyncSnapshot<List<CompositionModel>> compSnapshot) {
-                    // A search is currently being performed.
-                    if (searchingSnapshot.hasData &&
-                        searchingSnapshot.data == true) {
-                      return loadingCircle(context);
-                    }
-
                     // No searches have been performed yet.
                     if (!searchingSnapshot.hasData ||
                         (compSnapshot.data == null && !compSnapshot.hasError)) {
@@ -91,6 +85,11 @@ class LibraryScreen extends StatelessWidget {
                         greeting: GreetingType.LIBRARY,
                         message: 'Your glorious collection will show up here!',
                       );
+                    }
+
+                    // A search is currently being performed.
+                    if (searchingSnapshot.data == true) {
+                      return loadingCircle(context);
                     }
 
                     // A search has been completed.

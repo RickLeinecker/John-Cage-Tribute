@@ -86,11 +86,12 @@ class _StartSessionButtonState extends State<StartSessionButton> {
   }
 
   void finishSession(AuthBloc authBloc, RoomBloc roomBloc) async {
-    _toggleSession.sink.add(null);
+    final runtimeInSeconds = roomBloc.watch.elapsed.inSeconds;
 
     roomBloc.watch.stop();
     roomBloc.timer.cancel();
-    final compositionId = await roomBloc.endSession(authBloc.currentUser);
+    final compositionId =
+        await roomBloc.endSession(authBloc.currentUser, runtimeInSeconds);
 
     Navigator.push(
       context,

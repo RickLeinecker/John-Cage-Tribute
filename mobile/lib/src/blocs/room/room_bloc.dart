@@ -4,10 +4,10 @@ import 'package:audio_buffer_player/audio_buffer_player.dart';
 
 import 'package:audio_streamer/audio_streamer.dart';
 
+import 'package:flutter/material.dart';
+
 import 'package:jct/src/constants/base_url.dart';
-import 'package:jct/src/constants/pin_metadata.dart';
 import 'package:jct/src/constants/role.dart';
-import 'package:jct/src/constants/role_limits.dart';
 import 'package:jct/src/models/member_model.dart';
 import 'package:jct/src/models/room_model.dart';
 import 'package:jct/src/models/status_model.dart';
@@ -20,9 +20,13 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class RoomBloc {
   // Room Screen
+  final pinText = TextEditingController();
   final _rooms = BehaviorSubject<Map<String, RoomModel>>();
-  final _pinValid = BehaviorSubject<bool>();
+  final _pin = BehaviorSubject<String>();
+  final _numPerformers = BehaviorSubject<int>();
   final _role = BehaviorSubject<Role>();
+  final _createRoomValid = BehaviorSubject<bool>();
+  final _joinRoomValid = BehaviorSubject<bool>();
 
   // Session Screen
   final _members = BehaviorSubject<Map<String, MemberModel>>();
@@ -39,17 +43,25 @@ class RoomBloc {
   Timer timer;
   Stopwatch watch;
 
+  Function(int) get changeNumPerformers => _numPerformers.sink.add;
   Function(Role) get changeRole => _role.sink.add;
+  Function(String) get changePinValid => _pin.sink.add;
 
   Stream<Map<String, RoomModel>> get rooms => _rooms.stream;
   Stream<Map<String, MemberModel>> get members => _members.stream;
+  Stream<int> get numPerformers => _numPerformers.stream;
   Stream<Role> get role => _role.stream;
-  Stream<bool> get pinValid => _pinValid.stream;
+  Stream<String> get pin => _pin.stream;
   Stream<bool> get sessionHasBegun => _sessionHasBegun.stream;
   Stream<bool> get isActive => _isActive.stream;
 
+  Stream<bool> get createRoomValid => Rx.combineLatest3(
+      numPerformers, role, pin, (slctPerf, slctRole, pin) => true);
+
+  Stream<bool> get joinRoomValid =>
+      Rx.combineLatest2(role, pin, (slctRole, pin) => true);
+
   RoomBloc() {
-    _role.sink.add(Role.LISTENER);
     initSocket();
   }
 
@@ -114,10 +126,9 @@ class RoomBloc {
             _bufferPlayer = AudioBufferPlayer();
             _audioStreamer = null;
           }
-        }
-        // TODO: Change back minimum performers for session
-        else if (data['members'].length >= MIN_PERFORMERS) {
+        } else if (data['members'].length >= 1 /*_numPerformers.value*/) {
           _sessionHasBegun.sink.add(false);
+          // TODO: Change back minimum performers for session
         } else {
           _sessionHasBegun.add(null);
         }
@@ -126,16 +137,16 @@ class RoomBloc {
       _members.sink.add(membersMap);
     });
 
-    // Socket message that denotes success for an entered PIN that was
-    // consistent with an existing room's PIN.
-    socket.on('pinsuccess', (data) {
-      _pinValid.sink.add(true);
-    });
+    // Compares the entered PIN to the room's PIN on the server, returning null
+    // if the two are not equal.
+    socket.on('verifypin', (data) {
+      print('data: $data');
 
-    // Failure socket message that occurred for a PIN entry.
-    // TODO: Test this locally, get server code from interwebs
-    socket.on('pinerror', (err) {
-      _pinValid.addError(err);
+      if (data != null) {
+        _pin.add(data);
+      } else {
+        _pin.addError(data);
+      }
     });
 
     // Socket event for when an audio recording session finally begins.
@@ -181,9 +192,47 @@ class RoomBloc {
     });
   }
 
+  /// Passes audio from a performer's microphone to the server via sockets.
+  void onAudio(List<int> buffer) {
+    if (_sessionHasBegun.value == true) {
+      print('Sending audio of length: ${buffer.length}');
+      socket.emitWithBinary('sendaudio', [buffer]);
+    }
+  }
+
+  /// Handles the user's decision to mute/unmute or deafen/undeafen themselves
+  /// during a session.
+  void muteOrDeafen(String roomId, Role role, bool active) async {
+    socket.emit('muteordeafen', <String, dynamic>{
+      'roomId': roomId,
+      'isActive': active,
+    });
+
+    if (active) {
+      if (role == Role.LISTENER) {
+        _bufferPlayer.deafenAudio();
+      } else if (role == Role.PERFORMER) {
+        await _audioStreamer.stop();
+        // _audioStreamer.muteAudio();
+      } else {
+        print('Role unsupported for setting inactive.');
+      }
+    } else {
+      if (role == Role.LISTENER) {
+        _bufferPlayer.undeafenAudio();
+      } else if (role == Role.PERFORMER) {
+        await _audioStreamer.start(onAudio);
+        // _audioStreamer.unmuteAudio();
+      } else {
+        print('Role unsupported for setting active.');
+      }
+    }
+    _isActive.sink.add(!active);
+  }
+
   /// Sets up room metadata and attributes it to a user, passing it to the
   /// server.
-  void createRoom(String username, bool hasPin, String enteredPin) {
+  void createRoom(String username) {
     currentRoom = username;
     _sessionHasBegun.sink.add(null);
     _isActive.sink.add(null);
@@ -192,12 +241,11 @@ class RoomBloc {
     final Map<String, dynamic> room = {
       'id': username,
       'host': username,
-      'maxPerformers': MAX_PERFORMERS,
+      'maxPerformers': _numPerformers.value,
       'maxListeners': 3,
       'currentPerformers': _role.value == Role.PERFORMER ? 1 : 0,
       'currentListeners': _role.value == Role.LISTENER ? 1 : 0,
-      'hasPin': hasPin,
-      'pin': hasPin ? enteredPin : null,
+      'pin': _pin.value,
     };
 
     final Map<String, dynamic> member = {
@@ -214,14 +262,6 @@ class RoomBloc {
     });
 
     setupAudioBehavior();
-  }
-
-  /// Verifies the user's entered PIN by passing it to the server for comparing.
-  void verifyPin(String roomId, String enteredPin) {
-    socket.emit('verifypin', <String, dynamic>{
-      'roomId': roomId,
-      'enteredPin': enteredPin,
-    });
   }
 
   /// Sends a user's metadata to the server and alerting the server about an
@@ -257,59 +297,14 @@ class RoomBloc {
     socket.emit('startsession', currentRoom);
   }
 
-  /// Passes audio from a performer's microphone to the server via sockets.
-  void onAudio(List<int> buffer) {
-    if (_sessionHasBegun.value == true) {
-      socket.emitWithBinary('sendaudio', [buffer]);
-    }
-  }
-
-  /// Handles the user's decision to mute/unmute or deafen/undeafen themselves
-  /// during a session.
-  void muteOrDeafen(String roomId, Role role, bool active) async {
-    socket.emit('muteordeafen', <String, dynamic>{
-      'roomId': roomId,
-      'isActive': active,
-    });
-
-    if (active) {
-      if (role == Role.LISTENER) {
-        _bufferPlayer.deafenAudio();
-      } else if (role == Role.PERFORMER) {
-        await _audioStreamer.stop();
-        // _audioStreamer.muteAudio();
-      } else {
-        print('Role unsupported for setting inactive.');
-      }
-    } else {
-      if (role == Role.LISTENER) {
-        _bufferPlayer.undeafenAudio();
-      } else if (role == Role.PERFORMER) {
-        await _audioStreamer.start(onAudio);
-        // _audioStreamer.unmuteAudio();
-      } else {
-        print('Role unsupported for setting active.');
-      }
-    }
-    _isActive.sink.add(!active);
-  }
-
-  /// Exits the guest/user from their current room, canceling audio behavior.
-  /// Certain streams are reset in order to refresh user input.
-  void leaveRoom(String roomId) {
-    resetRoomAndMemberStreams();
-
-    socket.emit('leaveroom', roomId);
-    updateRooms();
-    endAudioBehavior();
-  }
-
   /// Ends the session between the members of the room.
   /// Any immediately important composition metadata is passed via an API call.
   /// (Examples: Composer name, composition runtime in seconds)
   ///
   /// The button that activates this is only visible to the host.
-  Future<String> endSession(UserModel user) async {
+  Future<String> endSession(UserModel user, int runtimeInSeconds) async {
+    print('Time elapsed: $runtimeInSeconds seconds.');
+
     final performerNames = List<String>();
 
     for (String socketId in _members.value.keys) {
@@ -325,6 +320,7 @@ class RoomBloc {
     final composition = <String, dynamic>{
       'id': compId,
       'composer': user.username,
+      'time': runtimeInSeconds,
       'performers': performerNames,
     };
 
@@ -337,14 +333,33 @@ class RoomBloc {
     return compId;
   }
 
-  /// TODO: Finish comments in room_bloc.dart
-  void resetRoomAndMemberStreams() {
+  /// TODO: Finish comments
+  void leaveRoom(String roomId) {
     _rooms.sink.add(null);
-    _pinValid.sink.add(null);
+    socket.emit('leaveroom', roomId);
+    updateRooms();
+    endAudioBehavior();
   }
 
   void updateRooms() {
     socket.emit('updaterooms', null);
+  }
+
+  void validateExistingPin(String roomId, String enteredPin) {
+    if (enteredPin.length == 4) {
+      socket.emit('verifypin',
+          <String, dynamic>{'roomId': roomId, 'enteredPin': enteredPin});
+    } else {
+      _pin.addError('Pin must be 4 digits.');
+    }
+  }
+
+  void validateNewPin(String enteredPin) {
+    if (enteredPin.length == 4) {
+      _pin.sink.add(enteredPin);
+    } else {
+      _pin.addError('Pin must be 4 digits.');
+    }
   }
 
   void setupAudioBehavior() {
@@ -390,9 +405,13 @@ class RoomBloc {
   }
 
   void dispose() {
+    pinText.dispose();
     _rooms.close();
+    _createRoomValid.close();
+    _joinRoomValid.close();
     _members.close();
-    _pinValid.close();
+    _pin.close();
+    _numPerformers.close();
     _role.close();
     _sessionHasBegun.close();
     _isActive.close();

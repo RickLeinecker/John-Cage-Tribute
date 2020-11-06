@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/room/bloc.dart';
-import 'package:jct/src/constants/pin_metadata.dart';
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/constants/role_limits.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/session_screen.dart';
 import 'package:jct/src/widgets/role_buttons.dart';
 
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+
+import 'package:pinput/pin_put/pin_put.dart';
 
 class HostButton extends StatelessWidget {
   final UserModel user;
@@ -31,100 +32,134 @@ class HostButton extends StatelessWidget {
     ));
   }
 
-  void onHostButtonPressed(BuildContext context, RoomBloc bloc) async {
-    await showDialog(
+  void onHostButtonPressed(BuildContext context, RoomBloc bloc) {
+    showDialog(
       context: context,
       builder: (context) {
-        String enteredPin = '';
-        bool pinEnabled = false;
-
-        return AlertDialog(
+        return SimpleDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
           backgroundColor: Colors.teal,
-          title: Text('Some Questions...', textAlign: TextAlign.center),
-          titleTextStyle: Theme.of(context).textTheme.headline6,
-          contentPadding: EdgeInsets.zero,
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setState) {
-              return Container(
-                decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
+          contentPadding:
+              EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          children: [
+            Column(
+              children: [
+                Divider(
+                  color: Colors.transparent,
+                  height: 20.0,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'What role will you play?',
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
-                    ),
-                    RoleButtons(),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 20.0,
-                    ),
-                    SwitchListTile(
-                      title: Text(
-                        'Protect it with a PIN?',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText1,
+                Text(
+                  'Before you begin...',
+                  style: Theme.of(context).textTheme.headline6,
+                  textAlign: TextAlign.center,
+                ),
+                Divider(
+                  color: Colors.transparent,
+                  height: 35.0,
+                ),
+                Text(
+                  'How many performers \nwould you like?',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+                Divider(
+                  color: Colors.transparent,
+                  height: 5.0,
+                ),
+                StreamBuilder(
+                  stream: bloc.numPerformers,
+                  builder: (context, AsyncSnapshot<int> snapshot) {
+                    return DropdownButtonFormField(
+                      value: !snapshot.hasData ? null : snapshot.data,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        filled: true,
+                        fillColor: Colors.teal[800],
                       ),
-                      secondary: pinEnabled
-                          ? Icon(Icons.lock)
-                          : Icon(Icons.lock_open_sharp),
-                      value: pinEnabled,
-                      onChanged: (value) => setState(() => pinEnabled = value),
-                    ),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 20.0,
-                    ),
-                    Text(
-                      'Enter a $PIN_LENGTH-digit PIN for this room.',
-                      style: pinEnabled
-                          ? Theme.of(context).textTheme.bodyText1
-                          : Theme.of(context).textTheme.subtitle2,
-                      textAlign: TextAlign.center,
-                    ),
-                    PinCodeTextField(
-                      appContext: context,
-                      enablePinAutofill: false,
-                      backgroundColor: Colors.teal,
-                      cursorColor: Colors.teal[600],
-                      enabled: pinEnabled,
+                      dropdownColor: Colors.teal[800],
+                      onChanged: (int selection) =>
+                          bloc.changeNumPerformers(selection),
+                      items: getPerformerItems(context),
+                    );
+                  },
+                ),
+                Divider(
+                  color: Colors.transparent,
+                  height: 35.0,
+                ),
+                Text(
+                  'What role will you play?',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+                RoleButtons(),
+                Divider(
+                  color: Colors.transparent,
+                  height: 30.0,
+                ),
+                Text(
+                  'Enter a 4-digit PIN for your room.',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+                StreamBuilder(
+                  stream: bloc.pin,
+                  builder: (context, AsyncSnapshot<String> snapshot) {
+                    return PinPut(
+                      fieldsCount: 4,
+                      controller: bloc.pinText,
                       keyboardType: TextInputType.number,
-                      length: PIN_LENGTH,
-                      onChanged: (pin) => setState(() => enteredPin = pin),
-                    ),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 10.0,
-                    ),
-                    Center(
-                      child: RaisedButton(
+                      onChanged: (pin) {
+                        print('(host) onChanged: $pin');
+                        bloc.validateNewPin(pin);
+                      },
+                      inputDecoration: InputDecoration(
+                        fillColor: Colors.white,
+                        errorText: snapshot.hasError ? snapshot.error : null,
+                      ),
+                    );
+                  },
+                ),
+                Divider(
+                  color: Colors.transparent,
+                  height: 10.0,
+                ),
+                Center(
+                  child: StreamBuilder(
+                    stream: bloc.createRoomValid,
+                    builder: (context, AsyncSnapshot<bool> snapshot) {
+                      return RaisedButton(
                         color: Colors.teal[600],
                         highlightColor: Colors.white,
                         child: Text('Create Room!',
                             style: Theme.of(context).textTheme.bodyText1),
-                        onPressed:
-                            !pinEnabled || (enteredPin.length == PIN_LENGTH)
-                                ? () => onCreateRoom(
-                                    context, bloc, user, enteredPin, pinEnabled)
-                                : null,
-                      ),
-                    ),
-                  ],
+                        onPressed: snapshot.hasData
+                            ? () => onCreateRoom(context, bloc, user)
+                            : null,
+                      );
+                    },
+                  ),
                 ),
-              );
-            },
-          ),
+              ],
+            ),
+          ],
         );
       },
     );
   }
 
-  void onCreateRoom(BuildContext context, RoomBloc bloc, UserModel user,
-      String enteredPin, bool pinEnabled) async {
+  List<Widget> getPerformerItems(BuildContext context) {
+    List<DropdownMenuItem<int>> items = List();
+
+    for (int i = MIN_PERFORMERS; i <= MAX_PERFORMERS; i++) {
+      items.add(performerItem(context, i));
+    }
+
+    return items;
+  }
+
+  void onCreateRoom(BuildContext context, RoomBloc bloc, UserModel user) async {
     print('Creating room!');
     if (bloc.currentRole == Role.PERFORMER) {
       print('Can confirm you\'re a performer!');
@@ -145,7 +180,7 @@ class HostButton extends StatelessWidget {
       }
     }
 
-    bloc.createRoom(user.username, pinEnabled, enteredPin);
+    bloc.createRoom(user.username);
 
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
@@ -159,6 +194,16 @@ class HostButton extends StatelessWidget {
             role: bloc.currentRole,
           );
         },
+      ),
+    );
+  }
+
+  Widget performerItem(BuildContext context, int value) {
+    return DropdownMenuItem(
+      value: value,
+      child: Text(
+        '$value Performers',
+        style: Theme.of(context).textTheme.bodyText1,
       ),
     );
   }

@@ -161,10 +161,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
         }
 
         final int currentSeconds = snapshot.data.inSeconds;
+        final int compSeconds = widget.composition.time;
 
         return Slider(
           min: 0.0,
-          max: widget.composition.time,
+          max: compSeconds.toDouble(),
           value: currentSeconds.toDouble(),
           onChanged: (double value) {
             setState(() {
@@ -217,7 +218,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 player: player,
                 builder: (context, duration) {
                   final curSecs = duration.inSeconds;
-                  final cmpSecs = widget.composition.time.floor();
+                  final cmpSecs = widget.composition.time;
 
                   bool addMinZero = (curSecs ~/ 60) < 10;
                   bool addSecZero = (curSecs % 60) < 10;

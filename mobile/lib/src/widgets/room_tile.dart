@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jct/src/constants/pin_metadata.dart';
 
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/blocs/room/bloc.dart';
@@ -8,8 +7,8 @@ import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/session_screen.dart';
 import 'package:jct/src/widgets/role_buttons.dart';
 
+import 'package:pinput/pin_put/pin_put.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 
 class RoomTile extends StatelessWidget {
   final UserModel user;
@@ -70,6 +69,33 @@ class RoomTile extends StatelessWidget {
                 ),
                 Divider(
                   color: Colors.transparent,
+                  height: 30.0,
+                ),
+                Text(
+                  'Please enter ${room.host}\'s PIN code:',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+                StreamBuilder(
+                    stream: bloc.pin,
+                    builder: (context, AsyncSnapshot<String> snapshot) {
+                      return PinPut(
+                        autofocus: true,
+                        controller: bloc.pinText,
+                        keyboardType: TextInputType.number,
+                        inputDecoration: InputDecoration(
+                          fillColor: Colors.white,
+                          errorText: snapshot.hasError ? snapshot.error : null,
+                        ),
+                        fieldsCount: 4,
+                        onChanged: (pin) {
+                          print('RoomTile PIN: $pin');
+                          bloc.validateExistingPin(room.id, pin);
+                        },
+                      );
+                    }),
+                Divider(
+                  color: Colors.transparent,
                   height: 35.0,
                 ),
                 Text(
@@ -79,39 +105,17 @@ class RoomTile extends StatelessWidget {
                 ),
                 RoleButtons(),
                 StreamBuilder(
-                  stream: bloc.pinValid,
+                  stream: bloc.joinRoomValid,
                   builder: (context, AsyncSnapshot<bool> snapshot) {
-                    return Column(
-                      children: [
-                        pinPrompt(context, bloc),
-                        Visibility(
-                          visible: snapshot.hasError ?? '',
-                          child: Divider(
-                            color: Colors.transparent,
-                            height: 10.0,
-                          ),
-                        ),
-                        Visibility(
-                          visible: snapshot.hasError,
-                          child: Text(
-                            snapshot.error ?? '',
-                            style: TextStyle(
-                              color: Colors.red[900],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        RaisedButton(
-                          color: Colors.teal[600],
-                          child: Text(
-                            'Join',
-                            style: Theme.of(context).textTheme.bodyText1,
-                          ),
-                          onPressed: !room.hasPin || snapshot.hasData
-                              ? () => onJoinRoom(context, bloc)
-                              : null,
-                        ),
-                      ],
+                    return RaisedButton(
+                      color: Colors.teal[600],
+                      child: Text(
+                        'Join',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      onPressed: snapshot.hasData
+                          ? () => onJoinRoom(context, bloc)
+                          : null,
                     );
                   },
                 ),
@@ -120,34 +124,6 @@ class RoomTile extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget pinPrompt(BuildContext context, RoomBloc bloc) {
-    return Visibility(
-      visible: room.hasPin,
-      child: Column(
-        children: [
-          Divider(
-            color: Colors.transparent,
-            height: 30.0,
-          ),
-          Text(
-            'Please enter ${room.host}\'s PIN code:',
-            style: Theme.of(context).textTheme.bodyText1,
-            textAlign: TextAlign.center,
-          ),
-          PinCodeTextField(
-            appContext: context,
-            enablePinAutofill: false,
-            backgroundColor: Colors.teal,
-            keyboardType: TextInputType.number,
-            length: PIN_LENGTH,
-            onChanged: null,
-            onCompleted: (pin) => bloc.verifyPin(room.id, pin),
-          ),
-        ],
-      ),
     );
   }
 
@@ -172,7 +148,6 @@ class RoomTile extends StatelessWidget {
     }
 
     bloc.joinRoom(room.id, user.username);
-
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
       context,
