@@ -9,24 +9,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc6f1dc0-ad42-4c76-9440-071ae4988754" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/jct_android.iml" beforeDir="false" afterPath="$PROJECT_DIR$/android/jct_android.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/.idea/libraries/Dart_SDK.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/.idea/runConfigurations/example_lib_main_dart.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/.metadata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/src/main/kotlin/com/jct/audio_buffer_player/AudioBufferPlayerPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/android/src/main/kotlin/com/jct/audio_buffer_player/AudioBufferPlayerPlugin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/android/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/android/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/example/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/ios/Assets/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/ios/Classes/SwiftAudioBufferPlayerPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/ios/Classes/SwiftAudioBufferPlayerPlugin.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/lib/audio_buffer_player.dart" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/lib/audio_buffer_player.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_buffer_player/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/.dart_tool/package_config.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/android/src/main/kotlin/plugins/cachet/audio_streamer/AudioStreamerPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/android/src/main/kotlin/plugins/cachet/audio_streamer/AudioStreamerPlugin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/ios/Classes/SwiftAudioStreamerPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/ios/Classes/SwiftAudioStreamerPlugin.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/lib/audio_streamer.dart" beforeDir="false" afterPath="$PROJECT_DIR$/ios/.symlinks/plugins/audio_streamer/lib/audio_streamer.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Flutter/.last_build_id" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/.last_build_id" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jct.iml" beforeDir="false" afterPath="$PROJECT_DIR$/jct.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/blocs/search/search_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/search/search_bloc.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/constants/base_url.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/base_url.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/composition_info_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/composition_info_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/constants/role_limits.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/role_limits.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/composition_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/composition_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/room_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/room_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/library_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/library_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/player_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/player_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/search_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/search_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/widgets/composition_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/composition_tile.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/widgets/host_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/host_button.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/widgets/room_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/room_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/widgets/search_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/search_field.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/widgets/start_session_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/start_session_button.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />

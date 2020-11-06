@@ -7,7 +7,7 @@ class CompositionModel {
   final String id;
   final String title;
   final String composer;
-  final int time;
+  final double time;
   final String filename;
   final List<String> performers;
   final List<String> tags;
@@ -36,4 +36,15 @@ class CompositionModel {
         tags = List<String>.from(parsedJson['tags']) ?? List(),
         description = parsedJson['description'] ?? '',
         isPrivate = parsedJson['private'];
+
+  void printComposition() {
+    print('===== COMPOSITION =====');
+    print('Title: $title');
+    print('Composed by: $composer');
+    print('Duration: $time');
+    print('Performed by: $performers');
+    print('Tags: $tags');
+    print('Description: $description');
+    print('');
+  }
 }

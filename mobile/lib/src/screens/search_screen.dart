@@ -58,18 +58,19 @@ class SearchScreen extends StatelessWidget {
                   stream: bloc.searchCompList,
                   builder: (context,
                       AsyncSnapshot<List<CompositionModel>> compSnapshot) {
+                    // A search is currently being performed.
+                    if (searchingSnapshot.hasData &&
+                        searchingSnapshot.data == true) {
+                      return loadingCircle(context);
+                    }
+
                     // No searches have been performed yet.
-                    if (!searchingSnapshot.hasData ||
+                    else if (!searchingSnapshot.hasData ||
                         (compSnapshot.data == null && !compSnapshot.hasError)) {
                       return GreetingMessage(
                         greeting: GreetingType.SEARCH,
                         message: 'Musical masterpieces will display here!',
                       );
-                    }
-
-                    // A search is currently being performed.
-                    else if (searchingSnapshot.data == true) {
-                      return loadingCircle(context);
                     }
 
                     // A search has been completed.
@@ -122,6 +123,8 @@ class SearchScreen extends StatelessWidget {
         crossAxisCount: 2,
       ),
       itemBuilder: (context, index) {
+        snapshot.data.elementAt(index).printComposition(); // TODO: Remove
+
         return CompositionTile(
           composition: snapshot.data.elementAt(index),
           screen: ScreenType.SEARCH,
