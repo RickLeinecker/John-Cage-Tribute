@@ -60,5 +60,6 @@ build/
 # End of https://www.toptal.com/developers/gitignore/api/flutter
 
 ### Custom Files ###
-/mobile/server
+/server/node_modules
+/server/client/node_modules
 **/.DS_Store
