@@ -124,7 +124,7 @@ class SessionScreen extends StatelessWidget {
                           backgroundColor: Colors.white,
                         ),
                       );
-                    } else if (snapshot.data.length == 0) {
+                    } else if (snapshot.data.isEmpty) {
                       return Center(
                         child: Text(
                           'Session complete! :)',
@@ -159,7 +159,7 @@ class SessionScreen extends StatelessWidget {
 
                           // The session has successfully ended.
                           // No members should remain in the room.
-                        } else if (snapshot.data.length == 0) {
+                        } else if (snapshot.data.isEmpty) {
                           if (!isHost) {
                             return GreetingMessage(
                               greeting: GreetingType.SUCCESS,

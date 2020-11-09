@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 
 import 'package:flutter/material.dart';
 
+import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/base_url.dart';
 import 'package:jct/src/models/composition_model.dart';
 
@@ -32,6 +33,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Widget build(context) {
+    SearchBloc bloc = SearchProvider.of(context);
+
     return WillPopScope(
       onWillPop: () async {
         player.stop();
@@ -46,7 +49,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
           ),
         ),
         backgroundColor: Theme.of(context).primaryColor,
-        body: playerBody(),
+        body: playerBody(bloc),
       ),
     );
   }
@@ -69,8 +72,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
     }
   }
 
-  Widget playerBody() {
+  Widget playerBody(SearchBloc bloc) {
     if (initFailed) {
+      bloc.clearSearchResults();
+
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -161,11 +166,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
         }
 
         final int currentSeconds = snapshot.data.inSeconds;
-        final int compSeconds = widget.composition.time;
 
         return Slider(
           min: 0.0,
-          max: compSeconds.toDouble(),
+          max: widget.composition.time,
           value: currentSeconds.toDouble(),
           onChanged: (double value) {
             setState(() {
@@ -218,7 +222,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 player: player,
                 builder: (context, duration) {
                   final curSecs = duration.inSeconds;
-                  final cmpSecs = widget.composition.time;
+                  final cmpSecs = widget.composition.time.floor();
 
                   bool addMinZero = (curSecs ~/ 60) < 10;
                   bool addSecZero = (curSecs % 60) < 10;
@@ -243,7 +247,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Widget performersOrGuests() {
-    if (widget.composition.performers.length == 0) {
+    if (widget.composition.performers.isEmpty) {
       return Text(
         '(A bundle of guests! 😄)',
         textAlign: TextAlign.center,

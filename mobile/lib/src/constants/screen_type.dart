@@ -1,1 +1,1 @@
-enum ScreenType { SEARCH, LIBRARY, SESSION }
+enum ScreenType { LOGIN, SIGNUP, SEARCH, LIBRARY, SESSION }

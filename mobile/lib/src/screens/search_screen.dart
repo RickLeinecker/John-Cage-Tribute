@@ -23,6 +23,7 @@ class SearchScreen extends StatelessWidget {
         child: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).accentColor,
+          centerTitle: true,
           title: SearchField(screen: ScreenType.SEARCH),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0.0),
@@ -31,7 +32,7 @@ class SearchScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Filter By: ',
+                  'Filter by: ',
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 SizedBox(
@@ -58,18 +59,19 @@ class SearchScreen extends StatelessWidget {
                   stream: bloc.searchCompList,
                   builder: (context,
                       AsyncSnapshot<List<CompositionModel>> compSnapshot) {
+                    // A search is currently being performed.
+                    if (searchingSnapshot.hasData &&
+                        searchingSnapshot.data == true) {
+                      return loadingCircle(context);
+                    }
+
                     // No searches have been performed yet.
-                    if (!searchingSnapshot.hasData ||
+                    else if (!searchingSnapshot.hasData ||
                         (compSnapshot.data == null && !compSnapshot.hasError)) {
                       return GreetingMessage(
                         greeting: GreetingType.SEARCH,
                         message: 'Musical masterpieces will display here!',
                       );
-                    }
-
-                    // A search is currently being performed.
-                    else if (searchingSnapshot.data == true) {
-                      return loadingCircle(context);
                     }
 
                     // A search has been completed.
@@ -80,7 +82,7 @@ class SearchScreen extends StatelessWidget {
                           message: 'Awww, shucks!\n${compSnapshot.error}',
                         );
                       } else {
-                        if (compSnapshot.data.length == 0) {
+                        if (compSnapshot.data.isEmpty) {
                           return GreetingMessage(
                             greeting: GreetingType.NORESULTS,
                             message:

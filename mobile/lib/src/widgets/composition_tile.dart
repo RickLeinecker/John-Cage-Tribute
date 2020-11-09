@@ -22,27 +22,35 @@ class CompositionTile extends StatelessWidget {
   Widget build(context) {
     final AuthBloc authBloc = AuthProvider.of(context);
     final SearchBloc searchBloc = SearchProvider.of(context);
-    final int compMinutes = composition.time ~/ 60;
-    final int compSeconds = composition.time % 60;
+    final int compMinutes =
+        !composition.isProcessing() ? 0 : composition.time ~/ 60;
+    final int compSeconds =
+        !composition.isProcessing() ? 0 : (composition.time % 60).floor();
+
     final bool addMinZero = (compMinutes < 10);
     final bool addSecZero = (compSeconds < 10);
 
+    // TODO: Revert isProcessing negation after testing is complete.
     return Card(
       child: Container(
-        color: Theme.of(context).accentColor,
+        color: !composition.isProcessing()
+            ? Colors.grey
+            : Theme.of(context).accentColor,
         child: ListTile(
-          onTap: () {
-            print('${composition.title} was tapped! :)');
+          onTap: !composition.isProcessing()
+              ? null
+              : () {
+                  print('${composition.title} was tapped! :)');
 
-            Navigator.of(context, rootNavigator: true).push(
-              CupertinoPageRoute(
-                builder: (context) {
-                  return PlayerScreen(composition: composition);
+                  Navigator.of(context, rootNavigator: true).push(
+                    CupertinoPageRoute(
+                      builder: (context) {
+                        return PlayerScreen(composition: composition);
+                      },
+                    ),
+                  );
                 },
-              ),
-            );
-          },
-          // TODO: Line up the metadata closer to the center if the buttons won't show up.
+          // TODO: Line up the metadata closer to the center if the buttons don't show up.
           title: Stack(
             children: [
               Column(
@@ -59,23 +67,40 @@ class CompositionTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
-                  Text(
-                    'Composer: ${composition.composer}',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
+                  Visibility(
+                    visible: !composition.isProcessing(),
+                    child: Text(
+                      'This composition\'s audio is still processing. Please try again later!',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  Text(
-                    'Length: ${addMinZero ? '0' : ''}$compMinutes:${addSecZero ? '0' : ''}$compSeconds',
-                    textAlign: TextAlign.center,
+                  Visibility(
+                    visible: composition.isProcessing(),
+                    child: Text(
+                      'Composer: ${composition.composer}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Visibility(
+                    visible: composition.isProcessing(),
+                    child: Text(
+                      'Length: ${addMinZero ? '0' : ''}$compMinutes:${addSecZero ? '0' : ''}$compSeconds',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
-              Positioned(
-                bottom: 10.0,
-                left: 0,
-                right: 0,
-                child: optionButtons(context, searchBloc, authBloc.currentUser),
+              Visibility(
+                visible: !composition.isProcessing(),
+                child: Positioned(
+                  bottom: 10.0,
+                  left: 0,
+                  right: 0,
+                  child:
+                      optionButtons(context, searchBloc, authBloc.currentUser),
+                ),
               ),
             ],
           ),
@@ -164,7 +189,7 @@ class CompositionTile extends StatelessWidget {
                     'There was an issue deleting your composition. Please try again later.\n',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.red[700],
+                      color: Colors.red[900],
                       fontSize: 16.0,
                     ),
                   )
@@ -191,7 +216,7 @@ class CompositionTile extends StatelessWidget {
                   height: 30.0,
                 ),
                 errorMessage,
-                deleteProgressOrButtons(context, bloc, user, snapshot),
+                deletingOrButtons(context, bloc, user, snapshot),
               ],
             );
           },
@@ -200,7 +225,7 @@ class CompositionTile extends StatelessWidget {
     );
   }
 
-  Widget deleteProgressOrButtons(BuildContext context, SearchBloc bloc,
+  Widget deletingOrButtons(BuildContext context, SearchBloc bloc,
       UserModel user, AsyncSnapshot<bool> snapshot) {
     if (snapshot.hasData && snapshot.data == true) {
       return Container(
@@ -228,8 +253,7 @@ class CompositionTile extends StatelessWidget {
             ),
           ),
           onPressed: () async {
-            await bloc.deleteComposition(
-                screen, user.id, composition.id, index);
+            await bloc.deleteComposition(user.id, composition.id, index);
             Navigator.of(context).pop();
           },
         ),

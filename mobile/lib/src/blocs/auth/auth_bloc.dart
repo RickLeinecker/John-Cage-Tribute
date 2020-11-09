@@ -7,14 +7,12 @@ import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/models/user_model.dart';
 
 class AuthBloc with AuthValidators {
-  final _signupEmail = BehaviorSubject<String>();
-  final _loginEmail = BehaviorSubject<String>();
+  final _email = BehaviorSubject<String>();
   final _username = BehaviorSubject<String>();
-  final _signupPassword = BehaviorSubject<String>();
-  final _loginPassword = BehaviorSubject<String>();
+  final _password = BehaviorSubject<String>();
   final _confirmPassword = BehaviorSubject<String>();
-  final _submitLogin = BehaviorSubject<String>();
-  final _submitSignup = BehaviorSubject<String>();
+  final _authSubmit = BehaviorSubject<bool>();
+  final _deletingAccount = BehaviorSubject<bool>();
   final _user = BehaviorSubject<UserModel>();
 
   AuthBloc() {
@@ -26,100 +24,129 @@ class AuthBloc with AuthValidators {
     _user.sink.add(existingUser == GUEST_USER ? GUEST_USER : existingUser);
   }
 
-  Function(String) get changeSignupEmail => _signupEmail.sink.add;
-  Function(String) get changeLoginEmail => _loginEmail.sink.add;
+  Function(String) get changeEmail => _email.sink.add;
   Function(String) get changeUsername => _username.sink.add;
-  Function(String) get changeSignupPassword => _signupPassword.sink.add;
-  Function(String) get changeLoginPassword => _loginPassword.sink.add;
+  Function(String) get changePassword => _password.sink.add;
   Function(String) get changeConfirmPassword => _confirmPassword.sink.add;
 
-  Stream<String> get signupEmail =>
-      _signupEmail.stream.transform(validateEmail);
-  Stream<String> get loginEmail => _loginEmail.stream.transform(validateEmail);
+  Stream<String> get email => _email.stream.transform(validateEmail);
   Stream<String> get username => _username.stream.transform(validateUsername);
-  Stream<String> get loginPassword =>
-      _loginPassword.stream.transform(validatePassword);
-  Stream<String> get signupPassword =>
-      _signupPassword.stream.transform(validatePassword);
+  Stream<String> get password => _password.stream.transform(validatePassword);
   Stream<String> get confirmPassword => _confirmPassword.stream;
   Stream<UserModel> get user => _user.stream;
-  Stream<String> get submitLogin => _submitLogin.stream;
-  Stream<String> get submitSignup => _submitSignup.stream;
+  Stream<bool> get authSubmit => _authSubmit.stream;
+  Stream<bool> get deletingAccount => _deletingAccount.stream;
 
-  // Broadcast allows for tabview changes to listen as many times as desired
   Stream<bool> get signupValid =>
-      Rx.combineLatest4(signupEmail, username, signupPassword, confirmPassword,
+      Rx.combineLatest4(email, username, password, confirmPassword,
           (em, us, pw, cpw) {
-        if (pw == cpw) {
-          return true;
-        } else {
-          _confirmPassword.sink.addError('Passwords do not match.');
+        if (em != null && us != null && pw != null && cpw != null) {
+          if (pw == cpw) {
+            return true;
+          } else {
+            _confirmPassword.sink.addError('Passwords do not match.');
+          }
         }
       }).asBroadcastStream();
 
-  Stream<bool> get loginValid =>
-      Rx.combineLatest2(loginEmail, loginPassword, (em, pw) => true)
-          .asBroadcastStream();
+  Stream<bool> get loginValid => Rx.combineLatest2(email, password, (em, pw) {
+        if (em != null && pw != null) {
+          return true;
+        }
+      }).asBroadcastStream();
 
   UserModel get currentUser => _user.value;
+
+  void clearFields() {
+    _username.sink.add(null);
+    _email.sink.add(null);
+    _password.sink.add(null);
+    _confirmPassword.sink.add(null);
+    _authSubmit.sink.add(null);
+  }
 
   Future<void> logout() async {
     print('Logging out... !');
     await deleteJwt();
+    clearFields();
     _user.sink.add(GUEST_USER);
   }
 
   Future<bool> submitAndLogin() async {
+    _user.sink.add(null);
+
     final parsedJson = await validateLogin(
       <String, dynamic>{
-        'email': '${_loginEmail.value}',
-        'password': '${_loginPassword.value}'
+        'email': '${_email.value}',
+        'password': '${_password.value}'
       },
     );
 
     if (parsedJson['statusCode'] != 200) {
       _user.sink.add(GUEST_USER);
-      _submitLogin.sink.addError(parsedJson['error']);
+      _authSubmit.sink.addError(parsedJson['error']);
       return false;
     }
 
     final existingUser = UserModel.fromJson(parsedJson);
+
     _user.sink.add(existingUser);
-    _submitLogin.sink.add('');
+    _authSubmit.sink.add(true);
     return true;
   }
 
   Future<bool> submitAndSignup() async {
+    _user.sink.add(null);
+
     final parsedJson = await validateSignup(
       <String, dynamic>{
-        'email': '${_signupEmail.value}',
+        'email': '${_email.value}',
         'name': '${_username.value}',
-        'password': '${_signupPassword.value}',
+        'password': '${_password.value}',
         'confirmPassword': '${_confirmPassword.value}',
       },
     );
 
     if (parsedJson['statusCode'] != 200) {
       _user.sink.add(GUEST_USER);
-      _submitSignup.sink.addError(parsedJson['error']);
+      _authSubmit.sink.addError(parsedJson['error']);
       return false;
     }
 
     final existingUser = UserModel.fromJson(parsedJson);
     _user.sink.add(existingUser);
-    _submitSignup.sink.add('');
+    _authSubmit.sink.add(true);
     return true;
   }
 
-  dispose() {
-    _signupEmail.close();
-    _loginEmail.close();
+  void deleteAccount() async {
+    print('Attempting to delete account... !');
+
+    if (_user.value == GUEST_USER) {
+      print('Silly guest, account deletion is for users!');
+      return;
+    }
+
+    _deletingAccount.sink.add(true);
+
+    bool deleteSuccess = await validateDeleteAccount();
+
+    if (deleteSuccess) {
+      _deletingAccount.sink.add(false);
+      await logout();
+    } else {
+      _deletingAccount.sink.addError('An error occurred while deleting your '
+          'account. Please try again later.');
+    }
+  }
+
+  void dispose() {
+    _email.close();
     _username.close();
-    _signupPassword.close();
-    _loginPassword.close();
+    _password.close();
     _confirmPassword.close();
     _user.close();
-    _submitLogin.close();
-    _submitSignup.close();
+    _authSubmit.close();
+    _deletingAccount.close();
   }
 }

@@ -1,0 +1,60 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run
+
+## exception
+
+RPCError: ext.flutter.debugDumpRenderTree: (-32000) Bad state: The client closed with pending request "ext.flutter.debugDumpRenderTree".
+
+```
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel master, 1.23.0-14.0.pre.149, on Mac OS X 10.15.5 19F101 x86_64, locale en-US)
+    • Flutter version 1.23.0-14.0.pre.149 at /Users/yoan/dev/flutter
+    • Framework revision 081c47b83d (4 weeks ago), 2020-10-13 00:03:20 -0400
+    • Engine revision c2938d06b1
+    • Dart version 2.11.0 (build 2.11.0-213.0.dev)
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 29.0.3)
+    • Android SDK at /Users/yoan/Library/Android/sdk
+    • Platform android-29, build-tools 29.0.3
+    • Java binary at: /Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 1.8.0_242-release-1644-b3-6222593)
+    • All Android licenses accepted.
+
+[✓] Xcode - develop for iOS and macOS (Xcode 12.1)
+    • Xcode at /Applications/Xcode.app/Contents/Developer
+    • Xcode 12.1, Build version 12A7403
+    • CocoaPods version 1.10.0
+
+[✓] Android Studio (version 4.1)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 1.8.0_242-release-1644-b3-6222593)
+
+[✓] IntelliJ IDEA Community Edition (version 2020.2.1)
+    • IntelliJ at /Applications/IntelliJ IDEA CE.app
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+
+[✓] VS Code (version 1.51.0)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 3.16.0
+
+[✓] Connected device (1 available)
+    • iPhone SE (2nd generation) (mobile) • D4C58701-EEB0-4E21-9689-5AECB441FA85 • ios •
+      com.apple.CoreSimulator.SimRuntime.iOS-14-1 (simulator)
+
+• No issues found!
+```

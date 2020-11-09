@@ -258,7 +258,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
 
     switch (widget.screen) {
       case ScreenType.LIBRARY:
-        searchBloc.clearSearchHistory();
+        searchBloc.clearSearchResults();
         Navigator.pop(context);
         break;
       case ScreenType.SESSION:
@@ -276,5 +276,4 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   }
 }
 
-// TODO: Try with and without final for GlobalKey instantiation
 final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();

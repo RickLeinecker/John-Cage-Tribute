@@ -7,7 +7,7 @@ const config = require('config');
 const { check, validationResult } = require('express-validator');
 const normalize = require('normalize-url');
 
-const User = require('../../models/User'); 
+const User = require('../../models/User');
 
 // @route    POST api/users
 // @desc     Register user
@@ -72,7 +72,7 @@ router.post(
         { expiresIn: 864000 },
         (err, token) => {
           if (err) throw err;
-          res.json({ token, user: {email: user.email, name: user.name} });
+          res.json({ token, user });
         }
       );
     } catch (err) {

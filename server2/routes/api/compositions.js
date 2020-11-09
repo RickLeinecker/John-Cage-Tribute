@@ -35,9 +35,17 @@ router.put('/edit/:id', async (req, res) => {
       return res.status(400).json({ msg: "Description is too long." });
     }
 
-    composition.title = req.body.title;
+    composition.title = req.body.title.trim();
+    if (composition.title.length == 0) {
+      composition.title = "(Untitled)";
+    }
+
+    composition.description = req.body.description.trim();
+    if (composition.description.length == 0) {
+      composition.description = "(No description has been added)";
+    }
+
     composition.private = req.body.private;
-    composition.description = req.body.description;
     composition.tags = req.body.tags;
 
     await composition.save();
@@ -52,9 +60,8 @@ router.put('/edit/:id', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const compositions = await Composition.find({ private: false }).sort({ start: -1 });
-    if(!compositions)
-    {
-	res.json("Be the first to create a composition");
+    if (!compositions) {
+      res.json("Be the first to create a composition");
     }
     res.json(compositions);
   }
@@ -105,7 +112,6 @@ router.post('/composer', async (req, res) => {
     // Search all compositions.
     else {
       compositions = await Composition.find({ private: false, composer: { $regex: new RegExp(req.body.query, 'i') }, file_id: { $ne: null } }).sort({ start: -1 });
-
     }
 
     res.json(compositions);

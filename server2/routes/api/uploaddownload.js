@@ -57,9 +57,7 @@ module.exports = router => {
 
       const file = req.file;
       const data = JSON.parse(req.body.data);
-      //console.log(data.user);
       const validUser = await User.findById(data.user).select('-password');
-
       let composition = await Composition.findById(data.composition.id);
 
       if (!composition) {
@@ -132,6 +130,38 @@ module.exports = router => {
     }
   });
 
-  // TODO: Add ab
+  router.delete('/removeuser', auth, async (req, res) => {
+    try {
+      const user = User.findById(req.user.id);
+
+      if (!user) {
+        res.status(402).send({ msg: 'Your account information was not found.' });
+      }
+
+      const compositions = await Composition.find({ user: ObjectId(req.user.id) }).sort({ date: -1 });
+
+      while (compositions) {
+        // Delete every user composition that the user had made
+        const composition = await Composition.findOne({ user: ObjectId(req.user.id) });
+
+        if (!composition) {
+          break;
+        }
+
+        const goaway = ObjectId(composition.file_id);
+        // get rid of it
+        gfs.delete(goaway);
+        await composition.remove();
+      }
+
+      // Remove user after removing all of user's compositions.
+      await User.findOneAndRemove({ _id: req.user.id });
+      res.json({ msg: 'Success!' });
+    }
+    catch (err) {
+      console.error(err.message);
+      res.status(500).send({ msg: "Server error while deleting composition." });
+    }
+  });
 }
 

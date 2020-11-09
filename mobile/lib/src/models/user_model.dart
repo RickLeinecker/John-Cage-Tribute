@@ -18,4 +18,10 @@ class UserModel extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{'email': email, 'name': username};
   }
+
+  void printUser() {
+    print('===== USER =====');
+    print('username: $username');
+    print('email: $email');
+  }
 }

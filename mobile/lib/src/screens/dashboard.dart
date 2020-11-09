@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:transparent_image/transparent_image.dart';
-// import '../models/unsplash/unsplash_image_model.dart';
-// import '../resources/image_api_provider.dart';
 
 import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/constants/filter_option.dart';
 import 'package:jct/src/widgets/fade_text_tile.dart';
-import 'package:jct/src/screens/library_screen.dart';
-import 'package:jct/src/screens/auth_screen.dart';
+import 'package:jct/src/screens/account_screen.dart';
 import 'package:jct/src/screens/pre_room_screen.dart';
 import 'package:jct/src/screens/search_screen.dart';
 
@@ -18,9 +16,6 @@ class Dashboard extends StatefulWidget {
 
 class DashboardState extends State<Dashboard> {
   static const int kNumTiles = 3;
-
-  // ImageApiProvider imageProvider;
-  // Future rndImgFuture;
   int currentIndex = 0;
 
   // Retrieve text files from assets folder
@@ -30,8 +25,6 @@ class DashboardState extends State<Dashboard> {
 
   initState() {
     super.initState();
-    // imageProvider = ImageApiProvider();
-    // rndImgFuture = imageProvider.getPhoto();
 
     // Text assets
     biographyFuture = rootBundle.loadString('assets/biography.txt');
@@ -40,20 +33,26 @@ class DashboardState extends State<Dashboard> {
   }
 
   Widget build(context) {
-    final AuthBloc bloc = AuthProvider.of(context);
+    final AuthBloc authBloc = AuthProvider.of(context);
+    final SearchBloc searchBloc = SearchProvider.of(context);
 
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         activeColor: Theme.of(context).primaryColor,
         inactiveColor: Theme.of(context).unselectedWidgetColor,
         backgroundColor: Theme.of(context).accentColor,
-        onTap: (index) {},
+        onTap: (index) {
+          if (index == 2) {
+            searchBloc.clearSearchResults();
+          } else if (index == 3) {
+            searchBloc.changeFilterSearch(FilterOption.TAGS);
+          }
+        },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home)),
           BottomNavigationBarItem(icon: Icon(Icons.assignment)),
           BottomNavigationBarItem(icon: Icon(Icons.search)),
-          BottomNavigationBarItem(icon: Icon(Icons.library_music)),
-          BottomNavigationBarItem(icon: Icon(Icons.exit_to_app)),
+          BottomNavigationBarItem(icon: Icon(Icons.person)),
         ],
       ),
       tabBuilder: (context, index) {
@@ -71,7 +70,7 @@ class DashboardState extends State<Dashboard> {
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: PreRoomScreen(user: bloc.user),
+                  child: PreRoomScreen(user: authBloc.user),
                 );
               },
             );
@@ -81,20 +80,12 @@ class DashboardState extends State<Dashboard> {
                 return CupertinoPageScaffold(child: SearchScreen());
               },
             );
-          case 3: // Library
-            return CupertinoTabView(
-              builder: (context) {
-                return CupertinoPageScaffold(
-                  child: LibraryScreen(),
-                );
-              },
-            );
             break;
-          case 4: // Login/Signup
+          case 3: // Login/Signup
             return CupertinoTabView(
               builder: (context) {
                 return CupertinoPageScaffold(
-                  child: AuthScreen(),
+                  child: AccountScreen(),
                 );
               },
             );
@@ -109,7 +100,7 @@ class DashboardState extends State<Dashboard> {
   Widget dashboardFutureBuilder() {
     return FutureBuilder(
       future: Future.wait(
-        [/*rndImgFuture,*/ biographyFuture, descriptionFuture, howtoFuture],
+        [biographyFuture, descriptionFuture, howtoFuture],
       ),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if (!snapshot.hasData) {
@@ -120,19 +111,6 @@ class DashboardState extends State<Dashboard> {
           );
         }
 
-        // final UnsplashImageModel image = snapshot.data[0];
-        // final String imageUrl = image.urls.full;
-
-        // Widget background = Container(
-        //   child: FadeInImage.memoryNetwork(
-        //     placeholder: kTransparentImage,
-        //     image: imageUrl,
-        //     fit: BoxFit.cover,
-        //     height: double.infinity,
-        //     width: double.infinity,
-        //   ),
-        // );
-
         final List<String> biography = snapshot.data[0].split('\n');
         final List<String> description = snapshot.data[1].split('\n');
         final List<String> howto = snapshot.data[2].split('\n');
@@ -140,7 +118,6 @@ class DashboardState extends State<Dashboard> {
         return Stack(
           children: <Widget>[
             defaultBackground(containerChild: null),
-            // background,
             ListView.separated(
               itemCount: kNumTiles,
               itemBuilder: (context, int index) {

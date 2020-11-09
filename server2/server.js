@@ -39,6 +39,7 @@ const Role = {
   PERFORMER: 1
 };
 
+const sampleRate = 22050;
 availableRooms = {}; // Currently active rooms
 memberAttendance = {}; // Maps socketId to roomId
 
@@ -365,7 +366,8 @@ io.on('connection', function (socket) {
     // and bit depth into the raw data which the MP3 conversion needs
     console.log('Making a wav file!');
     var wav = new wavefile();
-    wav.fromScratch(1, 22050, '16', availableRooms[roomId]['audioProcessor'].sessionAudio);
+    const numberOfSamples = availableRooms[roomId]['audioProcessor'].sessionAudio.length;
+    wav.fromScratch(1, sampleRate, '16', availableRooms[roomId]['audioProcessor'].sessionAudio);
     // Save the WAV file buffer as a raw data buffer
     var audioFileBuffer = Buffer.from(wav.toBuffer());
 
@@ -383,11 +385,16 @@ io.on('connection', function (socket) {
     }).setBuffer(audioFileBuffer);
 
     // Encode the MP3 file
-    await encoder.encode()
-    console.log('Finished encoding MP3')
+    await encoder.encode();
+    console.log('Finished encoding MP3');
+
+    data.composition = {
+      time: numberOfSamples / sampleRate,
+      ...data.composition
+    };
 
     // Open the MP3 file as a read stream
-    var mp3FileStream = fs.createReadStream(mp3FileName)
+    var mp3FileStream = fs.createReadStream(mp3FileName);
 
     // Make API call
     var formData = new FormData();

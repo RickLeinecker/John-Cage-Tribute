@@ -1,12 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/constants/user_auth.dart';
 import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/screens/library_screen.dart';
 import 'package:jct/src/widgets/loading_user.dart';
 
-class AuthScreen extends StatelessWidget {
+class AccountScreen extends StatelessWidget {
   Widget build(context) {
     final AuthBloc bloc = AuthProvider.of(context);
 
@@ -19,7 +21,7 @@ class AuthScreen extends StatelessWidget {
 
         if (snapshot.data != GUEST_USER) {
           return Scaffold(
-            body: logoutView(context, bloc, snapshot.data.username),
+            body: userView(context, bloc, snapshot.data),
           );
         } else {
           return DefaultTabController(
@@ -33,6 +35,7 @@ class AuthScreen extends StatelessWidget {
                   labelColor: Colors.white,
                   unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
                   indicatorColor: Colors.white,
+                  onTap: (idx) => bloc.clearFields,
                   tabs: [
                     Tab(text: 'Login'),
                     Tab(text: 'Sign Up'),
@@ -52,7 +55,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget logoutView(BuildContext context, AuthBloc bloc, String username) {
+  Widget userView(BuildContext context, AuthBloc bloc, UserModel user) {
     return SizedBox.expand(
       child: Container(
         color: Theme.of(context).primaryColor,
@@ -60,16 +63,93 @@ class AuthScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Not $username?\n Feel free to log out below.',
+            Divider(
+              color: Colors.transparent,
+              height: 20.0,
+            ),
+            Text(
+              'Reminiscing?\n Check your old compositions below.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            Divider(
+              color: Colors.transparent,
+              height: 10.0,
+            ),
+            RaisedButton(
+              color: Theme.of(context).accentColor,
+              onPressed: () => Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) {
+                    return LibraryScreen(user: user);
+                  },
+                ),
+              ),
+              child: Text('View My Compositions',
+                  style: TextStyle(color: Colors.white)),
+            ),
+            Divider(
+              color: Colors.transparent,
+              height: 10.0,
+            ),
+            Text('Not ${user.username}?\n Feel free to log out below.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headline6),
+            Divider(
+              color: Colors.transparent,
+              height: 10.0,
+            ),
             RaisedButton(
               color: Theme.of(context).accentColor,
               onPressed: () async {
                 await bloc.logout();
               },
-              child: Text('Log out', style: TextStyle(color: Colors.white)),
+              child: Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
+            Divider(
+              color: Colors.transparent,
+              height: 10.0,
+            ),
+            Text(
+              'No longer interested in JCT?\nDelete your account below.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            StreamBuilder(
+                stream: bloc.deletingAccount,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  if (snapshot.data == true) {
+                    return CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      Visibility(
+                        visible: snapshot.hasError,
+                        child: Text(
+                          snapshot.error ?? '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.red[900],
+                          ),
+                        ),
+                      ),
+                      RaisedButton(
+                        color: Theme.of(context).accentColor,
+                        onPressed: () {
+                          bloc.deleteAccount();
+                        },
+                        child: Text(
+                          'Delete Account',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
           ],
         ),
       ),
@@ -131,12 +211,10 @@ class AuthScreen extends StatelessWidget {
 
   Widget emailField(AuthBloc bloc, UserAuth authType) {
     return StreamBuilder(
-      stream: authType == UserAuth.LOGIN ? bloc.loginEmail : bloc.signupEmail,
+      stream: bloc.email,
       builder: (context, AsyncSnapshot<String> snapshot) {
         return TextField(
-          onChanged: authType == UserAuth.LOGIN
-              ? bloc.changeLoginEmail
-              : bloc.changeSignupEmail,
+          onChanged: bloc.changeEmail,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             labelText: 'Email Address',
@@ -166,14 +244,11 @@ class AuthScreen extends StatelessWidget {
 
   Widget passwordField(AuthBloc bloc, UserAuth authType) {
     return StreamBuilder(
-      stream:
-          authType == UserAuth.LOGIN ? bloc.loginPassword : bloc.signupPassword,
+      stream: bloc.password,
       builder: (context, AsyncSnapshot<String> snapshot) {
         return TextField(
           obscureText: true,
-          onChanged: authType == UserAuth.LOGIN
-              ? bloc.changeLoginPassword
-              : bloc.changeSignupPassword,
+          onChanged: bloc.changePassword,
           decoration: InputDecoration(
             labelText: 'Password',
             hintText: 'Use capitals and numbers.',
@@ -208,8 +283,8 @@ class AuthScreen extends StatelessWidget {
         return Column(
           children: [
             StreamBuilder(
-              stream: bloc.submitSignup,
-              builder: (context, AsyncSnapshot<String> snapshot) {
+              stream: bloc.authSubmit,
+              builder: (context, AsyncSnapshot<bool> snapshot) {
                 return Text(
                   snapshot.hasError ? snapshot.error : '',
                   style: TextStyle(
@@ -237,8 +312,8 @@ class AuthScreen extends StatelessWidget {
         return Column(
           children: [
             StreamBuilder(
-              stream: bloc.submitLogin,
-              builder: (context, AsyncSnapshot<String> snapshot) {
+              stream: bloc.authSubmit,
+              builder: (context, AsyncSnapshot<bool> snapshot) {
                 return Text(
                   snapshot.hasError ? snapshot.error : '',
                   style: TextStyle(

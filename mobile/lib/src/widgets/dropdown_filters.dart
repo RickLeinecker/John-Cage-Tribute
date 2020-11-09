@@ -13,7 +13,7 @@ class DropdownFilters extends StatelessWidget {
     SearchBloc bloc = SearchProvider.of(context);
 
     return StreamBuilder(
-      stream: getFilterStream(bloc, screen),
+      stream: bloc.filterSearch,
       builder: (context, AsyncSnapshot<FilterOption> snapshot) {
         return DropdownButtonFormField(
           value: !snapshot.hasData ? null : snapshot.data,
@@ -23,7 +23,7 @@ class DropdownFilters extends StatelessWidget {
             fillColor: Theme.of(context).primaryColor,
           ),
           dropdownColor: Theme.of(context).primaryColor,
-          onChanged: (FilterOption filter) => bloc.changeFilter(screen, filter),
+          onChanged: (FilterOption filter) => bloc.changeFilterSearch(filter),
           items: getFilterMenuItems(context),
         );
       },
@@ -73,16 +73,5 @@ class DropdownFilters extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyText1,
       ),
     );
-  }
-}
-
-Stream<FilterOption> getFilterStream(SearchBloc bloc, ScreenType screen) {
-  switch (screen) {
-    case ScreenType.LIBRARY:
-      return bloc.filterLibrary;
-    case ScreenType.SEARCH:
-      return bloc.filterSearch;
-    default:
-      return null; // Unsupported Screen Type
   }
 }

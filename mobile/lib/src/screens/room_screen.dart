@@ -50,7 +50,7 @@ class RoomScreen extends StatelessWidget {
               );
             }
 
-            if (snapshot.data.length == 0) {
+            if (snapshot.data.isEmpty) {
               return Stack(
                 children: [
                   ScrollToRefresh(),
