@@ -18,6 +18,9 @@ const wavefile = require('wavefile').WaveFile;
 const Lame = require("node-lame").Lame;
 const AudioProcessor = require('./audioProcessor/audioProcessor.js');
 
+const baseUrl = 'https://johncagetribute.org';
+// const baseUrl = `http://localhost:${PORT}`;
+
 // Connect Database
 connectDB();
 // Initialize Middleware
@@ -124,7 +127,6 @@ io.on('connection', function (socket) {
 
             delete memberAttendance[socketId];
             io.sockets.sockets[socketId].leave(roomId);
-            io.sockets.sockets[socketId].emit('updaterooms', availableRooms);
           });
         });
     }
@@ -407,7 +409,7 @@ io.on('connection', function (socket) {
     console.log('Uploading MP3 to database...')
     // console.log(formData)
 
-    const response = await fetch('https://johncagetribute.org/api/compositions/upload', { method: 'POST', body: formData });
+    const response = await fetch(`${baseUrl}/api/compositions/upload`, { method: 'POST', body: formData });
     //console.log(response)
     console.log('Finished uploading!')
     // After the MP3 file as been uploaded, delete it from the server 

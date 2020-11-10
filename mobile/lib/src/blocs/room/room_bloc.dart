@@ -32,7 +32,6 @@ class RoomBloc {
 
   String currentRoom;
   Socket socket;
-  Role currentRole;
   AudioStreamer _audioStreamer;
   AudioBufferPlayer _bufferPlayer;
   Timer timer;
@@ -46,6 +45,8 @@ class RoomBloc {
   Stream<bool> get pinValid => _pinValid.stream;
   Stream<bool> get sessionHasBegun => _sessionHasBegun.stream;
   Stream<bool> get isActive => _isActive.stream;
+
+  Role get currentRole => _role.value;
 
   RoomBloc() {
     _role.sink.add(Role.LISTENER);
@@ -176,7 +177,7 @@ class RoomBloc {
       endAudioBehavior();
       _sessionHasBegun.sink.add(null);
       _members.sink.addError(data);
-      socket.emit('updaterooms', null);
+      updateRooms();
     });
   }
 
@@ -295,11 +296,15 @@ class RoomBloc {
 
   /// Exits the guest/user from their current room, canceling audio behavior.
   /// Certain streams are reset in order to refresh user input.
-  void leaveRoom(String roomId) {
+  void leaveRoom(String roomId, bool isHost) {
     resetRoomAndMemberStreams();
 
     socket.emit('leaveroom', roomId);
-    updateRooms();
+
+    if (!isHost) {
+      updateRooms();
+    }
+
     endAudioBehavior();
   }
 

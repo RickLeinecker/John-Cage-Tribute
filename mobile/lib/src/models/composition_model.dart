@@ -14,7 +14,7 @@ class CompositionModel {
   final String description;
   final bool isPrivate;
 
-  const CompositionModel.emptyModel({
+  const CompositionModel.empty({
     this.id,
     this.title,
     this.composer,

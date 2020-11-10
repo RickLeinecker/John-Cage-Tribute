@@ -86,22 +86,7 @@ class RoomScreen extends StatelessWidget {
                   child: ListView(children: []),
                   displacement: 20.0,
                 ),
-                Container(
-                  height: 500,
-                  padding: EdgeInsets.only(top: 100.0),
-                  child: GridView.builder(
-                    itemCount: snapshot.data.length,
-                    scrollDirection: Axis.vertical,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                    ),
-                    itemBuilder: (BuildContext context, int index) {
-                      final String key = snapshot.data.keys.elementAt(index);
-
-                      return RoomTile(user: user, room: snapshot.data[key]);
-                    },
-                  ),
-                ),
+                roomsGrid(snapshot.data),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
@@ -115,6 +100,25 @@ class RoomScreen extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget roomsGrid(Map<String, RoomModel> rooms) {
+    return Container(
+      height: 500,
+      padding: EdgeInsets.only(top: 100.0),
+      child: GridView.builder(
+        itemCount: rooms.length,
+        scrollDirection: Axis.vertical,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+        ),
+        itemBuilder: (BuildContext context, int index) {
+          final String key = rooms.keys.elementAt(index);
+
+          return RoomTile(user: user, room: rooms[key]);
+        },
       ),
     );
   }

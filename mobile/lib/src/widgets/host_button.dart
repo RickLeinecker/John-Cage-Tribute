@@ -20,15 +20,16 @@ class HostButton extends StatelessWidget {
     final RoomBloc bloc = RoomProvider.of(context);
 
     return Container(
-        child: RaisedButton.icon(
-      textColor: Theme.of(context).primaryColor,
-      color: Theme.of(context).textTheme.bodyText2.color,
-      icon: Icon(Icons.add),
-      label: Text('Host a Room'),
-      onPressed: (user == GUEST_USER)
-          ? null
-          : () => onHostButtonPressed(context, bloc),
-    ));
+      child: RaisedButton.icon(
+        textColor: Theme.of(context).primaryColor,
+        color: Theme.of(context).textTheme.bodyText2.color,
+        icon: Icon(Icons.add),
+        label: Text('Host a Room'),
+        onPressed: (user == GUEST_USER)
+            ? null
+            : () => onHostButtonPressed(context, bloc),
+      ),
+    );
   }
 
   void onHostButtonPressed(BuildContext context, RoomBloc bloc) async {
@@ -39,12 +40,23 @@ class HostButton extends StatelessWidget {
         bool pinEnabled = false;
 
         return AlertDialog(
-          backgroundColor: Colors.teal,
-          title: Text('Some Questions...', textAlign: TextAlign.center),
-          titleTextStyle: Theme.of(context).textTheme.headline6,
+          backgroundColor: Colors.teal[700],
+          insetPadding: EdgeInsets.only(
+            left: 30.0,
+            right: 30.0,
+            top: 90.0,
+            bottom: 90.0,
+          ),
           contentPadding: EdgeInsets.zero,
+          title: Text(
+            'Some Questions...',
+            textAlign: TextAlign.center,
+          ),
+          titleTextStyle: Theme.of(context).textTheme.headline6,
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
+              final typedEntirePIN = enteredPin.length == PIN_LENGTH;
+
               return Container(
                 decoration: ShapeDecoration(
                   shape: RoundedRectangleBorder(
@@ -61,13 +73,17 @@ class HostButton extends StatelessWidget {
                     RoleButtons(),
                     Divider(
                       color: Colors.transparent,
-                      height: 20.0,
+                      height: 15.0,
                     ),
                     SwitchListTile(
+                      activeColor: Colors.greenAccent[700],
                       title: Text(
-                        'Protect it with a PIN?',
+                        'Protect with PIN?',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17.0,
+                        ),
                       ),
                       secondary: pinEnabled
                           ? Icon(Icons.lock)
@@ -80,7 +96,7 @@ class HostButton extends StatelessWidget {
                       height: 20.0,
                     ),
                     Text(
-                      'Enter a $PIN_LENGTH-digit PIN for this room.',
+                      'Enter a $PIN_LENGTH-digit PIN for this \nroom.',
                       style: pinEnabled
                           ? Theme.of(context).textTheme.bodyText1
                           : Theme.of(context).textTheme.subtitle2,
@@ -89,8 +105,8 @@ class HostButton extends StatelessWidget {
                     PinCodeTextField(
                       appContext: context,
                       enablePinAutofill: false,
-                      backgroundColor: Colors.teal,
-                      cursorColor: Colors.teal[600],
+                      backgroundColor: Colors.transparent,
+                      cursorColor: Colors.white,
                       enabled: pinEnabled,
                       keyboardType: TextInputType.number,
                       length: PIN_LENGTH,
@@ -102,15 +118,14 @@ class HostButton extends StatelessWidget {
                     ),
                     Center(
                       child: RaisedButton(
-                        color: Colors.teal[600],
+                        color: Theme.of(context).textTheme.bodyText2.color,
+                        textColor: Colors.teal,
                         highlightColor: Colors.white,
-                        child: Text('Create Room!',
-                            style: Theme.of(context).textTheme.bodyText1),
-                        onPressed:
-                            !pinEnabled || (enteredPin.length == PIN_LENGTH)
-                                ? () => onCreateRoom(
-                                    context, bloc, user, enteredPin, pinEnabled)
-                                : null,
+                        child: Text('Create'),
+                        onPressed: !pinEnabled || typedEntirePIN
+                            ? () => onCreateRoom(
+                                context, bloc, user, enteredPin, pinEnabled)
+                            : null,
                       ),
                     ),
                   ],

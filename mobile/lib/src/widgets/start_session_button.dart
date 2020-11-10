@@ -15,7 +15,6 @@ class StartSessionButton extends StatefulWidget {
 }
 
 class _StartSessionButtonState extends State<StartSessionButton> {
-  bool sessionStarted;
   BehaviorSubject<bool> _toggleSession;
 
   Stream<bool> get toggleSession => _toggleSession.stream;
@@ -24,33 +23,49 @@ class _StartSessionButtonState extends State<StartSessionButton> {
   // TODO: bloc.sessionHasBegun can probs replace sessionStarted
   void initState() {
     super.initState();
-    sessionStarted = false;
-    _toggleSession = BehaviorSubject();
+    _toggleSession = BehaviorSubject<bool>();
     changeToggleSession(true);
   }
 
   Widget build(context) {
-    AuthBloc authBloc = AuthProvider.of(context);
-    RoomBloc roomBloc = RoomProvider.of(context);
+    final authBloc = AuthProvider.of(context);
+    final roomBloc = RoomProvider.of(context);
 
     return StreamBuilder(
       stream: roomBloc.sessionHasBegun,
-      builder: (BuildContext context, AsyncSnapshot<bool> allPerfsSnap) {
+      builder: (BuildContext context, AsyncSnapshot<bool> startedSnap) {
         return StreamBuilder(
           stream: toggleSession,
           builder: (context, AsyncSnapshot<bool> timeSnap) {
+            final sessionStarted = startedSnap.data == true;
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                RaisedButton(
-                  onPressed: (!timeSnap.hasData || !allPerfsSnap.hasData)
-                      ? null
-                      : () => onToggleSession(authBloc, roomBloc),
-                  color: Colors.teal,
-                  textColor: Colors.white,
+                Visibility(
+                  visible: timeSnap.hasError,
                   child: Text(
-                    (!sessionStarted ? 'Start!' : 'Stop!'),
+                    timeSnap.error ?? '',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Visibility(
+                  visible: timeSnap.hasError,
+                  child: Divider(
+                    color: Colors.transparent,
+                    height: 10.0,
+                  ),
+                ),
+                RaisedButton(
+                  onPressed: (!timeSnap.hasData || !startedSnap.hasData)
+                      ? null
+                      : () =>
+                          onToggleSession(authBloc, roomBloc, sessionStarted),
+                  color: Theme.of(context).textTheme.bodyText2.color,
+                  textColor: Theme.of(context).primaryColor,
+                  child: Text(
+                    (!sessionStarted ? 'Begin' : 'End'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -62,7 +77,8 @@ class _StartSessionButtonState extends State<StartSessionButton> {
     );
   }
 
-  void onToggleSession(AuthBloc authBloc, RoomBloc roomBloc) async {
+  void onToggleSession(
+      AuthBloc authBloc, RoomBloc roomBloc, bool sessionStarted) async {
     if (!sessionStarted) {
       roomBloc.startSession();
 
@@ -74,7 +90,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
       // Disables the session button from being clicked until MIN_COMPOSITION
       // time passes.
       _toggleSession.sink.addError(
-          'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min${MIN_COMPOSITION_TIME / 60 == 0 ? '' : ' and ${MIN_COMPOSITION_TIME / 60} sec'} long.');
+          'Composition must be at least ${MIN_COMPOSITION_TIME ~/ 60} min ${MIN_COMPOSITION_TIME / 60 == 0 ? '' : ' and ${MIN_COMPOSITION_TIME % 60} sec'} long.');
 
       changeToggleSession(await Future.delayed(
           Duration(seconds: MIN_COMPOSITION_TIME), () => true));
@@ -99,7 +115,7 @@ class _StartSessionButtonState extends State<StartSessionButton> {
           return CompositionInfoScreen(
             user: authBloc.currentUser,
             screen: ScreenType.SESSION,
-            composition: CompositionModel.emptyModel(id: compositionId),
+            composition: CompositionModel.empty(id: compositionId),
           );
         },
       ),

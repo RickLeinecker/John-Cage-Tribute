@@ -43,7 +43,7 @@ class SessionScreen extends StatelessWidget {
                 (role == Role.LISTENER ||
                     !atMaxPerformerCapacity ||
                     snapshot.data == false)) {
-              bloc.leaveRoom(roomId);
+              bloc.leaveRoom(roomId, isHost);
               return true;
             }
 
@@ -77,7 +77,7 @@ class SessionScreen extends StatelessWidget {
                       (role == Role.LISTENER ||
                           !atMaxPerformerCapacity ||
                           snapshot.data == false)) {
-                    bloc.leaveRoom(roomId);
+                    bloc.leaveRoom(roomId, isHost);
                     Navigator.pop(context);
                   } else {
                     print('Are you sure you wanna exit?');
@@ -194,7 +194,8 @@ class SessionScreen extends StatelessWidget {
                               child: actionButton(context, bloc),
                             ),
                             Align(
-                              alignment: Alignment.bottomCenter,
+                              alignment: FractionalOffset.bottomCenter,
+                              heightFactor: 11.0,
                               child: isHost
                                   ? StartSessionButton()
                                   : sessionStartNotifier(context, bloc),
@@ -248,17 +249,14 @@ class SessionScreen extends StatelessWidget {
                   ),
                   onPressed: () {
                     if (isHost) {
-                      if (bloc.watch != null) {
-                        bloc.watch.stop();
-                      }
-                      if (bloc.timer != null) {
-                        bloc.timer.cancel();
-                      }
+                      // TODO: Verify that this shorthand works (watch stop).
+                      bloc.watch?.stop();
+                      bloc.timer?.cancel();
 
                       print('Host has left their room.');
                     }
 
-                    bloc.leaveRoom(roomId);
+                    bloc.leaveRoom(roomId, isHost);
                     Navigator.of(context).pop(true);
                     Navigator.of(context).pop();
                   },

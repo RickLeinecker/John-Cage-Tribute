@@ -8,9 +8,9 @@ import 'package:jct/src/screens/dashboard.dart';
 
 class App extends StatelessWidget {
   Widget build(BuildContext context) {
-    return SearchProvider(
-      child: AuthProvider(
-        child: RoomProvider(
+    return RoomProvider(
+      child: SearchProvider(
+        child: AuthProvider(
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Dashboard(),

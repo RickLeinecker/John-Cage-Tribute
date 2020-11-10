@@ -102,10 +102,10 @@ class RoomTile extends StatelessWidget {
                           ),
                         ),
                         RaisedButton(
-                          color: Colors.teal[600],
+                          color: Theme.of(context).textTheme.bodyText2.color,
                           child: Text(
                             'Join',
-                            style: Theme.of(context).textTheme.bodyText1,
+                            style: TextStyle(color: Colors.teal),
                           ),
                           onPressed: !room.hasPin || snapshot.hasData
                               ? () => onJoinRoom(context, bloc)
