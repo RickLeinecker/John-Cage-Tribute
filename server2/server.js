@@ -18,8 +18,8 @@ const wavefile = require('wavefile').WaveFile;
 const Lame = require("node-lame").Lame;
 const AudioProcessor = require('./audioProcessor/audioProcessor.js');
 
-// const baseUrl = 'https://johncagetribute.org';
-const baseUrl = `http://localhost:${PORT}`;
+const baseUrl = 'https://johncagetribute.org';
+// const baseUrl = `http://localhost:${PORT}`;
 
 // Connect Database
 connectDB();
