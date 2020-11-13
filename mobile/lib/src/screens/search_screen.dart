@@ -117,17 +117,18 @@ class SearchScreen extends StatelessWidget {
   }
 
   Widget compositionsDisplay(AsyncSnapshot<List<CompositionModel>> snapshot) {
-    return GridView.builder(
+    return ListView.separated(
       itemCount: snapshot.data.length,
-      scrollDirection: Axis.vertical,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
       itemBuilder: (context, index) {
         return CompositionTile(
           composition: snapshot.data.elementAt(index),
           screen: ScreenType.SEARCH,
           index: index,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Divider(
+          height: 5.0,
         );
       },
     );

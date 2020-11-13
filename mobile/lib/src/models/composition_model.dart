@@ -30,7 +30,7 @@ class CompositionModel {
       : id = parsedJson['_id'],
         title = parsedJson['title'],
         composer = parsedJson['composer'],
-        time = parsedJson['runtime'],
+        time = parsedJson['runtime'] * 1.0,
         filename = parsedJson['filename'] ?? null,
         performers = List<String>.from(parsedJson['performers']) ?? List(),
         tags = List<String>.from(parsedJson['tags']) ?? List(),

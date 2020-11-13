@@ -22,157 +22,117 @@ class CompositionTile extends StatelessWidget {
   Widget build(context) {
     final AuthBloc authBloc = AuthProvider.of(context);
     final SearchBloc searchBloc = SearchProvider.of(context);
-    final int compMinutes =
-        !composition.isProcessing() ? 0 : composition.time ~/ 60;
-    final int compSeconds =
-        !composition.isProcessing() ? 0 : (composition.time % 60).floor();
 
-    final bool addMinZero = (compMinutes < 10);
-    final bool addSecZero = (compSeconds < 10);
+    return ListTile(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+      tileColor: !composition.isProcessing()
+          ? Theme.of(context).accentColor
+          : Colors.grey,
+      enabled: !composition.isProcessing(),
+      title: Text(
+        composition.title,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 20.0),
+      ),
+      subtitle: Text(
+        composition.composer,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(fontSize: 16.0),
+      ),
+      onTap: composition.isProcessing() ? null : () => goToPlayer(context),
+      trailing: trailingItems(context, searchBloc, authBloc.currentUser),
+    );
+  }
 
-    // TODO: Revert isProcessing negation after testing is complete.
-    return Card(
-      child: Container(
-        color: !composition.isProcessing()
-            ? Colors.grey
-            : Theme.of(context).accentColor,
-        child: ListTile(
-          onTap: !composition.isProcessing()
-              ? null
-              : () {
-                  print('${composition.title} was tapped! :)');
-
-                  Navigator.of(context, rootNavigator: true).push(
-                    CupertinoPageRoute(
-                      builder: (context) {
-                        return PlayerScreen(composition: composition);
-                      },
-                    ),
-                  );
-                },
-          // TODO: Line up the metadata closer to the center if the buttons don't show up.
-          title: Stack(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Divider(
-                    color: Colors.transparent,
-                    height: 25.0,
-                  ),
-                  Text(
-                    'Title: ${composition.title}',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                  ),
-                  Visibility(
-                    visible: !composition.isProcessing(),
-                    child: Text(
-                      'This composition\'s audio is still processing. Please try again later!',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Visibility(
-                    visible: composition.isProcessing(),
-                    child: Text(
-                      'Composer: ${composition.composer}',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Visibility(
-                    visible: composition.isProcessing(),
-                    child: Text(
-                      'Length: ${addMinZero ? '0' : ''}$compMinutes:${addSecZero ? '0' : ''}$compSeconds',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-              Visibility(
-                visible: !composition.isProcessing(),
-                child: Positioned(
-                  bottom: 10.0,
-                  left: 0,
-                  right: 0,
-                  child:
-                      optionButtons(context, searchBloc, authBloc.currentUser),
-                ),
-              ),
-            ],
-          ),
-        ),
+  void goToPlayer(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).push(
+      CupertinoPageRoute(
+        builder: (context) {
+          return PlayerScreen(composition: composition);
+        },
       ),
     );
   }
 
-  // Composition modification can only occur from the Library screen.
-  Widget optionButtons(
-      BuildContext context, SearchBloc searchBloc, UserModel user) {
-    if (screen == ScreenType.LIBRARY) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          editButton(context, searchBloc, user),
-          VerticalDivider(
-            color: Colors.transparent,
-            thickness: 10.0,
+  // Presents a composition's duration if it has finished processing. In
+  // addition, it presents edit/delete buttons when searched via the library.
+  Widget trailingItems(BuildContext context, SearchBloc bloc, UserModel user) {
+    if (composition.isProcessing()) {
+      return Wrap(
+        spacing: 12,
+        children: <Widget>[
+          Text(
+            '(Processing...)',
+            style: TextStyle(
+              color: Colors.grey[700],
+            ),
           ),
-          deleteButton(context, searchBloc, user),
+          Icon(Icons.hourglass_bottom),
         ],
       );
     }
 
-    return SizedBox.shrink();
+    final int compMinutes =
+        composition.isProcessing() ? 0 : composition.time ~/ 60;
+    final int compSeconds =
+        composition.isProcessing() ? 0 : (composition.time % 60).floor();
+
+    final bool addMinZero = (compMinutes < 10);
+    final bool addSecZero = (compSeconds < 10);
+
+    final duration =
+        Text('${addMinZero ? '0' : ''}$compMinutes:${addSecZero ? '0' : ''}'
+            '$compSeconds');
+
+    switch (screen) {
+      case ScreenType.SEARCH:
+        return duration;
+      case ScreenType.LIBRARY:
+        return Wrap(
+          spacing: 12,
+          children: <Widget>[
+            editButton(context, bloc, user),
+            deleteButton(context, bloc, user),
+          ],
+        );
+      // Unsupported screen type.
+      default:
+        return Icon(Icons.error);
+    }
   }
 
-  Widget editButton(
-      BuildContext context, SearchBloc searchBloc, UserModel user) {
-    return SizedBox(
-      height: 50.0,
-      width: 50.0,
-      child: CircleAvatar(
-        backgroundColor: Theme.of(context).highlightColor,
-        child: IconButton(
-          icon: Icon(
-            Icons.edit,
-            color: Theme.of(context).accentColor,
-          ),
-          iconSize: 30.0,
-          onPressed: () => Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) {
-                return CompositionInfoScreen(
-                  user: user,
-                  screen: ScreenType.LIBRARY,
-                  composition: composition,
-                );
-              },
-            ),
-          ),
+  Widget editButton(BuildContext context, SearchBloc bloc, UserModel user) {
+    return IconButton(
+      icon: Icon(
+        Icons.edit,
+        // color: Theme.of(context).accentColor,
+      ),
+      // iconSize: 30.0,
+      onPressed: () => Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (context) {
+            return CompositionInfoScreen(
+              user: user,
+              screen: ScreenType.LIBRARY,
+              composition: composition,
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget deleteButton(
-      BuildContext context, SearchBloc searchBloc, UserModel user) {
-    return SizedBox(
-      height: 50.0,
-      width: 50.0,
-      child: CircleAvatar(
-        backgroundColor: Theme.of(context).highlightColor,
-        child: IconButton(
-          iconSize: 30.0,
-          icon: Icon(Icons.delete, color: Theme.of(context).accentColor),
-          onPressed: () => onDeleteComposition(context, searchBloc, user),
-        ),
+  Widget deleteButton(BuildContext context, SearchBloc bloc, UserModel user) {
+    return IconButton(
+      iconSize: 30.0,
+      icon: Icon(
+        Icons.delete,
+        // color: Theme.of(context).accentColor,
       ),
+      onPressed: () => onDeleteComposition(context, bloc, user),
     );
   }
 
@@ -228,13 +188,9 @@ class CompositionTile extends StatelessWidget {
   Widget deletingOrButtons(BuildContext context, SearchBloc bloc,
       UserModel user, AsyncSnapshot<bool> snapshot) {
     if (snapshot.hasData && snapshot.data == true) {
-      return Container(
-        height: 50.0,
-        width: 50.0,
-        child: Center(
-          child: CircularProgressIndicator(
-            backgroundColor: Colors.white,
-          ),
+      return Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.white,
         ),
       );
     }

@@ -7,6 +7,7 @@ import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/models/member_model.dart';
 import 'package:jct/src/models/user_model.dart';
+import 'package:jct/src/widgets/action_button.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
 import 'package:jct/src/widgets/start_session_button.dart';
 
@@ -191,14 +192,18 @@ class SessionScreen extends StatelessWidget {
                             // TODO: Maybe add a StreamBuilder here that checks whether a user joined or left, y'know, to fill this empty space!!!
                             Align(
                               alignment: Alignment.center,
-                              child: actionButton(context, bloc),
+                              child: ActionButton(roomId: roomId, role: role),
                             ),
                             Align(
-                              alignment: FractionalOffset.bottomCenter,
-                              heightFactor: 11.0,
-                              child: isHost
-                                  ? StartSessionButton()
-                                  : sessionStartNotifier(context, bloc),
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: 60.0,
+                                ),
+                                child: isHost
+                                    ? StartSessionButton()
+                                    : sessionStartNotifier(context, bloc),
+                              ),
                             ),
                           ],
                         );
@@ -249,7 +254,6 @@ class SessionScreen extends StatelessWidget {
                   ),
                   onPressed: () {
                     if (isHost) {
-                      // TODO: Verify that this shorthand works (watch stop).
                       bloc.watch?.stop();
                       bloc.timer?.cancel();
 
@@ -362,102 +366,6 @@ class SessionScreen extends StatelessWidget {
         }
       },
     );
-  }
-
-  Widget actionButton(BuildContext context, RoomBloc bloc) {
-    return StreamBuilder(
-      stream: bloc.isActive,
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        // Session not yet started.
-        if (!snapshot.hasData) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ClipOval(
-                child: Material(
-                  color: Colors.transparent,
-                  child: SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: Icon(
-                      Icons.watch_later,
-                      color: Colors.grey,
-                      size: 100.0,
-                    ),
-                  ),
-                ),
-              ),
-              Divider(
-                color: Colors.transparent,
-                height: 10.0,
-              ),
-              Text(
-                'Awaiting session initiation...',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-            ],
-          );
-        }
-
-        bool active = snapshot.data;
-
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ClipOval(
-              child: Material(
-                color: active ? Colors.blue[700] : Colors.blue,
-                shadowColor: Colors.blue[900],
-                child: InkWell(
-                  splashColor: active ? Colors.blue[700] : Colors.blue,
-                  child: SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: getActionIcon(context, active),
-                  ),
-                  onTap: () => bloc.muteOrDeafen(roomId, role, active),
-                ),
-              ),
-            ),
-            Divider(
-              color: Colors.transparent,
-              height: 10.0,
-            ),
-            getActionText(context, active),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget getActionIcon(BuildContext context, bool active) {
-    if (role == Role.PERFORMER) {
-      return Icon(
-        active ? Icons.mic : Icons.mic_off,
-        size: 100.0,
-      );
-    } else {
-      return Icon(
-        active ? Icons.headset : Icons.headset_off,
-        size: 100.0,
-      );
-    }
-  }
-
-  Widget getActionText(BuildContext context, bool active) {
-    if (role == Role.PERFORMER) {
-      return Text(
-        (active ? 'Click to Mute' : 'Click to Unmute'),
-        style: Theme.of(context).textTheme.bodyText1,
-      );
-    } else {
-      return Text(
-        (active ? 'Click to Deafen' : 'Click to Undeafen'),
-        style: Theme.of(context).textTheme.bodyText1,
-      );
-    }
   }
 
   // A text widget notifying a non-host of the current status of the room.

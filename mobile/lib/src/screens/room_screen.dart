@@ -11,6 +11,8 @@ import 'package:jct/src/widgets/host_button.dart';
 import 'package:jct/src/widgets/room_tile.dart';
 import 'package:jct/src/widgets/scroll_to_refresh.dart';
 
+import 'package:rxdart/rxdart.dart';
+
 class RoomScreen extends StatelessWidget {
   final UserModel user;
 
@@ -36,7 +38,8 @@ class RoomScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
         body: StreamBuilder(
           stream: bloc.rooms,
-          builder: (context, AsyncSnapshot<Map<String, RoomModel>> snapshot) {
+          builder: (context,
+              AsyncSnapshot<Map<String, BehaviorSubject<RoomModel>>> snapshot) {
             if (!snapshot.hasData) {
               return SizedBox.expand(
                 child: Container(
@@ -80,18 +83,36 @@ class RoomScreen extends StatelessWidget {
 
             return Stack(
               children: [
-                ScrollToRefresh(),
+                Column(
+                  children: [
+                    ScrollToRefresh(),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 25.0,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 10.0,
+                        right: 10.0,
+                      ),
+                      child: Text(
+                        'Masterpieces are currently at work!',
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                    ),
+                  ],
+                ),
                 RefreshIndicator(
                   onRefresh: () async => bloc.updateRooms(),
                   child: ListView(children: []),
                   displacement: 20.0,
                 ),
-                roomsGrid(snapshot.data),
+                roomsList(snapshot.data),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: EdgeInsets.only(
-                      bottom: 60.0,
+                      bottom: 30.0,
                     ),
                     child: HostButton(user: user),
                   ),
@@ -104,20 +125,33 @@ class RoomScreen extends StatelessWidget {
     );
   }
 
-  Widget roomsGrid(Map<String, RoomModel> rooms) {
+  Widget roomsList(Map<String, BehaviorSubject<RoomModel>> rooms) {
     return Container(
       height: 500,
       padding: EdgeInsets.only(top: 100.0),
-      child: GridView.builder(
+      child: ListView.separated(
         itemCount: rooms.length,
-        scrollDirection: Axis.vertical,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-        ),
         itemBuilder: (BuildContext context, int index) {
           final String key = rooms.keys.elementAt(index);
 
-          return RoomTile(user: user, room: rooms[key]);
+          return StreamBuilder(
+            stream: rooms[key].stream,
+            builder: (BuildContext context, AsyncSnapshot<RoomModel> snapshot) {
+              if (!snapshot.hasData) {
+                return ListTile(
+                  enabled: false,
+                  title: Text('Invalid Room'),
+                );
+              }
+
+              return RoomTile(user: user, room: snapshot.data);
+            },
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(
+            height: 5.0,
+          );
         },
       ),
     );

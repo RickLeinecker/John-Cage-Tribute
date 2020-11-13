@@ -6,6 +6,7 @@ import 'package:jct/src/blocs/room/bloc.dart';
 import 'package:jct/src/models/room_model.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/session_screen.dart';
+import 'package:jct/src/widgets/flashing_music_icon.dart';
 import 'package:jct/src/widgets/role_buttons.dart';
 
 import 'package:permission_handler/permission_handler.dart';
@@ -20,33 +21,67 @@ class RoomTile extends StatelessWidget {
   Widget build(context) {
     final RoomBloc bloc = RoomProvider.of(context);
 
-    return Card(
-      child: Container(
-        color: Theme.of(context).accentColor,
-        child: ListTile(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Host: ${room.host}',
-                style: Theme.of(context).textTheme.headline6,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Performers: ${room.currentPerformers}/${room.maxPerformers}',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              Text(
-                'Listeners: ${room.currentListeners}/${room.maxListeners}',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-            ],
+    if (room.isClosed()) {
+      return ListTile(
+        tileColor: Colors.grey,
+        enabled: false,
+        title: Text(
+          room.host,
+          style: TextStyle(
+            fontSize: 30.0,
           ),
-          onTap: () {
-            onTilePressed(context, bloc);
-          },
+        ),
+        subtitle: Text('This room is closed.'),
+        trailing: Icon(Icons.cancel_presentation),
+      );
+    }
+
+    return ListTile(
+      tileColor: Theme.of(context).accentColor,
+      title: Text(
+        room.host,
+        style: TextStyle(
+          fontSize: 30.0,
         ),
       ),
+      subtitle: Row(
+        children: [
+          Icon(Icons.mic),
+          VerticalDivider(
+            color: Colors.transparent,
+            width: 5.0,
+          ),
+          Text(
+            '${room.currentPerformers}/${room.maxPerformers}',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+          VerticalDivider(
+            color: Colors.transparent,
+            width: 15.0,
+          ),
+          Icon(Icons.headset),
+          VerticalDivider(
+            color: Colors.transparent,
+            width: 5.0,
+          ),
+          Text(
+            '${room.currentListeners}/${room.maxListeners}',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+        ],
+      ),
+      trailing: Wrap(
+        spacing: 18,
+        children: <Widget>[
+          room.hasPin ? Icon(Icons.lock) : SizedBox.shrink(),
+          (room.sessionStarted ?? false)
+              ? FlashingMusicIcon()
+              : SizedBox.shrink(),
+        ],
+      ),
+      onTap: () {
+        onTilePressed(context, bloc);
+      },
     );
   }
 
@@ -60,17 +95,17 @@ class RoomTile extends StatelessWidget {
           backgroundColor: Colors.teal,
           contentPadding:
               EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          title: Text(
+            'Joining a room?',
+            style: Theme.of(context).textTheme.headline6,
+            textAlign: TextAlign.center,
+          ),
           children: [
             Column(
               children: [
-                Text(
-                  'Joining a \nroom?',
-                  style: Theme.of(context).textTheme.headline6,
-                  textAlign: TextAlign.center,
-                ),
                 Divider(
                   color: Colors.transparent,
-                  height: 35.0,
+                  height: 10.0,
                 ),
                 Text(
                   'What role will you play?',
@@ -137,14 +172,32 @@ class RoomTile extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyText1,
             textAlign: TextAlign.center,
           ),
-          PinCodeTextField(
-            appContext: context,
-            enablePinAutofill: false,
-            backgroundColor: Colors.teal,
-            keyboardType: TextInputType.number,
-            length: PIN_LENGTH,
-            onChanged: null,
-            onCompleted: (pin) => bloc.verifyPin(room.id, pin),
+          Divider(
+            color: Colors.transparent,
+            height: 15.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 10.0, right: 10.0),
+            child: PinCodeTextField(
+              appContext: context,
+              backgroundColor: Colors.transparent,
+              cursorColor: Colors.white,
+              enablePinAutofill: false,
+              keyboardType: TextInputType.number,
+              length: PIN_LENGTH,
+              onChanged: null,
+              onCompleted: (pin) => bloc.verifyPin(room.id, pin),
+              pinTheme: PinTheme(
+                activeColor: Colors.lime,
+                inactiveColor: Colors.white,
+                shape: PinCodeFieldShape.box,
+                selectedColor: Colors.lightBlueAccent[200],
+              ),
+              textStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+            ),
           ),
         ],
       ),

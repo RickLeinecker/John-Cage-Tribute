@@ -17,9 +17,7 @@ class PreRoomScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          'Audio Recording Disclaimer',
-        ),
+        title: Text('Audio Recording Disclaimer'),
       ),
       body: StreamBuilder(
         stream: user,
@@ -110,9 +108,23 @@ class PreRoomScreen extends StatelessWidget {
                     height: 20.0,
                   ),
                   Text(
-                    'We of John Cage Tribute\'s team are not liable for such behavior. Use this application at your own risk.',
+                    'We of John Cage Tribute\'s team are not liable for such behavior.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Divider(
+                    color: Colors.transparent,
+                    height: 20.0,
+                  ),
+                  Text(
+                    'Creativity is key for this app, but it too has limits. '
+                    'Use its session feature at your own risk.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                  Divider(
+                    color: Colors.transparent,
+                    height: 30.0,
                   ),
                 ],
               ),

@@ -45,7 +45,7 @@ class DashboardState extends State<Dashboard> {
           if (index == 2) {
             searchBloc.clearSearchResults();
           } else if (index == 3) {
-            searchBloc.changeFilterSearch(FilterOption.TAGS);
+            searchBloc.changeFilterSearch(FilterOption.TITLE);
           }
         },
         items: [

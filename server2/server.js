@@ -18,8 +18,8 @@ const wavefile = require('wavefile').WaveFile;
 const Lame = require("node-lame").Lame;
 const AudioProcessor = require('./audioProcessor/audioProcessor.js');
 
-const baseUrl = 'https://johncagetribute.org';
-// const baseUrl = `http://localhost:${PORT}`;
+// const baseUrl = 'https://johncagetribute.org';
+const baseUrl = `http://localhost:${PORT}`;
 
 // Connect Database
 connectDB();
@@ -61,6 +61,7 @@ io.on('connection', function (socket) {
     const member = data.member;
 
     availableRooms[roomId] = room;
+    availableRooms[roomId]['isOpen'] = true;
     availableRooms[roomId]['members'] = {};
     availableRooms[roomId]['members'][socket.id] = member;
     availableRooms[roomId]['members'][socket.id]['socket'] = socket.id;
@@ -129,6 +130,7 @@ io.on('connection', function (socket) {
             io.sockets.sockets[socketId].leave(roomId);
           });
         });
+      io.emit('updateoneroom', { roomId: roomId, room: null });
     }
     // If non-host is leaving, handle them exclusively
     else {
@@ -160,6 +162,7 @@ io.on('connection', function (socket) {
         members: availableRooms[roomId]['members'],
         sessionStarted: availableRooms[roomId]['sessionStarted']
       });
+      io.emit('updateoneroom', { roomId: roomId, room: availableRooms[roomId] });
     }
   });
 
@@ -245,6 +248,7 @@ io.on('connection', function (socket) {
         members: availableRooms[roomId]['members'],
         sessionStarted: availableRooms[roomId]['sessionStarted']
       });
+      io.emit('updateoneroom', { roomId: roomId, room: availableRooms[roomId] });
     }
   });
 
@@ -274,11 +278,14 @@ io.on('connection', function (socket) {
       return;
     }
 
-    // If the host is leaving, clear the room.
     if (user['isHost']) {
       console.log("Yep! You're the host! Time to partyyyy!");
       availableRooms[roomId]['sessionStarted'] = true;
       io.to(roomId).emit('audiostart', null);
+      io.emit('updateoneroom', {
+        roomId: roomId,
+        room: availableRooms[roomId]
+      });
     }
   });
 
@@ -363,6 +370,8 @@ io.on('connection', function (socket) {
         });
       });
 
+    io.emit('updateoneroom', { roomId: roomId, room: null });
+
     // Create a WAV file buffer from the raw audio data before we
     // delete the room. This encodes the number of channels, sample rate,
     // and bit depth into the raw data which the MP3 conversion needs
@@ -418,7 +427,6 @@ io.on('connection', function (socket) {
     fs.unlink(mp3FileName, (err) => {
       if (err) console.log('Error deleting temporary file!');
     });
-
   });
 
   socket.on('disconnect', function () {
@@ -463,6 +471,8 @@ io.on('connection', function (socket) {
               );
             });
           });
+
+        io.emit('updateoneroom', { roomId: roomId, room: null });
       }
 
       // When a non-host disconnects, the room and members size is updated
@@ -489,6 +499,7 @@ io.on('connection', function (socket) {
             sessionStarted: availableRooms[roomId]['sessionStarted']
           }
         );
+        io.emit('updateoneroom', { roomId: roomId, room: availableRooms[roomId] });
       }
     }
   });

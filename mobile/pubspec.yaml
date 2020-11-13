@@ -1,5 +1,5 @@
 name: jct
-description: John Cage-inspired application that allows audio composition in the likeness of John Cage. iOS/Android
+description: John Cage-inspired application that allows audio composition creation in the likeness of John Cage. Available for iOS/Android
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.

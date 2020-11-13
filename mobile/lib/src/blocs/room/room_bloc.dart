@@ -19,7 +19,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class RoomBloc {
   // Room Screen
-  final _rooms = BehaviorSubject<Map<String, RoomModel>>();
+  final _rooms = BehaviorSubject<Map<String, BehaviorSubject<RoomModel>>>();
   final _pinValid = BehaviorSubject<bool>();
   final _role = BehaviorSubject<Role>();
 
@@ -39,7 +39,7 @@ class RoomBloc {
 
   Function(Role) get changeRole => _role.sink.add;
 
-  Stream<Map<String, RoomModel>> get rooms => _rooms.stream;
+  Stream<Map<String, BehaviorSubject<RoomModel>>> get rooms => _rooms.stream;
   Stream<Map<String, MemberModel>> get members => _members.stream;
   Stream<Role> get role => _role.stream;
   Stream<bool> get pinValid => _pinValid.stream;
@@ -81,13 +81,25 @@ class RoomBloc {
     // Updates list of available rooms in Room Screen
     socket.on('updaterooms', (data) {
       print('Updated rooms!');
-      final Map<String, RoomModel> roomMap = Map();
+      final Map<String, BehaviorSubject<RoomModel>> roomMap = Map();
 
       for (String key in data.keys) {
-        roomMap[key] = RoomModel.fromJson(data[key]);
+        roomMap[key] = BehaviorSubject.seeded(RoomModel.fromJson(data[key]));
       }
 
+      disposeRooms();
       _rooms.sink.add(roomMap);
+    });
+
+    socket.on('updateoneroom', (data) {
+      final String roomId = data['roomId'];
+      final RoomModel room = data['room'] != null
+          ? RoomModel.fromJson(data['room'])
+          : RoomModel.closedRoom(roomId);
+
+      if (_rooms.value != null && _rooms.value.containsKey(roomId)) {
+        _rooms.value[roomId].sink.add(room);
+      }
     });
 
     // Updates list of members shown on a particular room
@@ -114,9 +126,7 @@ class RoomBloc {
             _bufferPlayer = AudioBufferPlayer();
             _audioStreamer = null;
           }
-        }
-        // TODO: Change back minimum performers for session
-        else if (data['members'].length >= MIN_PERFORMERS) {
+        } else if (data['members'].length >= MIN_PERFORMERS) {
           _sessionHasBegun.sink.add(false);
         } else {
           _sessionHasBegun.add(null);
@@ -133,7 +143,6 @@ class RoomBloc {
     });
 
     // Failure socket message that occurred for a PIN entry.
-    // TODO: Test this locally, get server code from interwebs
     socket.on('pinerror', (err) {
       _pinValid.addError(err);
     });
@@ -166,9 +175,6 @@ class RoomBloc {
       // At this point, non-hosts should be greeted by a success screen!
       _members.sink.add(Map());
       _sessionHasBegun.sink.add(false);
-
-      // _bufferPlayer = null;
-      // _audioStreamer = null;
     });
 
     // Ends the session due to a server error or a host leaving.
@@ -232,6 +238,7 @@ class RoomBloc {
     _isActive.sink.add(null);
     _members.sink.add(null);
     _sessionHasBegun.sink.add(null);
+    _pinValid.sink.add(null);
 
     final Map<String, dynamic> member = {
       'socket': socket.id,
@@ -277,7 +284,6 @@ class RoomBloc {
         _bufferPlayer.deafenAudio();
       } else if (role == Role.PERFORMER) {
         await _audioStreamer.stop();
-        // _audioStreamer.muteAudio();
       } else {
         print('Role unsupported for setting inactive.');
       }
@@ -286,7 +292,6 @@ class RoomBloc {
         _bufferPlayer.undeafenAudio();
       } else if (role == Role.PERFORMER) {
         await _audioStreamer.start(onAudio);
-        // _audioStreamer.unmuteAudio();
       } else {
         print('Role unsupported for setting active.');
       }
@@ -294,8 +299,7 @@ class RoomBloc {
     _isActive.sink.add(!active);
   }
 
-  /// Exits the guest/user from their current room, canceling audio behavior.
-  /// Certain streams are reset in order to refresh user input.
+  /// Exits the user from their current room while canceling audio behavior.
   void leaveRoom(String roomId, bool isHost) {
     resetRoomAndMemberStreams();
 
@@ -309,19 +313,23 @@ class RoomBloc {
   }
 
   /// Ends the session between the members of the room.
-  /// Any immediately important composition metadata is passed via an API call.
-  /// (Examples: Composer name, composition runtime in seconds)
   ///
+  /// Any immediately important composition metadata is passed via an API call.
   /// The button that activates this is only visible to the host.
   Future<String> endSession(UserModel user) async {
     final performerNames = List<String>();
 
     for (String socketId in _members.value.keys) {
-      print('User: ${_members.value[socketId].username}');
       final member = _members.value[socketId];
+      int numGuests = 0;
 
-      if (!member.isGuest && member.role == Role.PERFORMER) {
-        performerNames.add(member.username);
+      if (member.role == Role.PERFORMER) {
+        if (!member.isGuest) {
+          performerNames.add(member.username);
+        } else {
+          numGuests++;
+          performerNames.add('Guest $numGuests');
+        }
       }
     }
 
@@ -341,16 +349,22 @@ class RoomBloc {
     return compId;
   }
 
-  /// TODO: Finish comments in room_bloc.dart
+  /// Adds null to the rooms list and pin streams, effectively treating them
+  /// as empty with no information.
   void resetRoomAndMemberStreams() {
     _rooms.sink.add(null);
     _pinValid.sink.add(null);
   }
 
+  /// Makes a socket call to receive all currently active rooms from the server.
+  /// Additionally, refreshes the pinValid stream.
   void updateRooms() {
+    _pinValid.sink.add(null);
     socket.emit('updaterooms', null);
   }
 
+  /// Initializes mic/speaker objects in preparation for an audio session.
+  /// The object that is initialized is based on which role a user selected.
   void setupAudioBehavior() {
     print('Setting up user of role: $currentRole.');
     if (currentRole == Role.LISTENER && _bufferPlayer == null) {
@@ -362,6 +376,8 @@ class RoomBloc {
     }
   }
 
+  /// Stops audio functionality on mic/speaker object based on a user's role in
+  /// a session.
   void endAudioBehavior() {
     if (currentRole == Role.LISTENER) {
       if (_bufferPlayer != null) {
@@ -374,6 +390,7 @@ class RoomBloc {
     }
   }
 
+  /// Edits a pre-existing composition's metadata that was provided by the user.
   Future<StatusModel> submitCompositionInfo(
       {String userId,
       String compositionId,
@@ -393,7 +410,17 @@ class RoomBloc {
     return await _compositionRepo.editComposition(data);
   }
 
+  void disposeRooms() {
+    if (_rooms.value != null) {
+      for (String key in _rooms.value.keys) {
+        _rooms.value[key].close();
+      }
+    }
+  }
+
+  /// Closes streams and disconnects socket.
   void dispose() {
+    disposeRooms();
     _rooms.close();
     _members.close();
     _pinValid.close();

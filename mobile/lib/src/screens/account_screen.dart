@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/auth/bloc.dart';
+import 'package:jct/src/blocs/search/bloc.dart';
+import 'package:jct/src/blocs/search/search_provider.dart';
 import 'package:jct/src/constants/guest_user.dart';
 import 'package:jct/src/constants/user_auth.dart';
 import 'package:jct/src/models/user_model.dart';
@@ -10,10 +12,11 @@ import 'package:jct/src/widgets/loading_user.dart';
 
 class AccountScreen extends StatelessWidget {
   Widget build(context) {
-    final AuthBloc bloc = AuthProvider.of(context);
+    final AuthBloc authBloc = AuthProvider.of(context);
+    final SearchBloc searchBloc = SearchProvider.of(context);
 
     return StreamBuilder(
-      stream: bloc.user,
+      stream: authBloc.user,
       builder: (context, AsyncSnapshot<UserModel> snapshot) {
         if (!snapshot.hasData) {
           return LoadingUser();
@@ -21,7 +24,7 @@ class AccountScreen extends StatelessWidget {
 
         if (snapshot.data != GUEST_USER) {
           return Scaffold(
-            body: userView(context, bloc, snapshot.data),
+            body: userView(context, authBloc, searchBloc, snapshot.data),
           );
         } else {
           return DefaultTabController(
@@ -35,7 +38,7 @@ class AccountScreen extends StatelessWidget {
                   labelColor: Colors.white,
                   unselectedLabelColor: Theme.of(context).unselectedWidgetColor,
                   indicatorColor: Colors.white,
-                  onTap: (idx) => bloc.clearFields,
+                  onTap: (idx) => authBloc.clearFields,
                   tabs: [
                     Tab(text: 'Login'),
                     Tab(text: 'Sign Up'),
@@ -44,8 +47,8 @@ class AccountScreen extends StatelessWidget {
               ),
               body: TabBarView(
                 children: [
-                  loginView(context, bloc),
-                  signupView(context, bloc),
+                  loginView(context, authBloc),
+                  signupView(context, authBloc),
                 ],
               ),
             ),
@@ -55,7 +58,8 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget userView(BuildContext context, AuthBloc bloc, UserModel user) {
+  Widget userView(BuildContext context, AuthBloc authBloc,
+      SearchBloc searchBloc, UserModel user) {
     return SizedBox.expand(
       child: Container(
         color: Theme.of(context).primaryColor,
@@ -78,14 +82,17 @@ class AccountScreen extends StatelessWidget {
             ),
             RaisedButton(
               color: Theme.of(context).accentColor,
-              onPressed: () => Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) {
-                    return LibraryScreen(user: user);
-                  },
-                ),
-              ),
+              onPressed: () {
+                searchBloc.clearSearchResults();
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) {
+                      return LibraryScreen(user: user);
+                    },
+                  ),
+                );
+              },
               child: Text('View My Compositions',
                   style: TextStyle(color: Colors.white)),
             ),
@@ -103,7 +110,7 @@ class AccountScreen extends StatelessWidget {
             RaisedButton(
               color: Theme.of(context).accentColor,
               onPressed: () async {
-                await bloc.logout();
+                await authBloc.logout();
               },
               child: Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
@@ -117,7 +124,7 @@ class AccountScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
             StreamBuilder(
-                stream: bloc.deletingAccount,
+                stream: authBloc.deletingAccount,
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
                   if (snapshot.data == true) {
                     return CircularProgressIndicator(
@@ -140,7 +147,7 @@ class AccountScreen extends StatelessWidget {
                       RaisedButton(
                         color: Theme.of(context).accentColor,
                         onPressed: () {
-                          bloc.deleteAccount();
+                          authBloc.deleteAccount();
                         },
                         child: Text(
                           'Delete Account',

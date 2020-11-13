@@ -58,11 +58,9 @@ class LibraryScreen extends StatelessWidget {
             ),
             Center(
               child: StreamBuilder(
-                // stream: bloc.queryLibrary,
                 stream: bloc.querySearch,
                 builder: (context, AsyncSnapshot<bool> searchingSnapshot) {
                   return StreamBuilder(
-                    // stream: bloc.libraryCompList,
                     stream: bloc.searchCompList,
                     builder: (context,
                         AsyncSnapshot<List<CompositionModel>> compSnapshot) {
@@ -128,17 +126,18 @@ class LibraryScreen extends StatelessWidget {
   }
 
   Widget compositionsDisplay(AsyncSnapshot<List<CompositionModel>> snapshot) {
-    return GridView.builder(
+    return ListView.separated(
       itemCount: snapshot.data.length,
-      scrollDirection: Axis.vertical,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-      ),
-      itemBuilder: (context, index) {
+      itemBuilder: (BuildContext context, int index) {
         return CompositionTile(
           composition: snapshot.data.elementAt(index),
           screen: ScreenType.LIBRARY,
           index: index,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return Divider(
+          height: 5.0,
         );
       },
     );

@@ -40,7 +40,7 @@ class HostButton extends StatelessWidget {
         bool pinEnabled = false;
 
         return AlertDialog(
-          backgroundColor: Colors.teal[700],
+          backgroundColor: Colors.teal,
           insetPadding: EdgeInsets.only(
             left: 30.0,
             right: 30.0,
@@ -49,86 +49,112 @@ class HostButton extends StatelessWidget {
           ),
           contentPadding: EdgeInsets.zero,
           title: Text(
-            'Some Questions...',
+            'About Your Room',
             textAlign: TextAlign.center,
           ),
           titleTextStyle: Theme.of(context).textTheme.headline6,
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              final typedEntirePIN = enteredPin.length == PIN_LENGTH;
+              final typedEntirePIN = (enteredPin.length == PIN_LENGTH);
 
-              return Container(
-                decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'What role will you play?',
-                      style: Theme.of(context).textTheme.bodyText1,
-                      textAlign: TextAlign.center,
+              return SingleChildScrollView(
+                physics: ClampingScrollPhysics(),
+                child: Container(
+                  decoration: ShapeDecoration(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    RoleButtons(),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 15.0,
-                    ),
-                    SwitchListTile(
-                      activeColor: Colors.greenAccent[700],
-                      title: Text(
-                        'Protect with PIN?',
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Divider(
+                        color: Colors.transparent,
+                        height: 10.0,
+                      ),
+                      Text(
+                        'What role will you play?',
+                        style: Theme.of(context).textTheme.bodyText1,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17.0,
+                      ),
+                      RoleButtons(),
+                      Divider(
+                        color: Colors.transparent,
+                        height: 15.0,
+                      ),
+                      SwitchListTile(
+                        activeColor: Colors.greenAccent[700],
+                        title: Text(
+                          'Protect with PIN?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        secondary: pinEnabled
+                            ? Icon(Icons.lock)
+                            : Icon(Icons.lock_open_sharp),
+                        value: pinEnabled,
+                        onChanged: (value) =>
+                            setState(() => pinEnabled = value),
+                      ),
+                      Divider(
+                        color: Colors.transparent,
+                        height: 15.0,
+                      ),
+                      Text(
+                        'Enter its $PIN_LENGTH-digit PIN.',
+                        style: pinEnabled
+                            ? Theme.of(context).textTheme.bodyText1
+                            : Theme.of(context).textTheme.subtitle2,
+                        textAlign: TextAlign.center,
+                      ),
+                      Divider(
+                        color: Colors.transparent,
+                        height: 15.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                        child: PinCodeTextField(
+                          appContext: context,
+                          backgroundColor: Colors.transparent,
+                          cursorColor: Colors.white,
+                          enablePinAutofill: false,
+                          enabled: pinEnabled,
+                          keyboardType: TextInputType.number,
+                          length: PIN_LENGTH,
+                          onChanged: (pin) => setState(() => enteredPin = pin),
+                          pinTheme: PinTheme(
+                            activeColor: Colors.lime,
+                            inactiveColor: Colors.white,
+                            shape: PinCodeFieldShape.box,
+                            selectedColor: Colors.lightBlueAccent[200],
+                          ),
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
                         ),
                       ),
-                      secondary: pinEnabled
-                          ? Icon(Icons.lock)
-                          : Icon(Icons.lock_open_sharp),
-                      value: pinEnabled,
-                      onChanged: (value) => setState(() => pinEnabled = value),
-                    ),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 20.0,
-                    ),
-                    Text(
-                      'Enter a $PIN_LENGTH-digit PIN for this \nroom.',
-                      style: pinEnabled
-                          ? Theme.of(context).textTheme.bodyText1
-                          : Theme.of(context).textTheme.subtitle2,
-                      textAlign: TextAlign.center,
-                    ),
-                    PinCodeTextField(
-                      appContext: context,
-                      enablePinAutofill: false,
-                      backgroundColor: Colors.transparent,
-                      cursorColor: Colors.white,
-                      enabled: pinEnabled,
-                      keyboardType: TextInputType.number,
-                      length: PIN_LENGTH,
-                      onChanged: (pin) => setState(() => enteredPin = pin),
-                    ),
-                    Divider(
-                      color: Colors.transparent,
-                      height: 10.0,
-                    ),
-                    Center(
-                      child: RaisedButton(
-                        color: Theme.of(context).textTheme.bodyText2.color,
-                        textColor: Colors.teal,
-                        highlightColor: Colors.white,
-                        child: Text('Create'),
-                        onPressed: !pinEnabled || typedEntirePIN
-                            ? () => onCreateRoom(
-                                context, bloc, user, enteredPin, pinEnabled)
-                            : null,
+                      Divider(
+                        color: Colors.transparent,
+                        height: 10.0,
                       ),
-                    ),
-                  ],
+                      Center(
+                        child: RaisedButton(
+                          color: Theme.of(context).textTheme.bodyText2.color,
+                          textColor: Colors.teal[900],
+                          highlightColor: Colors.white,
+                          child: Text('Create'),
+                          onPressed: !pinEnabled || typedEntirePIN
+                              ? () => onCreateRoom(
+                                  context, bloc, user, enteredPin, pinEnabled)
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

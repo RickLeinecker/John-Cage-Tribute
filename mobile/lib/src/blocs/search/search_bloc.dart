@@ -31,7 +31,7 @@ class SearchBloc {
   Function(FilterOption) get changeFilterSearch => _filterSearch.sink.add;
 
   SearchBloc() {
-    changeFilterSearch(FilterOption.TAGS);
+    changeFilterSearch(FilterOption.TITLE);
   }
 
   /// Performs a search for compositions based on the user's search query.
