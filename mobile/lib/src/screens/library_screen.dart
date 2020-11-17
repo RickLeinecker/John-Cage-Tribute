@@ -6,9 +6,8 @@ import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/widgets/composition_tile.dart';
-import 'package:jct/src/widgets/dropdown_filters.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
-import 'package:jct/src/widgets/search_field.dart';
+import 'package:jct/src/widgets/search_app_bar.dart';
 
 class LibraryScreen extends StatelessWidget {
   final UserModel user;
@@ -25,29 +24,8 @@ class LibraryScreen extends StatelessWidget {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(100.0),
-          child: AppBar(
-            backgroundColor: Theme.of(context).accentColor,
-            centerTitle: true,
-            title: SearchField(user: user, screen: ScreenType.LIBRARY),
-            bottom: PreferredSize(
-              preferredSize: Size(0.0, 150.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Filter by: ',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  SizedBox(
-                    width: 150,
-                    child: DropdownFilters(screen: ScreenType.LIBRARY),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          preferredSize: Size.fromHeight(50.0),
+          child: SearchAppBar(user: user, screen: ScreenType.LIBRARY),
         ),
         body: Stack(
           children: [
@@ -93,8 +71,8 @@ class LibraryScreen extends StatelessWidget {
                             return GreetingMessage(
                               greeting: GreetingType.NORESULTS,
                               message:
-                                  'Darn. Looks like you have no compositions that'
-                                  ' meet that criteria.',
+                                  'Darn. Looks like you have no compositions '
+                                  'that meet that criteria.',
                             );
                           }
 

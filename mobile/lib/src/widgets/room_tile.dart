@@ -92,7 +92,7 @@ class RoomTile extends StatelessWidget {
         return SimpleDialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.cyan,
           contentPadding:
               EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           title: Text(
@@ -140,7 +140,7 @@ class RoomTile extends StatelessWidget {
                           color: Theme.of(context).textTheme.bodyText2.color,
                           child: Text(
                             'Join',
-                            style: TextStyle(color: Colors.teal),
+                            style: TextStyle(color: Colors.cyan),
                           ),
                           onPressed: !room.hasPin || snapshot.hasData
                               ? () => onJoinRoom(context, bloc)

@@ -40,7 +40,7 @@ class HostButton extends StatelessWidget {
         bool pinEnabled = false;
 
         return AlertDialog(
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.cyan[600],
           insetPadding: EdgeInsets.only(
             left: 30.0,
             right: 30.0,
@@ -83,7 +83,7 @@ class HostButton extends StatelessWidget {
                         height: 15.0,
                       ),
                       SwitchListTile(
-                        activeColor: Colors.greenAccent[700],
+                        activeColor: Colors.blueAccent[400],
                         title: Text(
                           'Protect with PIN?',
                           textAlign: TextAlign.center,
@@ -126,10 +126,11 @@ class HostButton extends StatelessWidget {
                           length: PIN_LENGTH,
                           onChanged: (pin) => setState(() => enteredPin = pin),
                           pinTheme: PinTheme(
-                            activeColor: Colors.lime,
+                            activeColor: Colors.green[700],
+                            disabledColor: Colors.grey[600],
                             inactiveColor: Colors.white,
                             shape: PinCodeFieldShape.box,
-                            selectedColor: Colors.lightBlueAccent[200],
+                            selectedColor: Colors.blueAccent[700],
                           ),
                           textStyle: TextStyle(
                             color: Colors.white,
@@ -144,7 +145,7 @@ class HostButton extends StatelessWidget {
                       Center(
                         child: RaisedButton(
                           color: Theme.of(context).textTheme.bodyText2.color,
-                          textColor: Colors.teal[900],
+                          textColor: Colors.cyan[900],
                           highlightColor: Colors.white,
                           child: Text('Create'),
                           onPressed: !pinEnabled || typedEntirePIN

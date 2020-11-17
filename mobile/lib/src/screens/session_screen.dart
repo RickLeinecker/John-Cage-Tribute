@@ -13,7 +13,6 @@ import 'package:jct/src/widgets/start_session_button.dart';
 
 import 'package:native_widgets/native_widgets.dart';
 
-// TODO: Maybe use MemberModel here instead??
 // TODO: Show time elapsed, change its color over time (i.e. gray if < 2 min, red if > 90% MAX_TIME, yellow if > 70% MAX_TIME, white if > 2 min)
 class SessionScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -221,11 +220,11 @@ class SessionScreen extends StatelessWidget {
 
   Widget confirmLeaveRoom(BuildContext context, RoomBloc bloc) {
     return AlertDialog(
-      backgroundColor: Colors.teal,
+      backgroundColor: Colors.cyan[600],
       content: Container(
-        height: 300,
+        height: 250,
         width: 200,
-        color: Colors.teal,
+        color: Colors.cyan[600],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -244,14 +243,10 @@ class SessionScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 RaisedButton(
-                  color: Colors.teal[600],
+                  color: Theme.of(context).textTheme.bodyText2.color,
+                  textColor: Colors.cyan[900],
                   highlightColor: Colors.white,
-                  child: Text(
-                    'Yes',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text('Yes'),
                   onPressed: () {
                     if (isHost) {
                       bloc.watch?.stop();
@@ -267,17 +262,13 @@ class SessionScreen extends StatelessWidget {
                 ),
                 VerticalDivider(
                   color: Colors.transparent,
-                  width: 10.0,
+                  width: 35.0,
                 ),
                 RaisedButton(
-                  color: Colors.teal[600],
+                  color: Theme.of(context).textTheme.bodyText2.color,
+                  textColor: Colors.cyan[900],
                   highlightColor: Colors.white,
-                  child: Text(
-                    'No',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text('No'),
                   onPressed: () => Navigator.of(context).pop(false),
                 ),
               ],

@@ -158,7 +158,7 @@ class CompositionTile extends StatelessWidget {
             return SimpleDialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0)),
-              backgroundColor: Colors.teal,
+              backgroundColor: Colors.cyan,
               contentPadding:
                   EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
               children: [
@@ -200,14 +200,10 @@ class CompositionTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         RaisedButton(
-          color: Colors.teal[600],
+          color: Colors.cyan[100],
           highlightColor: Colors.white,
-          child: Text(
-            'Yes',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
+          textColor: Colors.cyan[900],
+          child: Text('Yes'),
           onPressed: () async {
             await bloc.deleteComposition(user.id, composition.id, index);
             Navigator.of(context).pop();
@@ -215,17 +211,13 @@ class CompositionTile extends StatelessWidget {
         ),
         VerticalDivider(
           color: Colors.transparent,
-          width: 10.0,
+          width: 35.0,
         ),
         RaisedButton(
-          color: Colors.teal[600],
+          color: Colors.cyan[100],
           highlightColor: Colors.white,
-          child: Text(
-            'No',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
+          textColor: Colors.cyan[900],
+          child: Text('No'),
           onPressed: () => Navigator.of(context).pop(false),
         ),
       ],

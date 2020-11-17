@@ -81,6 +81,8 @@ class CompositionApiRepository {
         break;
     }
 
+    print('screen: $screen');
+
     if (screen == ScreenType.LIBRARY) {
       response = await client.post(
         url,

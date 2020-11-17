@@ -12,21 +12,25 @@ class DropdownFilters extends StatelessWidget {
   Widget build(context) {
     SearchBloc bloc = SearchProvider.of(context);
 
-    return StreamBuilder(
-      stream: bloc.filterSearch,
-      builder: (context, AsyncSnapshot<FilterOption> snapshot) {
-        return DropdownButtonFormField(
-          value: !snapshot.hasData ? null : snapshot.data,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            filled: true,
-            fillColor: Theme.of(context).primaryColor,
-          ),
-          dropdownColor: Theme.of(context).primaryColor,
-          onChanged: (FilterOption filter) => bloc.changeFilterSearch(filter),
-          items: getFilterMenuItems(context),
-        );
-      },
+    return SizedBox(
+      width: 105,
+      height: 45.0,
+      child: StreamBuilder(
+        stream: bloc.filterSearch,
+        builder: (context, AsyncSnapshot<FilterOption> snapshot) {
+          return Container(
+            color: Theme.of(context).accentColor,
+            child: DropdownButtonFormField(
+              isExpanded: true,
+              value: !snapshot.hasData ? null : snapshot.data,
+              dropdownColor: Theme.of(context).primaryColor,
+              onChanged: (FilterOption filter) =>
+                  bloc.changeFilterSearch(filter),
+              items: getFilterMenuItems(context),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -68,9 +72,15 @@ class DropdownFilters extends StatelessWidget {
 
     return DropdownMenuItem(
       value: filter,
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyText1,
+      child: Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+        ),
       ),
     );
   }

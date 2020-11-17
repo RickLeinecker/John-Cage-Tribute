@@ -19,36 +19,38 @@ class SearchField extends StatelessWidget {
     final searchBloc = SearchProvider.of(context);
 
     return Container(
-      width: 200,
-      height: 48,
+      width: 180,
+      height: 43,
       child: Container(
         child: TextFormField(
-            controller: searchBloc.searchText,
-            cursorColor: Colors.tealAccent[400],
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: 'Search Compositions',
-              hintStyle: Theme.of(context).textTheme.bodyText1,
-              suffixIcon: IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () => searchBloc.searchText.clear(),
-                  color: Colors.blue[100]),
-            ),
-            style: Theme.of(context).textTheme.bodyText1,
-            onFieldSubmitted: (text) {
-              final query = text.trim();
+          controller: searchBloc.searchText,
+          cursorColor: Colors.cyanAccent[400],
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10.0, top: 6.0),
+            border: InputBorder.none,
+            hintText: 'Search',
+            hintStyle: TextStyle(color: Colors.blue[100]),
+            suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () => searchBloc.searchText.clear(),
+                color: Colors.white),
+          ),
+          style: Theme.of(context).textTheme.bodyText1,
+          onFieldSubmitted: (text) {
+            final query = text.trim();
 
-              if (query != '') {
-                searchBloc.search(
-                  user: user,
-                  filter: searchBloc.getFilter(screen),
-                  query: query,
-                  screen: screen,
-                );
-              }
+            if (query != '') {
+              searchBloc.search(
+                user: user,
+                filter: searchBloc.getFilter(screen),
+                query: query,
+                screen: screen,
+              );
+
               print('Filter $text by ${searchBloc.getFilter(screen)}');
-            }),
-        margin: EdgeInsets.only(left: 10.0),
+            }
+          },
+        ),
       ),
       decoration: BoxDecoration(
         color: Theme.of(context).highlightColor,

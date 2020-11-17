@@ -23,12 +23,12 @@ class RoleButtons extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             RaisedButton.icon(
-              textColor: Colors.teal[900],
+              textColor: Colors.cyan[900],
               elevation: selectedRole == Role.LISTENER ? 5.0 : 16.0,
               color: selectedRole == Role.LISTENER
-                  ? Colors.teal[300]
-                  : Colors.teal[100],
-              highlightColor: Colors.teal,
+                  ? Colors.cyan[300]
+                  : Colors.cyan[100],
+              highlightColor: Colors.cyan,
               icon: Icon(Icons.headset),
               label: Text(
                 'Listener',
@@ -36,12 +36,12 @@ class RoleButtons extends StatelessWidget {
               onPressed: () => bloc.changeRole(Role.LISTENER),
             ),
             RaisedButton.icon(
-                textColor: Colors.teal[900],
+                textColor: Colors.cyan[900],
                 elevation: selectedRole == Role.PERFORMER ? 5.0 : 16.0,
                 color: selectedRole == Role.PERFORMER
-                    ? Colors.teal[300]
-                    : Colors.teal[100],
-                highlightColor: Colors.teal,
+                    ? Colors.cyan[300]
+                    : Colors.cyan[100],
+                highlightColor: Colors.cyan,
                 icon: Icon(Icons.mic),
                 label: Text(
                   'Performer',

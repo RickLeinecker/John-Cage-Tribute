@@ -6,9 +6,8 @@ import 'package:jct/src/constants/greeting_type.dart';
 import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
 import 'package:jct/src/widgets/composition_tile.dart';
-import 'package:jct/src/widgets/dropdown_filters.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
-import 'package:jct/src/widgets/search_field.dart';
+import 'package:jct/src/widgets/search_app_bar.dart';
 
 class SearchScreen extends StatelessWidget {
   Widget build(context) {
@@ -19,30 +18,8 @@ class SearchScreen extends StatelessWidget {
   Widget nonGuestScaffold(BuildContext context, SearchBloc bloc) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.0),
-        child: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Theme.of(context).accentColor,
-          centerTitle: true,
-          title: SearchField(screen: ScreenType.SEARCH),
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(0.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Filter by: ',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                SizedBox(
-                  width: 150,
-                  child: DropdownFilters(screen: ScreenType.SEARCH),
-                ),
-              ],
-            ),
-          ),
-        ),
+        preferredSize: Size.fromHeight(50.0),
+        child: SearchAppBar(screen: ScreenType.SEARCH),
       ),
       body: Stack(
         children: [
