@@ -42,6 +42,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).accentColor,
           centerTitle: true,
           title: Text(
             'Return to Main Screen',

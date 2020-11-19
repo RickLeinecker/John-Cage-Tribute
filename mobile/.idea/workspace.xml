@@ -10,24 +10,10 @@
   <component name="ChangeListManager">
     <list default="true" id="bc6f1dc0-ad42-4c76-9440-071ae4988754" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Flutter/AppFrameworkInfo.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/AppFrameworkInfo.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Podfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Podfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/src/constants/base_url.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/base_url.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/models/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/account_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/account_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/search_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/search_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/widgets/host_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/host_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/widgets/role_buttons.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/role_buttons.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/widgets/room_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/room_tile.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/widgets/search_app_bar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/search_app_bar.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server2/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server2/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/client/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server2/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server2/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

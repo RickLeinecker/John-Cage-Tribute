@@ -87,9 +87,6 @@ router.post('/title', async (req, res) => {
       compositions = await Composition.find({ private: false, title: { $regex: new RegExp(req.body.query, 'i') }, file_id: { $ne: null } }).sort({ start: -1 });
     }
 
-    console.log('Printing compositions');
-    console.log(compositions);
-
     res.json(compositions);
   }
   catch (err) {
@@ -134,7 +131,6 @@ router.post('/performer', async (req, res) => {
 
     else {
       compositions = await Composition.find({ private: false, performers: { $in: [new RegExp(req.body.query, 'i')] }, file_id: { $ne: null } }).sort({ start: -1 });
-
     }
 
     res.json(compositions);

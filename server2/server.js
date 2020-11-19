@@ -18,8 +18,8 @@ const wavefile = require('wavefile').WaveFile;
 const Lame = require("node-lame").Lame;
 const AudioProcessor = require('./audioProcessor/audioProcessor.js');
 
-const baseUrl = 'https://johncagetribute.org';
-// const baseUrl = `http://localhost:${PORT}`;
+// const baseUrl = 'https://johncagetribute.org';
+const baseUrl = `http://localhost:${PORT}`;
 
 // Connect Database
 connectDB();
@@ -416,11 +416,12 @@ io.on('connection', function (socket) {
     formData.append('data', JSON.stringify(data)); // Composition metadata here
 
     console.log('Uploading MP3 to database...')
-    // console.log(formData)
+    // console.log(formData);
 
     const response = await fetch(`${baseUrl}/api/compositions/upload`, { method: 'POST', body: formData });
-    //console.log(response)
-    console.log('Finished uploading!')
+    // console.log(response);
+    console.log('uploaddownload call complete!');
+
     // After the MP3 file as been uploaded, delete it from the server 
     // Close the read stream to release the file descriptor 
     mp3FileStream.close()
