@@ -224,19 +224,14 @@ class RoomTile extends StatelessWidget {
       }
     }
 
-    bloc.joinRoom(room.id, user.username);
+    final member = bloc.joinRoom(room.id, user.username);
 
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return SessionScreen(
-            user: user,
-            roomId: room.id,
-            isHost: false,
-            role: bloc.currentRole,
-          );
+          return SessionScreen(member: member, roomId: room.id);
         },
       ),
     );

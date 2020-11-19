@@ -17,6 +17,7 @@ class PreRoomScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
+        backgroundColor: Theme.of(context).accentColor,
         title: Text('Audio Recording Disclaimer'),
       ),
       body: StreamBuilder(

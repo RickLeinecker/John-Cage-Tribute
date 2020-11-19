@@ -126,7 +126,7 @@ class HostButton extends StatelessWidget {
                           length: PIN_LENGTH,
                           onChanged: (pin) => setState(() => enteredPin = pin),
                           pinTheme: PinTheme(
-                            activeColor: Colors.green[700],
+                            activeColor: Colors.lime,
                             disabledColor: Colors.grey[600],
                             inactiveColor: Colors.white,
                             shape: PinCodeFieldShape.box,
@@ -187,7 +187,7 @@ class HostButton extends StatelessWidget {
       }
     }
 
-    bloc.createRoom(user.username, pinEnabled, enteredPin);
+    final member = bloc.createRoom(user.username, pinEnabled, enteredPin);
 
     Navigator.of(context, rootNavigator: true).pop();
     Navigator.push(
@@ -195,11 +195,9 @@ class HostButton extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) {
           return SessionScreen(
-            user: user,
-            roomId: user.username,
-            isHost: true,
-            role: bloc.currentRole,
-          );
+              member: member,
+              roomId: user.username,
+              pin: pinEnabled ? enteredPin : null);
         },
       ),
     );

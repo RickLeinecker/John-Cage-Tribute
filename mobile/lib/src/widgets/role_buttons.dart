@@ -26,8 +26,8 @@ class RoleButtons extends StatelessWidget {
               textColor: Colors.cyan[900],
               elevation: selectedRole == Role.LISTENER ? 5.0 : 16.0,
               color: selectedRole == Role.LISTENER
-                  ? Colors.cyan[300]
-                  : Colors.cyan[100],
+                  ? Colors.cyan[100]
+                  : Colors.cyan[300],
               highlightColor: Colors.cyan,
               icon: Icon(Icons.headset),
               label: Text(
@@ -39,8 +39,8 @@ class RoleButtons extends StatelessWidget {
                 textColor: Colors.cyan[900],
                 elevation: selectedRole == Role.PERFORMER ? 5.0 : 16.0,
                 color: selectedRole == Role.PERFORMER
-                    ? Colors.cyan[300]
-                    : Colors.cyan[100],
+                    ? Colors.cyan[100]
+                    : Colors.cyan[300],
                 highlightColor: Colors.cyan,
                 icon: Icon(Icons.mic),
                 label: Text(

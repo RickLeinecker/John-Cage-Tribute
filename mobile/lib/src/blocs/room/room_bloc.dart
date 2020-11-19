@@ -188,8 +188,8 @@ class RoomBloc {
   }
 
   /// Sets up room metadata and attributes it to a user, passing it to the
-  /// server.
-  void createRoom(String username, bool hasPin, String enteredPin) {
+  /// server. Subsequently, returns the host represented as its member.
+  MemberModel createRoom(String username, bool hasPin, String enteredPin) {
     currentRoom = username;
     _sessionHasBegun.sink.add(null);
     _isActive.sink.add(null);
@@ -220,6 +220,8 @@ class RoomBloc {
     });
 
     setupAudioBehavior();
+    return MemberModel.fromJson(
+        <String, dynamic>{'username': username, ...member});
   }
 
   /// Verifies the user's entered PIN by passing it to the server for comparing.
@@ -232,7 +234,7 @@ class RoomBloc {
 
   /// Sends a user's metadata to the server and alerting the server about an
   /// intent to join the specified room.
-  void joinRoom(String roomId, String joiningUser) {
+  MemberModel joinRoom(String roomId, String joiningUser) {
     currentRoom = roomId;
 
     _isActive.sink.add(null);
@@ -253,6 +255,8 @@ class RoomBloc {
         'joinroom', <String, dynamic>{'roomId': roomId, 'member': member});
 
     setupAudioBehavior();
+    return MemberModel.fromJson(
+        <String, dynamic>{'username': joiningUser, ...member});
   }
 
   /// Starts the audio recording session between the members of the room.
@@ -410,6 +414,7 @@ class RoomBloc {
     return await _compositionRepo.editComposition(data);
   }
 
+  /// Clears all streams/controllers for each room.
   void disposeRooms() {
     if (_rooms.value != null) {
       for (String key in _rooms.value.keys) {

@@ -70,8 +70,7 @@ class AuthValidators {
         if (capitalNumberSixChars.hasMatch(enteredPassword)) {
           sink.add(enteredPassword);
         } else if (enteredPassword.isNotEmpty) {
-          sink.addError(
-              'Must be 6 characters, have lowercase and capital letters, and digits.');
+          sink.addError('One of the password requirements is missing.');
         }
       }
     },

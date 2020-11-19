@@ -18,7 +18,7 @@ class SearchScreen extends StatelessWidget {
   Widget nonGuestScaffold(BuildContext context, SearchBloc bloc) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(50.0),
+        preferredSize: Size.fromHeight(56.0),
         child: SearchAppBar(screen: ScreenType.SEARCH),
       ),
       body: Stack(

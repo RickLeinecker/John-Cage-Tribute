@@ -108,7 +108,9 @@ class _SearchAppBarState extends State<SearchAppBar> {
         );
       default:
         return Text(
-          'Your Compositions',
+          widget.screen == ScreenType.LIBRARY
+              ? 'Your Compositions'
+              : 'Search a Composition',
           style: TextStyle(color: Colors.white),
         );
     }
