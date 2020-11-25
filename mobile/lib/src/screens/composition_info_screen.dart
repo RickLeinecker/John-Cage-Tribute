@@ -26,14 +26,14 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   TextEditingController _description;
   List<String> _tags;
   String submitError;
-  bool maxTagsReached;
-  bool isSubmitting;
-  bool isPrivate;
+  bool _maxTagsReached;
+  bool _isSubmitting;
+  bool _isPrivate;
 
   void initState() {
     super.initState();
 
-    isPrivate = widget.composition.isPrivate ?? false;
+    _isPrivate = widget.composition.isPrivate ?? false;
     _title = TextEditingController.fromValue(
         TextEditingValue(text: widget.composition.title ?? ''));
     _description = TextEditingController.fromValue(
@@ -41,8 +41,8 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
     _tags = widget.composition.tags ?? List();
 
     submitError = '';
-    maxTagsReached = _tags.length >= MAX_TAGS;
-    isSubmitting = false;
+    _maxTagsReached = _tags.length >= MAX_TAGS;
+    _isSubmitting = false;
   }
 
   Widget build(context) {
@@ -57,93 +57,84 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
         automaticallyImplyLeading: widget.screen != ScreenType.SESSION,
         centerTitle: true,
         title: Text(
-          'About Your Composition',
+          'About Your Composition...',
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ),
       body: ListView(
         children: [
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
+          Divider(color: Colors.transparent, height: 20.0),
           Text(
-            'What shall this masterpiece go by?',
+            'Title',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline6,
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
-          TextFormField(
-            controller: _title,
-            maxLength: MAX_TITLE_LENGTH,
-            maxLengthEnforced: true,
-            decoration: InputDecoration(
-              hintText: 'Title',
-              fillColor: Theme.of(context).primaryColor,
-              filled: true,
-              border: InputBorder.none,
+          Divider(color: Colors.transparent, height: 20.0),
+          Padding(
+            padding: EdgeInsets.only(left: 40.0, right: 40.0),
+            child: TextFormField(
+              controller: _title,
+              maxLength: MAX_TITLE_LENGTH,
+              maxLengthEnforced: true,
+              decoration: InputDecoration(
+                hintText: 'Title',
+                fillColor: Theme.of(context).primaryColor,
+                filled: true,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              ),
             ),
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 30.0,
-          ),
+          Divider(color: Colors.blue[900], height: 60.0),
           Text(
-            'Any tags to go with it? \n(${MAX_TAGS - _tags.length} left.)',
+            'Tags (${MAX_TAGS - _tags.length} left.)',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline6,
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
+          Divider(color: Colors.transparent, height: 20.0),
           compositionTags(),
           Divider(
-            color: Colors.transparent,
-            height: 50.0,
+            color: Colors.blue[900],
+            height: 60.0,
           ),
           Text(
-            'How would you describe this wonderful thing?',
+            'Description',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline6,
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
-          TextFormField(
-            controller: _description,
-            decoration: InputDecoration(
-              hintText: 'Describe your composition here!',
-              fillColor: Theme.of(context).primaryColor,
-              filled: true,
-              border: InputBorder.none,
+          Divider(color: Colors.transparent, height: 20.0),
+          Padding(
+            padding: EdgeInsets.only(left: 30.0, right: 30.0),
+            child: TextFormField(
+              controller: _description,
+              decoration: InputDecoration(
+                hintText: 'For e.g., an unparalleled coalescence of howling '
+                    'winds and whispers greets your ears.',
+                fillColor: Theme.of(context).primaryColor,
+                filled: true,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
+              ),
+              maxLength: MAX_DESCRIPTION_LENGTH,
+              maxLengthEnforced: true,
+              style: Theme.of(context).textTheme.bodyText2,
+              minLines: 5,
+              maxLines: 100,
             ),
-            maxLength: MAX_DESCRIPTION_LENGTH,
-            maxLengthEnforced: true,
-            style: Theme.of(context).textTheme.bodyText2,
-            minLines: 3,
-            maxLines: 100,
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
+          Divider(color: Colors.blue[900], height: 60.0),
           Text(
-            'Hide this composition from \nusers\' searches?',
-            style: Theme.of(context).textTheme.bodyText1,
+            'Make Public?',
+            style: Theme.of(context).textTheme.headline6,
             textAlign: TextAlign.center,
           ),
-          Checkbox(
-            value: isPrivate,
-            onChanged: (data) => setState(() => isPrivate = !isPrivate),
-          ),
-          Divider(
-            color: Colors.transparent,
-            height: 15.0,
+          Transform.scale(
+            scale: 1.5,
+            child: Checkbox(
+              activeColor: Colors.blueAccent[100],
+              value: _isPrivate,
+              onChanged: (data) => setState(() => _isPrivate = !_isPrivate),
+            ),
           ),
           Text(
             submitError,
@@ -153,51 +144,35 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             ),
           ),
           Align(
-            child: SizedBox(
-              width: 150,
-              child: RaisedButton(
-                onPressed: () => onSubmit(roomBloc, searchBloc),
-                color: Theme.of(context).primaryColor,
-                child:
-                    isSubmitting ? awaitingSubmitWidget() : allowSubmitWidget(),
-              ),
+            child: RaisedButton(
+              onPressed: () => onSubmit(roomBloc, searchBloc),
+              color: Theme.of(context).textTheme.bodyText2.color,
+              textColor: Theme.of(context).primaryColor,
+              child: _isSubmitting
+                  ? CircularProgressIndicator(backgroundColor: Colors.white)
+                  : Text('Submit'),
             ),
           ),
-          Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          ),
+          Divider(color: Colors.transparent, height: 20.0),
         ],
       ),
     );
   }
 
-  Widget awaitingSubmitWidget() {
-    return CircularProgressIndicator(
-      backgroundColor: Colors.white,
-    );
-  }
-
-  Widget allowSubmitWidget() {
-    return Text(
-      'Submit!',
-      style: Theme.of(context).textTheme.bodyText1,
-    );
-  }
-
   Widget compositionTags() {
     return Tags(
+      verticalDirection: VerticalDirection.up,
+      direction: Axis.vertical,
       key: _tagStateKey,
       textField: TagsTextField(
         inputDecoration: InputDecoration(
-          border: InputBorder.none,
-          fillColor: maxTagsReached
-              ? Theme.of(context).accentColor
-              : Theme.of(context).primaryColor,
+          fillColor: Theme.of(context).primaryColor,
           filled: true,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
         ),
-        hintText: maxTagsReached ? '' : 'Add a tag!',
-        enabled: !maxTagsReached,
+        hintText: _maxTagsReached ? '' : 'Add a tag!',
+        enabled: !_maxTagsReached,
         maxLength: 12,
         textStyle: TextStyle(
           fontSize: Theme.of(context).textTheme.bodyText2.fontSize,
@@ -205,7 +180,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
         constraintSuggestion: true,
         onSubmitted: (String str) {
           setState(() => _tags.add(str));
-          setState(() => maxTagsReached = _tags.length >= MAX_TAGS);
+          setState(() => _maxTagsReached = _tags.length >= MAX_TAGS);
         },
       ),
       itemCount: _tags.length,
@@ -224,7 +199,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           removeButton: ItemTagsRemoveButton(
             onRemoved: () {
               setState(() => _tags.removeAt(index));
-              setState(() => maxTagsReached = _tags.length >= MAX_TAGS);
+              setState(() => _maxTagsReached = _tags.length >= MAX_TAGS);
               return true;
             },
           ),
@@ -236,17 +211,17 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   }
 
   void onSubmit(RoomBloc roomBloc, SearchBloc searchBloc) async {
-    setState(() => isSubmitting = true);
+    setState(() => _isSubmitting = true);
     StatusModel status = await roomBloc.submitCompositionInfo(
       userId: widget.user.id,
       compositionId: widget.composition.id,
       title: _title.text,
       description: _description.text,
       tags: _tags,
-      isPrivate: isPrivate,
+      isPrivate: _isPrivate,
     );
 
-    setState(() => isSubmitting = false);
+    setState(() => _isSubmitting = false);
 
     if (status.code != 200) {
       print('Oh no! Could not submit composition info!');

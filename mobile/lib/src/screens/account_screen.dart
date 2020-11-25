@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:jct/src/blocs/auth/bloc.dart';
 import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/guest_user.dart';
+import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/user_model.dart';
 import 'package:jct/src/screens/library_screen.dart';
 import 'package:jct/src/widgets/account/login_view.dart';
@@ -61,6 +62,7 @@ class AccountScreen extends StatelessWidget {
   Widget accountView(BuildContext context, AuthBloc authBloc,
       SearchBloc searchBloc, UserModel user) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).accentColor,
         centerTitle: true,
@@ -101,112 +103,117 @@ class AccountScreen extends StatelessWidget {
             ).createShader(rect);
           },
           blendMode: BlendMode.dstOut,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0, right: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Divider(
-                    color: Colors.transparent,
-                    height: 20.0,
-                  ),
-                  Text(
-                    'About Me',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 5.0,
-                  ),
-                  Text('Username: ${user.username}'),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 5.0,
-                  ),
-                  Text('Email: ${user.email}'),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 5.0,
-                  ),
-                  Text('Joined: ${user.dateJoined()}'),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 10.0,
-                  ),
-                  Divider(
-                    color: Colors.blue,
-                    height: 30.0,
-                  ),
-                  Text(
-                    'My Creations',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 10.0,
-                  ),
-                  Text(
-                    'Your own compositions can be accessed here. This also '
-                    'includes compositions that you\'ve marked as \'private\'.',
-                    textAlign: TextAlign.center,
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 10.0,
-                  ),
-                  RaisedButton.icon(
-                    icon: Icon(Icons.search),
-                    color: Theme.of(context).textTheme.bodyText1.color,
-                    textColor: Theme.of(context).primaryColor,
-                    label: Text('Search My Library'),
-                    onPressed: () {
-                      searchBloc.clearSearchResults();
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) {
-                            return LibraryScreen(user: user);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  Divider(
-                    color: Colors.blue,
-                    height: 30.0,
-                  ),
-                  Text(
-                    'Account Settings',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 10.0,
-                  ),
-                  Text(
-                    'Beware: Choosing to delete your account will not only '
-                    'remove it from JCT, it will also remove any compositions '
-                    'created under this account, as well.',
-                    textAlign: TextAlign.center,
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 10.0,
-                  ),
-                  RaisedButton.icon(
-                    icon: Icon(Icons.delete),
-                    color: Theme.of(context).textTheme.bodyText1.color,
-                    textColor: Colors.red,
-                    label: Text('Delete'),
-                    onPressed: () => deleteAccOnPressed(context, authBloc),
-                  ),
-                  Divider(
-                    color: Colors.transparent,
-                    height: 20.0,
-                  ),
-                ],
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Divider(
+                      color: Colors.transparent,
+                      height: 20.0,
+                    ),
+                    Text(
+                      'About Me',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 5.0,
+                    ),
+                    Text('Username: ${user.username}'),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 5.0,
+                    ),
+                    Text('Email: ${user.email}'),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 5.0,
+                    ),
+                    Text('Joined: ${user.dateJoined()}'),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 10.0,
+                    ),
+                    Divider(
+                      color: Colors.blue,
+                      height: 30.0,
+                    ),
+                    Text(
+                      'My Creations',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 10.0,
+                    ),
+                    Text(
+                      'Your own compositions can be accessed here. This also '
+                      'includes compositions that you\'ve marked as \'private\'.',
+                      textAlign: TextAlign.center,
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 10.0,
+                    ),
+                    RaisedButton.icon(
+                      icon: Icon(Icons.search),
+                      color: Theme.of(context).textTheme.bodyText1.color,
+                      textColor: Theme.of(context).primaryColor,
+                      label: Text('Search My Library'),
+                      onPressed: () {
+                        searchBloc.searchRecents(
+                          ScreenType.LIBRARY,
+                          user: user,
+                        );
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) {
+                              return LibraryScreen(user: user);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    Divider(
+                      color: Colors.blue,
+                      height: 30.0,
+                    ),
+                    Text(
+                      'Account Settings',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 10.0,
+                    ),
+                    Text(
+                      'Beware: Choosing to delete your account will not only '
+                      'remove it from JCT, it will also remove any compositions '
+                      'created under this account, as well.',
+                      textAlign: TextAlign.center,
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 10.0,
+                    ),
+                    RaisedButton.icon(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).textTheme.bodyText1.color,
+                      textColor: Colors.red,
+                      label: Text('Delete'),
+                      onPressed: () => deleteAccOnPressed(context, authBloc),
+                    ),
+                    Divider(
+                      color: Colors.transparent,
+                      height: 20.0,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

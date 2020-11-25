@@ -81,8 +81,6 @@ class CompositionApiRepository {
         break;
     }
 
-    print('screen: $screen');
-
     if (screen == ScreenType.LIBRARY) {
       response = await client.post(
         url,
@@ -102,6 +100,36 @@ class CompositionApiRepository {
 
     if (response.statusCode != 200) {
       print('Composition search failed. Error code: ${response.statusCode}.');
+      return null;
+    }
+
+    final List<dynamic> compositions =
+        List<Map<String, dynamic>>.from(jsonDecode(response.body));
+
+    return compositions;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRecentCompositions(ScreenType screen,
+      {UserModel user}) async {
+    Response response;
+    String url = '$baseUrl/$compUrl';
+
+    if (screen == ScreenType.SEARCH) {
+      response = await client.get(url);
+    }
+
+    // Retrieves the users' own compositions.
+    else if (screen == ScreenType.LIBRARY) {
+      final String jwt = await storage.read(key: 'jwt');
+
+      response = await client.get(
+        '$url/usercompositions/',
+        headers: {'x-auth-token': '$jwt'},
+      );
+    }
+
+    if (response.statusCode != 200) {
+      print('Error fetching recent compositions.');
       return null;
     }
 

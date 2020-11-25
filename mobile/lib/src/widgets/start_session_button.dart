@@ -20,7 +20,6 @@ class _StartSessionButtonState extends State<StartSessionButton> {
   Stream<bool> get toggleSession => _toggleSession.stream;
   Function(bool) get changeToggleSession => _toggleSession.sink.add;
 
-  // TODO: bloc.sessionHasBegun can probs replace sessionStarted
   void initState() {
     super.initState();
     _toggleSession = BehaviorSubject<bool>();

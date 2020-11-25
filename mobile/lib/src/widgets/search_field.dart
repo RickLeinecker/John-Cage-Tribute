@@ -25,6 +25,7 @@ class SearchField extends StatelessWidget {
         child: TextFormField(
           controller: searchBloc.searchText,
           cursorColor: Colors.cyanAccent[400],
+          autofocus: true,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(left: 10.0, top: 6.0),
             border: InputBorder.none,

@@ -16,7 +16,7 @@ class DropdownFilters extends StatelessWidget {
       width: 105,
       height: 45.0,
       child: StreamBuilder(
-        stream: bloc.filterSearch,
+        stream: bloc.getFilterStream(screen),
         builder: (context, AsyncSnapshot<FilterOption> snapshot) {
           return Container(
             color: Theme.of(context).accentColor,
@@ -25,7 +25,7 @@ class DropdownFilters extends StatelessWidget {
               value: !snapshot.hasData ? null : snapshot.data,
               dropdownColor: Theme.of(context).primaryColor,
               onChanged: (FilterOption filter) =>
-                  bloc.changeFilterSearch(filter),
+                  bloc.changeFilter(screen, filter),
               items: getFilterMenuItems(context),
             ),
           );

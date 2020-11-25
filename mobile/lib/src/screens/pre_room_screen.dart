@@ -91,7 +91,8 @@ class PreRoomScreen extends StatelessWidget {
                         height: 35.0,
                       ),
                       Text(
-                        'Before you continue, please be warned about this important note.',
+                        'Before you continue, please be warned about this '
+                        'important note.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
@@ -100,7 +101,8 @@ class PreRoomScreen extends StatelessWidget {
                         height: 20.0,
                       ),
                       Text(
-                        'Use of this application for recording copyrighted material may result in serious legal consequences.',
+                        'Use of this application for recording copyrighted '
+                        'material may result in serious legal consequences.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
@@ -109,7 +111,8 @@ class PreRoomScreen extends StatelessWidget {
                         height: 20.0,
                       ),
                       Text(
-                        'We of John Cage Tribute\'s team are not liable for such behavior.',
+                        'We of John Cage Tribute\'s team are not liable for '
+                        'such behavior.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
@@ -118,8 +121,8 @@ class PreRoomScreen extends StatelessWidget {
                         height: 20.0,
                       ),
                       Text(
-                        'Creativity is key for this app, but it too has limits. '
-                        'Use its session feature at your own risk.',
+                        'Creativity is key for this app, but it too has its '
+                        'limits. Use this session feature at your own risk.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),

@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 
 import 'package:jct/src/blocs/search/bloc.dart';
 import 'package:jct/src/constants/base_url.dart';
+import 'package:jct/src/constants/screen_type.dart';
 import 'package:jct/src/models/composition_model.dart';
 
 class PlayerScreen extends StatefulWidget {
   final CompositionModel composition;
+  final ScreenType screen;
 
-  PlayerScreen({@required this.composition});
+  PlayerScreen({@required this.composition, @required this.screen});
 
   createState() => _PlayerScreenState();
 }
@@ -75,7 +77,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Widget playerBody(SearchBloc bloc) {
     if (initFailed) {
-      bloc.clearSearchResults();
+      if (widget.screen == ScreenType.SEARCH) {
+        bloc.clearSearchResults();
+      } else if (widget.screen == ScreenType.LIBRARY) {
+        bloc.clearLibraryResults();
+      }
 
       return Center(
         child: Column(

@@ -19,12 +19,11 @@ class LibraryScreen extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        bloc.clearSearchResults();
         return true;
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
+          preferredSize: Size.fromHeight(56.0),
           child: SearchAppBar(user: user, screen: ScreenType.LIBRARY),
         ),
         body: Stack(
@@ -36,10 +35,10 @@ class LibraryScreen extends StatelessWidget {
             ),
             Center(
               child: StreamBuilder(
-                stream: bloc.querySearch,
+                stream: bloc.queryLibrary,
                 builder: (context, AsyncSnapshot<bool> searchingSnapshot) {
                   return StreamBuilder(
-                    stream: bloc.searchCompList,
+                    stream: bloc.libraryCompList,
                     builder: (context,
                         AsyncSnapshot<List<CompositionModel>> compSnapshot) {
                       // A search is currently being performed.

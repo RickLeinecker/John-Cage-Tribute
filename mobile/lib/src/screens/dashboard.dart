@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:jct/src/blocs/auth/bloc.dart';
-import 'package:jct/src/blocs/search/bloc.dart';
-import 'package:jct/src/constants/filter_option.dart';
 import 'package:jct/src/widgets/fade_text_tile.dart';
 import 'package:jct/src/screens/account_screen.dart';
 import 'package:jct/src/screens/pre_room_screen.dart';
@@ -34,20 +32,12 @@ class DashboardState extends State<Dashboard> {
 
   Widget build(context) {
     final AuthBloc authBloc = AuthProvider.of(context);
-    final SearchBloc searchBloc = SearchProvider.of(context);
 
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
         activeColor: Theme.of(context).primaryColor,
         inactiveColor: Theme.of(context).unselectedWidgetColor,
         backgroundColor: Theme.of(context).accentColor,
-        onTap: (index) {
-          if (index == 2) {
-            searchBloc.clearSearchResults();
-          } else if (index == 3) {
-            searchBloc.changeFilterSearch(FilterOption.TITLE);
-          }
-        },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home)),
           BottomNavigationBarItem(icon: Icon(Icons.assignment)),

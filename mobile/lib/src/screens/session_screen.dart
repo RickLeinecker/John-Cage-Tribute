@@ -11,7 +11,6 @@ import 'package:jct/src/widgets/start_session_button.dart';
 
 import 'package:native_widgets/native_widgets.dart';
 
-// TODO: Show time elapsed, change its color over time (i.e. gray if < 2 min, red if > 90% MAX_TIME, yellow if > 70% MAX_TIME, white if > 2 min)
 class SessionScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MemberModel member;
@@ -96,42 +95,7 @@ class SessionScreen extends StatelessWidget {
                 ),
               ],
             ),
-            endDrawer: Drawer(
-              child: Container(
-                color: Theme.of(context).primaryColor,
-                child: StreamBuilder(
-                  stream: bloc.members,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<Map<String, MemberModel>> snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'No member data available for this room. :(',
-                          style: Theme.of(context).textTheme.bodyText1,
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    } else if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                        ),
-                      );
-                    } else if (snapshot.data.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'Session complete! :)',
-                          style: Theme.of(context).textTheme.bodyText1,
-                          textAlign: TextAlign.center,
-                        ),
-                      );
-                    }
-
-                    return memberList(context, snapshot.data);
-                  },
-                ),
-              ),
-            ),
+            endDrawer: membersDrawer(context, bloc),
             body: Stack(
               children: [
                 SizedBox.expand(
@@ -191,7 +155,6 @@ class SessionScreen extends StatelessWidget {
 
                         return Stack(
                           children: [
-                            // TODO: Maybe add a StreamBuilder here that checks whether a user joined or left, y'know, to fill this empty space!!!
                             Align(
                               alignment: Alignment.topCenter,
                               child: Column(
@@ -235,6 +198,45 @@ class SessionScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget membersDrawer(BuildContext context, RoomBloc bloc) {
+    return Drawer(
+      child: Container(
+        color: Theme.of(context).primaryColor,
+        child: StreamBuilder(
+          stream: bloc.members,
+          builder: (BuildContext context,
+              AsyncSnapshot<Map<String, MemberModel>> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'No member data available for this room. :(',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              );
+            } else if (snapshot.data.isEmpty) {
+              return Center(
+                child: Text(
+                  'Session complete! :)',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+
+            return altMemberList(context, snapshot.data);
+          },
+        ),
+      ),
     );
   }
 
@@ -317,9 +319,82 @@ class SessionScreen extends StatelessWidget {
     }
   }
 
+  Widget altMemberList(BuildContext context, Map<String, MemberModel> members) {
+    int numGuests = 1;
+
+    final performerWidgets = List<Widget>();
+    performerWidgets
+        .add(Text('Performers', style: Theme.of(context).textTheme.headline6));
+
+    final listenerWidgets = List<Widget>();
+    listenerWidgets
+        .add(Text('Listeners', style: Theme.of(context).textTheme.headline6));
+
+    for (String socketId in members.keys) {
+      final member = members[socketId];
+
+      if (member.role == Role.PERFORMER) {
+        performerWidgets
+            .add(Text(member.isGuest ? 'Guest $numGuests' : member.username));
+        performerWidgets.add(Divider(color: Colors.transparent, height: 10.0));
+        numGuests++;
+      } else {
+        listenerWidgets
+            .add(Text(member.isGuest ? 'Guest $numGuests' : member.username));
+        listenerWidgets.add(Divider(color: Colors.transparent, height: 10.0));
+        numGuests++;
+      }
+    }
+
+    if (performerWidgets.length == 1) {
+      performerWidgets.add(Text('None yet!'));
+    }
+
+    if (listenerWidgets.length == 1) {
+      listenerWidgets.add(Text('None yet!'));
+    }
+
+    performerWidgets.insert(
+        0, Divider(color: Colors.transparent, height: 50.0));
+
+    return Stack(
+      alignment: FractionalOffset(0.5, 0.1),
+      children: [
+        Stack(
+          alignment: FractionalOffset(0.5, 0.1),
+          children: [
+            Icon(
+              Icons.mic,
+              color: Theme.of(context).accentColor,
+              size: 120.0,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: performerWidgets,
+            ),
+          ],
+        ),
+        Stack(
+          alignment: FractionalOffset(0.5, 0.57),
+          children: [
+            Icon(
+              Icons.headset,
+              color: Theme.of(context).accentColor,
+              size: 120.0,
+            ),
+            Column(
+              children: listenerWidgets,
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget memberList(BuildContext context, Map<String, MemberModel> members) {
-    List<String> performers = List();
-    List<String> listeners = List();
+    final performers = List<String>();
+    final listeners = List<String>();
 
     for (String socketId in members.keys) {
       final member = members[socketId];

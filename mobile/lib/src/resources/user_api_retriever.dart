@@ -75,7 +75,6 @@ class UserApiRetriever {
     }
   }
 
-  // TODO: Consult with Jacob so that the url is fixed (not using compUrl)
   Future<StatusModel> deleteUserAndCompositions() async {
     final String jwt = await storage.read(key: 'jwt');
 

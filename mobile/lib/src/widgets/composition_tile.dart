@@ -28,7 +28,7 @@ class CompositionTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(5.0),
       ),
       tileColor: !composition.isProcessing()
-          ? Theme.of(context).accentColor
+          ? Colors.lightBlueAccent[700]
           : Colors.grey,
       enabled: !composition.isProcessing(),
       title: Text(
@@ -50,7 +50,7 @@ class CompositionTile extends StatelessWidget {
     Navigator.of(context, rootNavigator: true).push(
       CupertinoPageRoute(
         builder: (context) {
-          return PlayerScreen(composition: composition);
+          return PlayerScreen(screen: screen, composition: composition);
         },
       ),
     );
@@ -105,11 +105,8 @@ class CompositionTile extends StatelessWidget {
 
   Widget editButton(BuildContext context, SearchBloc bloc, UserModel user) {
     return IconButton(
-      icon: Icon(
-        Icons.edit,
-        // color: Theme.of(context).accentColor,
-      ),
-      // iconSize: 30.0,
+      iconSize: 30.0,
+      icon: Icon(Icons.edit),
       onPressed: () => Navigator.push(
         context,
         CupertinoPageRoute(
@@ -128,10 +125,7 @@ class CompositionTile extends StatelessWidget {
   Widget deleteButton(BuildContext context, SearchBloc bloc, UserModel user) {
     return IconButton(
       iconSize: 30.0,
-      icon: Icon(
-        Icons.delete,
-        // color: Theme.of(context).accentColor,
-      ),
+      icon: Icon(Icons.delete),
       onPressed: () => onDeleteComposition(context, bloc, user),
     );
   }

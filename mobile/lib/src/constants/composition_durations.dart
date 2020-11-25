@@ -1,2 +1,2 @@
-const int MIN_COMPOSITION_TIME = 1; // TODO: Change MIN_COMP_TIME to 120
+const int MIN_COMPOSITION_TIME = 120;
 const int MAX_COMPOSITION_TIME = 600;

@@ -37,7 +37,7 @@ class RoomTile extends StatelessWidget {
     }
 
     return ListTile(
-      tileColor: Theme.of(context).accentColor,
+      tileColor: Colors.lightBlueAccent[700],
       title: Text(
         room.host,
         style: TextStyle(
