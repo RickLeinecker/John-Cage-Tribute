@@ -38,7 +38,6 @@ dependencies:
   pin_code_fields: ^6.0.0
   rxdart: ^0.24.0
   socket_io_client: ^0.9.10
-  transparent_image: ^1.0.0
 
 dev_dependencies:
   flutter_test:

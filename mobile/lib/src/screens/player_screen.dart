@@ -67,7 +67,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
         ),
       );
 
-      await player.open(audio, autoStart: false, showNotification: true);
+      await player.open(audio, autoStart: false);
       setState(() => loadSuccess = true);
     } catch (e) {
       print('Uh oh, there was an issue initailizing the player!\nError: $e');
@@ -229,7 +229,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 player: player,
                 builder: (context, duration) {
                   final curSecs = duration.inSeconds;
-                  final cmpSecs = widget.composition.time.floor();
+                  final cmpSecs = widget.composition.time.ceil();
 
                   bool addMinZero = (curSecs ~/ 60) < 10;
                   bool addSecZero = (curSecs % 60) < 10;

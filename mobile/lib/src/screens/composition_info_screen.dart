@@ -22,6 +22,7 @@ class CompositionInfoScreen extends StatefulWidget {
 }
 
 class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
+  GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
   TextEditingController _title;
   TextEditingController _description;
   List<String> _tags;
@@ -33,7 +34,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
   void initState() {
     super.initState();
 
-    _isPrivate = widget.composition.isPrivate ?? false;
+    _isPrivate = widget.composition.isPrivate ?? true;
     _title = TextEditingController.fromValue(
         TextEditingValue(text: widget.composition.title ?? ''));
     _description = TextEditingController.fromValue(
@@ -124,17 +125,18 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
           ),
           Divider(color: Colors.blue[900], height: 60.0),
           Text(
-            'Make Public?',
+            'Make Private?',
             style: Theme.of(context).textTheme.headline6,
             textAlign: TextAlign.center,
           ),
           Transform.scale(
             scale: 1.5,
             child: Checkbox(
-              activeColor: Colors.blueAccent[100],
-              value: _isPrivate,
-              onChanged: (data) => setState(() => _isPrivate = !_isPrivate),
-            ),
+                activeColor: Colors.blueAccent[100],
+                value: _isPrivate,
+                onChanged: (data) {
+                  setState(() => _isPrivate = !_isPrivate);
+                }),
           ),
           Text(
             submitError,
@@ -144,14 +146,14 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
             ),
           ),
           Align(
-            child: RaisedButton(
-              onPressed: () => onSubmit(roomBloc, searchBloc),
-              color: Theme.of(context).textTheme.bodyText2.color,
-              textColor: Theme.of(context).primaryColor,
-              child: _isSubmitting
-                  ? CircularProgressIndicator(backgroundColor: Colors.white)
-                  : Text('Submit'),
-            ),
+            child: _isSubmitting
+                ? CircularProgressIndicator(backgroundColor: Colors.white)
+                : RaisedButton(
+                    onPressed: () => onSubmit(roomBloc, searchBloc),
+                    color: Theme.of(context).textTheme.bodyText2.color,
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text('Submit'),
+                  ),
           ),
           Divider(color: Colors.transparent, height: 20.0),
         ],
@@ -212,6 +214,7 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
 
   void onSubmit(RoomBloc roomBloc, SearchBloc searchBloc) async {
     setState(() => _isSubmitting = true);
+
     StatusModel status = await roomBloc.submitCompositionInfo(
       userId: widget.user.id,
       compositionId: widget.composition.id,
@@ -233,7 +236,19 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
 
     switch (widget.screen) {
       case ScreenType.LIBRARY:
-        searchBloc.clearSearchResults();
+        final editedComposition = CompositionModel.fromJson({
+          '_id': widget.composition.id,
+          'title': _title.text,
+          'composer': widget.composition.composer,
+          'runtime': widget.composition.time,
+          'filename': widget.composition.filename,
+          'performers': widget.composition.performers,
+          'tags': _tags,
+          'description': _description.text,
+          'private': _isPrivate,
+        });
+
+        searchBloc.updateCompositionLists(editedComposition);
         Navigator.pop(context);
         break;
       case ScreenType.SESSION:
@@ -250,5 +265,3 @@ class _CompositionInfoScreenState extends State<CompositionInfoScreen> {
     _description.dispose();
   }
 }
-
-final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();

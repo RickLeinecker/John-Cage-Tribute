@@ -119,12 +119,13 @@ class AuthBloc with AuthValidators {
     return true;
   }
 
-  void deleteAccount() async {
+  Future<bool> deleteAccount() async {
     print('Attempting to delete account... !');
 
     if (_user.value == GUEST_USER) {
       print('Silly guest, account deletion is for users!');
-      return;
+      _deletingAccount.sink.addError('Guests cannot delete themselves.');
+      return false;
     }
 
     _deletingAccount.sink.add(true);
@@ -134,9 +135,11 @@ class AuthBloc with AuthValidators {
     if (deleteSuccess) {
       _deletingAccount.sink.add(false);
       await logout();
+      return true;
     } else {
       _deletingAccount.sink.addError('An error occurred while deleting your '
           'account. Please try again later.');
+      return false;
     }
   }
 

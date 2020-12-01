@@ -15,24 +15,29 @@ class SignupView extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Tired of acting as a guest?\nSign up below.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1,
+        Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Divider(color: Colors.transparent, height: 20.0),
+                Text(
+                  'Tired of acting as a guest?\nSign up below.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                EmailField(),
+                Divider(color: Colors.transparent, height: 5.0),
+                UsernameField(),
+                Divider(color: Colors.transparent, height: 5.0),
+                PasswordField(),
+                Divider(color: Colors.transparent, height: 5.0),
+                ConfirmPasswordField(),
+                SignupButton(),
+              ],
             ),
-            EmailField(),
-            Divider(color: Colors.transparent, height: 5.0),
-            UsernameField(),
-            Divider(color: Colors.transparent, height: 5.0),
-            PasswordField(),
-            Divider(color: Colors.transparent, height: 5.0),
-            ConfirmPasswordField(),
-            SignupButton(),
-          ],
+          ),
         ),
       ],
     );

@@ -193,8 +193,8 @@ class AccountScreen extends StatelessWidget {
                     ),
                     Text(
                       'Beware: Choosing to delete your account will not only '
-                      'remove it from JCT, it will also remove any compositions '
-                      'created under this account, as well.',
+                      'remove it from JCT, it will also remove any '
+                      'compositions created under this account, as well.',
                       textAlign: TextAlign.center,
                     ),
                     Divider(
@@ -252,8 +252,8 @@ class AccountScreen extends StatelessWidget {
                       textColor: Colors.cyan[900],
                       child: Text('Yes'),
                       onPressed: () async {
-                        Navigator.of(context, rootNavigator: true).pop();
                         await bloc.logout();
+                        Navigator.of(context, rootNavigator: true).pop();
                       },
                     ),
                     VerticalDivider(
@@ -327,7 +327,13 @@ class AccountScreen extends StatelessWidget {
                               color: Colors.red,
                               textColor: Colors.white,
                               child: Text('YES!'),
-                              onPressed: () => bloc.deleteAccount(),
+                              onPressed: () async {
+                                final deleted = await bloc.deleteAccount();
+
+                                if (deleted) {
+                                  Navigator.of(context).pop(false);
+                                }
+                              },
                             ),
                           ],
                         );

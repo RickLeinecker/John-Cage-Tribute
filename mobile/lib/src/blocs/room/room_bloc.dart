@@ -126,10 +126,20 @@ class RoomBloc {
             _bufferPlayer = AudioBufferPlayer();
             _audioStreamer = null;
           }
-        } else if (data['members'].length >= MIN_PERFORMERS) {
-          _sessionHasBegun.sink.add(false);
         } else {
-          _sessionHasBegun.add(null);
+          int performerCount = 0;
+
+          for (final member in data['members'].keys) {
+            if (data['members'][member]['role'] == Role.PERFORMER.index) {
+              performerCount++;
+            }
+          }
+
+          if (performerCount >= MIN_PERFORMERS) {
+            _sessionHasBegun.sink.add(false);
+          } else {
+            _sessionHasBegun.add(null);
+          }
         }
       }
 
@@ -263,7 +273,7 @@ class RoomBloc {
   /// The button that activates this is only visible to the host.
   ///
   /// A timer begins counting down, as recordings can only last up to a
-  /// maximum of MAX_COMPOSITION_TIME.
+  /// maximum of COMPOSITION_MAX_TIME.
   void startSession() {
     socket.emit('startsession', currentRoom);
   }
@@ -321,20 +331,25 @@ class RoomBloc {
   /// Any immediately important composition metadata is passed via an API call.
   /// The button that activates this is only visible to the host.
   Future<String> endSession(UserModel user) async {
+    int numGuests = 0;
     final performerNames = List<String>();
+
+    _sessionHasBegun.sink.add(null);
 
     for (String socketId in _members.value.keys) {
       final member = _members.value[socketId];
-      int numGuests = 0;
 
       if (member.role == Role.PERFORMER) {
         if (!member.isGuest) {
           performerNames.add(member.username);
         } else {
           numGuests++;
-          performerNames.add('Guest $numGuests');
         }
       }
+    }
+
+    for (int curGuest = 1; curGuest <= numGuests; curGuest++) {
+      performerNames.add('Guest $curGuest');
     }
 
     final String compId = await _compositionRepo.generateCompositionID(user.id);
@@ -371,12 +386,16 @@ class RoomBloc {
   /// The object that is initialized is based on which role a user selected.
   void setupAudioBehavior() {
     print('Setting up user of role: $currentRole.');
-    if (currentRole == Role.LISTENER && _bufferPlayer == null) {
-      _bufferPlayer = AudioBufferPlayer();
-      _audioStreamer = null;
-    } else if (_audioStreamer == null) {
-      _audioStreamer = AudioStreamer();
-      _bufferPlayer = null;
+    if (currentRole == Role.LISTENER) {
+      if (_bufferPlayer == null) {
+        _bufferPlayer = AudioBufferPlayer();
+        _audioStreamer = null;
+      }
+    } else {
+      if (_audioStreamer == null) {
+        _audioStreamer = AudioStreamer();
+        _bufferPlayer = null;
+      }
     }
   }
 

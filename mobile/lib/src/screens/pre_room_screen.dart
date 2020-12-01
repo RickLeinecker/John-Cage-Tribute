@@ -42,7 +42,7 @@ class PreRoomScreen extends StatelessWidget {
         Center(
           child: Icon(
             Icons.warning,
-            size: 120.0,
+            size: 200.0,
             color: Theme.of(context).accentColor,
           ),
         ),

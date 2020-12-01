@@ -6,9 +6,6 @@ class UserModel extends Equatable {
   final String username;
   final String date;
 
-  @override
-  List<Object> get props => [email, username];
-
   const UserModel({this.id, this.email, this.username, this.date});
 
   UserModel.fromJson(Map<String, dynamic> parsedJson)
@@ -84,4 +81,7 @@ class UserModel extends Equatable {
     dateStr += '${int.parse(date.substring(8, 10))}, ${date.substring(0, 4)}';
     return dateStr;
   }
+
+  @override
+  List<Object> get props => [email, username];
 }

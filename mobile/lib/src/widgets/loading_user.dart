@@ -10,7 +10,7 @@ class LoadingUser extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(Icons.supervised_user_circle,
-                  color: Theme.of(context).accentColor, size: 50.0),
+                  color: Theme.of(context).accentColor, size: 120.0),
               Text(
                 'Please wait while we\n authenticate you...',
                 style: Theme.of(context).textTheme.headline6,
@@ -20,7 +20,7 @@ class LoadingUser extends StatelessWidget {
                 color: Colors.transparent,
                 height: 40.0,
               ),
-              CircularProgressIndicator(),
+              CircularProgressIndicator(backgroundColor: Colors.white),
             ],
           )),
     );

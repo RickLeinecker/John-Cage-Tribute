@@ -1,9 +1,11 @@
+import 'package:equatable/equatable.dart';
+
 /// A representation of a recorded composition.
 ///
 /// The length of the composition is measured in seconds.
 /// The composition's filename is accessible as a resource in combination with
 /// the baseUrl and compositionUrl.
-class CompositionModel {
+class CompositionModel extends Equatable {
   final String id;
   final String title;
   final String composer;
@@ -37,15 +39,18 @@ class CompositionModel {
         description = parsedJson['description'] ?? '',
         isPrivate = parsedJson['private'];
 
-  void printComposition() {
-    print('===== COMPOSITION =====');
-    print('Title: $title');
-    print('Composed by: $composer');
-    print('Duration: $time');
-    print('Performed by: $performers');
-    print('Tags: $tags');
-    print('Description: $description');
-    print('');
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'composer': composer,
+      'time': time,
+      'filename': filename,
+      'performers': performers,
+      'tags': tags,
+      'description': description,
+      'isPrivate': isPrivate,
+    };
   }
 
   /// Returns a boolean indicating whether or not the composition is still
@@ -54,4 +59,21 @@ class CompositionModel {
   bool isProcessing() {
     return this.filename == null;
   }
+
+  void printComposition() {
+    print('===== COMPOSITION =====');
+    print('ID: $id');
+    print('Title: $title');
+    print('Composed by: $composer');
+    print('Duration: $time');
+    print('Filename: $filename');
+    print('Performed by: $performers');
+    print('Tags: $tags');
+    print('Description: $description');
+    print('isPrivate: $isPrivate');
+    print('');
+  }
+
+  @override
+  List<Object> get props => [id];
 }

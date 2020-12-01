@@ -13,19 +13,24 @@ class LoginView extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Get your persona going.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyText1,
+        Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Divider(color: Colors.transparent, height: 20.0),
+                Text(
+                  'Get your persona going.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText1,
+                ),
+                EmailField(),
+                PasswordField(),
+                LoginButton(),
+              ],
             ),
-            EmailField(),
-            PasswordField(),
-            LoginButton(),
-          ],
+          ),
         ),
       ],
     );

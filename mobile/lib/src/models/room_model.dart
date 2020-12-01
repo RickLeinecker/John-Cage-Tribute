@@ -10,9 +10,6 @@ class RoomModel extends Equatable {
   final int currentPerformers;
   final int currentListeners;
 
-  @override
-  List<Object> get props => [id];
-
   RoomModel.fromJson(Map<String, dynamic> parsedJson)
       : id = parsedJson['id'],
         host = parsedJson['host'],
@@ -49,4 +46,7 @@ class RoomModel extends Equatable {
   bool isClosed() {
     return id == null;
   }
+
+  @override
+  List<Object> get props => [id];
 }

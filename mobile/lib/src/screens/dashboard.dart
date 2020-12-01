@@ -108,48 +108,64 @@ class DashboardState extends State<Dashboard> {
         return Stack(
           children: <Widget>[
             defaultBackground(containerChild: null),
-            ListView.separated(
-              itemCount: kNumTiles,
-              itemBuilder: (context, int index) {
-                Widget homeTextTile;
-
-                switch (index) {
-                  case 0:
-                    homeTextTile = FadeTextTile(
-                      title: biography[0],
-                      body: biography[1],
-                    );
-                    break;
-                  case 1:
-                    homeTextTile = FadeTextTile(
-                      title: description[0],
-                      body: description[1],
-                    );
-                    break;
-                  case 2:
-                    homeTextTile = FadeTextTile(
-                      title: howto[0],
-                      body: howto[1],
-                    );
-                    break;
-                  default:
-                    homeTextTile = FadeTextTile(
-                      title: 'Title',
-                      body: 'Body',
-                    );
-                }
-
-                return Column(
-                  children: [
-                    Divider(height: 200.0, color: Colors.transparent),
-                    homeTextTile,
+            ShaderMask(
+              shaderCallback: (Rect rect) {
+                return LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.purple,
+                    Colors.transparent,
+                    Colors.transparent,
+                    Colors.purple
                   ],
-                );
+                  stops: [0.0, 0.1, 0.9, 1.0],
+                ).createShader(rect);
               },
-              padding: EdgeInsets.all(20.0),
-              separatorBuilder: (context, index) {
-                return Divider(height: 300.0, color: Colors.transparent);
-              },
+              blendMode: BlendMode.dstOut,
+              child: ListView.separated(
+                itemCount: kNumTiles,
+                itemBuilder: (context, int index) {
+                  Widget homeTextTile;
+
+                  switch (index) {
+                    case 0:
+                      homeTextTile = FadeTextTile(
+                        title: biography[0],
+                        body: biography[1],
+                      );
+                      break;
+                    case 1:
+                      homeTextTile = FadeTextTile(
+                        title: description[0],
+                        body: description[1],
+                      );
+                      break;
+                    case 2:
+                      homeTextTile = FadeTextTile(
+                        title: howto[0],
+                        body: howto[1],
+                      );
+                      break;
+                    default:
+                      homeTextTile = FadeTextTile(
+                        title: 'Title',
+                        body: 'Body',
+                      );
+                  }
+
+                  return Column(
+                    children: [
+                      Divider(height: 100.0, color: Colors.transparent),
+                      homeTextTile,
+                    ],
+                  );
+                },
+                padding: EdgeInsets.all(20.0),
+                separatorBuilder: (context, index) {
+                  return Divider(height: 300.0, color: Colors.transparent);
+                },
+              ),
             ),
           ],
         );

@@ -145,14 +145,52 @@ class SearchBloc {
   }
 
   /// Simulates a lack of a search, effectively refreshing the search function
-  /// of the screen.
+  /// on the [SearchScreen].
   void clearSearchResults() {
     _searchCompList.sink.add(null);
   }
 
-  /// Simulates a lack of a search for the library screen.
+  /// Simulates a lack of a search query made on the [LibraryScreen].
   void clearLibraryResults() {
     _libraryCompList.sink.add(null);
+  }
+
+  /// Updates composition lists if the edited composition is currently present
+  /// in them. Otherwise, they are left untouched.
+  void updateCompositionLists(CompositionModel editedComp) {
+    _editCompInList(_searchCompList.value, editedComp, ScreenType.SEARCH);
+    _editCompInList(_libraryCompList.value, editedComp, ScreenType.LIBRARY);
+  }
+
+  /// Private helper of [updateCompositionLists] that updates the passed in list
+  /// that belongs to a certain screen.
+  void _editCompInList(List<CompositionModel> list, CompositionModel editedComp,
+      ScreenType screen) {
+    if (list == null) {
+      return;
+    }
+
+    int compIndex = list.indexOf(editedComp);
+
+    if (compIndex != -1) {
+      if (screen == ScreenType.SEARCH) {
+        _querySearch.sink.add(true);
+
+        !editedComp.isPrivate
+            ? list.replaceRange(compIndex, compIndex + 1, [editedComp])
+            : list.removeAt(compIndex);
+        _searchCompList.sink.add(list);
+
+        _querySearch.sink.add(false);
+      } else if (screen == ScreenType.LIBRARY) {
+        _queryLibrary.sink.add(true);
+
+        list.replaceRange(compIndex, compIndex + 1, [editedComp]);
+        _libraryCompList.sink.add(list);
+
+        _queryLibrary.sink.add(false);
+      }
+    }
   }
 
   /// Returns a filter stream based on the screen the user is on.
@@ -182,6 +220,8 @@ class SearchBloc {
   Future<void> deleteComposition(
       String userId, String compositionId, int index) async {
     _deletingComposition.sink.add(true);
+    _querySearch.sink.add(true);
+    _queryLibrary.sink.add(true);
 
     final StatusModel statusModel =
         await compositionRepo.deleteComposition(compositionId);
@@ -194,10 +234,22 @@ class SearchBloc {
     }
 
     final List<CompositionModel> libraryList = _libraryCompList.value;
+    final List<CompositionModel> searchList = _searchCompList.value;
+
+    final deletedCompIdx = searchList != null
+        ? searchList.indexWhere((comp) => comp.id == compositionId)
+        : -1;
+
+    if (deletedCompIdx != -1) {
+      searchList.removeAt(deletedCompIdx);
+      _searchCompList.sink.add(searchList);
+    }
 
     libraryList.removeAt(index);
     _libraryCompList.add(libraryList);
     _deletingComposition.sink.add(false);
+    _querySearch.sink.add(false);
+    _queryLibrary.sink.add(false);
   }
 
   /// Gets the current filter selected on a certain screen.

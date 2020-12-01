@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -7,11 +9,12 @@ import 'package:jct/src/constants/role.dart';
 import 'package:jct/src/models/member_model.dart';
 import 'package:jct/src/widgets/action_button.dart';
 import 'package:jct/src/widgets/greeting_message.dart';
+import 'package:jct/src/widgets/seconds_timer.dart';
 import 'package:jct/src/widgets/start_session_button.dart';
 
 import 'package:native_widgets/native_widgets.dart';
 
-class SessionScreen extends StatelessWidget {
+class SessionScreen extends StatefulWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MemberModel member;
   final String roomId;
@@ -20,6 +23,13 @@ class SessionScreen extends StatelessWidget {
   SessionScreen(
       {Key key, @required this.member, @required this.roomId, this.pin})
       : super(key: key);
+
+  State<StatefulWidget> createState() => _SessionScreenState();
+}
+
+class _SessionScreenState extends State<SessionScreen> {
+  int secondsElapsed = 0;
+  Timer oneSecTimer;
 
   Widget build(context) {
     final RoomBloc bloc = RoomProvider.of(context);
@@ -31,11 +41,11 @@ class SessionScreen extends StatelessWidget {
 
         return WillPopScope(
           onWillPop: () async {
-            if (!member.isHost &&
-                (member.role == Role.LISTENER ||
+            if (!widget.member.isHost &&
+                (widget.member.role == Role.LISTENER ||
                     !atMaxPerformerCapacity ||
                     snapshot.data == false)) {
-              bloc.leaveRoom(roomId, member.isHost);
+              bloc.leaveRoom(widget.roomId, widget.member.isHost);
               return true;
             }
 
@@ -48,7 +58,7 @@ class SessionScreen extends StatelessWidget {
             );
           },
           child: Scaffold(
-            key: _scaffoldKey,
+            key: widget._scaffoldKey,
             appBar: AppBar(
               centerTitle: true,
               title: Text('Close Room and Return'),
@@ -65,11 +75,11 @@ class SessionScreen extends StatelessWidget {
                   size: 26.0,
                 ),
                 onPressed: () async {
-                  if (!member.isHost &&
-                      (member.role == Role.LISTENER ||
+                  if (!widget.member.isHost &&
+                      (widget.member.role == Role.LISTENER ||
                           !atMaxPerformerCapacity ||
                           snapshot.data == false)) {
-                    bloc.leaveRoom(roomId, member.isHost);
+                    bloc.leaveRoom(widget.roomId, widget.member.isHost);
                     Navigator.pop(context);
                   } else {
                     print('Are you sure you wanna exit?');
@@ -86,7 +96,8 @@ class SessionScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
-                    onTap: () => _scaffoldKey.currentState.openEndDrawer(),
+                    onTap: () =>
+                        widget._scaffoldKey.currentState.openEndDrawer(),
                     child: Icon(
                       Icons.supervisor_account,
                       size: 26.0,
@@ -117,7 +128,7 @@ class SessionScreen extends StatelessWidget {
                           // The session has successfully ended.
                           // No members should remain in the room.
                         } else if (snapshot.data.isEmpty) {
-                          if (!member.isHost) {
+                          if (!widget.member.isHost) {
                             return GreetingMessage(
                               greeting: GreetingType.SUCCESS,
                               message: successMessage(),
@@ -145,9 +156,9 @@ class SessionScreen extends StatelessWidget {
 
                         String pinInfo = '';
 
-                        if (member.isHost) {
-                          if (pin != null) {
-                            pinInfo = 'Room PIN: $pin';
+                        if (widget.member.isHost) {
+                          if (widget.pin != null) {
+                            pinInfo = 'Room PIN: ${widget.pin}';
                           } else {
                             pinInfo = 'This room is PIN-free!';
                           }
@@ -168,13 +179,19 @@ class SessionScreen extends StatelessWidget {
                                     style:
                                         Theme.of(context).textTheme.bodyText1,
                                   ),
+                                  Divider(
+                                    height: 70.0,
+                                    color: Colors.transparent,
+                                  ),
+                                  SecondsTimer(),
                                 ],
                               ),
                             ),
                             Align(
                               alignment: Alignment.center,
                               child: ActionButton(
-                                  roomId: roomId, role: member.role),
+                                  roomId: widget.roomId,
+                                  role: widget.member.role),
                             ),
                             Align(
                               alignment: Alignment.bottomCenter,
@@ -182,7 +199,7 @@ class SessionScreen extends StatelessWidget {
                                 padding: EdgeInsets.only(
                                   bottom: 60.0,
                                 ),
-                                child: member.isHost
+                                child: widget.member.isHost
                                     ? StartSessionButton()
                                     : sessionStartNotifier(context, bloc),
                               ),
@@ -219,9 +236,7 @@ class SessionScreen extends StatelessWidget {
               );
             } else if (!snapshot.hasData) {
               return Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
+                child: CircularProgressIndicator(backgroundColor: Colors.white),
               );
             } else if (snapshot.data.isEmpty) {
               return Center(
@@ -233,7 +248,7 @@ class SessionScreen extends StatelessWidget {
               );
             }
 
-            return altMemberList(context, snapshot.data);
+            return memberList(context, snapshot.data);
           },
         ),
       ),
@@ -252,7 +267,7 @@ class SessionScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Are you sure you\'d like to leave the room? \n\n${(member.isHost ? 'Your room will close and its members will have to leave.' : 'You\'re performing in the middle of a session!')}',
+              'Are you sure you\'d like to leave the room? \n\n${(widget.member.isHost ? 'Your room will close and its members will have to leave.' : 'You\'re performing in the middle of a session!')}',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 20.0),
             ),
@@ -270,14 +285,14 @@ class SessionScreen extends StatelessWidget {
                   highlightColor: Colors.white,
                   child: Text('Yes'),
                   onPressed: () {
-                    if (member.isHost) {
+                    if (widget.member.isHost) {
                       bloc.watch?.stop();
                       bloc.timer?.cancel();
 
                       print('Host has left their room.');
                     }
 
-                    bloc.leaveRoom(roomId, member.isHost);
+                    bloc.leaveRoom(widget.roomId, widget.member.isHost);
                     Navigator.of(context).pop(true);
                     Navigator.of(context).pop();
                   },
@@ -302,26 +317,25 @@ class SessionScreen extends StatelessWidget {
   }
 
   String successMessage() {
-    switch (member.role) {
+    switch (widget.member.role) {
       case Role.LISTENER:
-        return 'Thanks for tuning in, ${member.isGuest ? 'guest' : member.username}!';
+        return 'Thanks for tuning in, '
+            '${widget.member.isGuest ? 'guest' : widget.member.username}!';
 
       case Role.PERFORMER:
-        if (member.isGuest) {
+        if (widget.member.isGuest) {
           return 'Thanks for pitching in, guest!\nYour audio will live on!';
         }
 
-        return 'Awesome job, ${member.username}! You\'ll be credited for this'
-            ' composition!';
+        return 'Awesome job, ${widget.member.username}! You\'ll be credited for'
+            ' this composition!';
 
       default:
         return '(Role not yet supported) Session complete.';
     }
   }
 
-  Widget altMemberList(BuildContext context, Map<String, MemberModel> members) {
-    int numGuests = 1;
-
+  Widget memberList(BuildContext context, Map<String, MemberModel> members) {
     final performerWidgets = List<Widget>();
     performerWidgets
         .add(Text('Performers', style: Theme.of(context).textTheme.headline6));
@@ -335,17 +349,15 @@ class SessionScreen extends StatelessWidget {
 
       if (member.role == Role.PERFORMER) {
         performerWidgets
-            .add(Text(member.isGuest ? 'Guest $numGuests' : member.username));
+            .add(Text(member.isGuest ? '(Guest)' : member.username));
         performerWidgets.add(Divider(color: Colors.transparent, height: 10.0));
-        numGuests++;
       } else {
-        listenerWidgets
-            .add(Text(member.isGuest ? 'Guest $numGuests' : member.username));
+        listenerWidgets.add(Text(member.isGuest ? '(Guest)' : member.username));
         listenerWidgets.add(Divider(color: Colors.transparent, height: 10.0));
-        numGuests++;
       }
     }
 
+    // Also counts the "Performer" or "Listener" text widget.
     if (performerWidgets.length == 1) {
       performerWidgets.add(Text('None yet!'));
     }
@@ -392,69 +404,6 @@ class SessionScreen extends StatelessWidget {
     );
   }
 
-  Widget memberList(BuildContext context, Map<String, MemberModel> members) {
-    final performers = List<String>();
-    final listeners = List<String>();
-
-    for (String socketId in members.keys) {
-      final member = members[socketId];
-
-      if (member.role == Role.PERFORMER) {
-        performers.add(member.isGuest ? '(GUEST)' : member.username);
-      } else {
-        listeners.add(member.isGuest ? '(GUEST)' : member.username);
-      }
-    }
-
-    final perfHeadingIdx = 0;
-    final listHeadingIdx = performers.length + 1;
-
-    // The "Performers" and "Listeners" headings are part of the ListView.
-    return ListView.separated(
-      itemCount: performers.length + listeners.length + 2,
-      itemBuilder: (BuildContext context, int index) {
-        if (index == perfHeadingIdx) {
-          return Text(
-            'Performers',
-            style: Theme.of(context).textTheme.headline6,
-            textAlign: TextAlign.center,
-          );
-        } else if (index <= performers.length) {
-          return Text(
-            performers.elementAt(index - 1),
-            style: Theme.of(context).textTheme.bodyText1,
-            textAlign: TextAlign.center,
-          );
-        } else if (index == listHeadingIdx) {
-          return Text(
-            'Listeners',
-            style: Theme.of(context).textTheme.headline6,
-            textAlign: TextAlign.center,
-          );
-        } else {
-          return Text(
-            listeners.elementAt(index - performers.length - 2),
-            style: Theme.of(context).textTheme.bodyText1,
-            textAlign: TextAlign.center,
-          );
-        }
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        if (index == listHeadingIdx - 1) {
-          return Divider(
-            color: Colors.transparent,
-            height: 80.0,
-          );
-        } else {
-          return Divider(
-            color: Colors.transparent,
-            height: 20.0,
-          );
-        }
-      },
-    );
-  }
-
   // A text widget notifying a non-host of the current status of the room.
   Widget sessionStartNotifier(BuildContext context, RoomBloc bloc) {
     return StreamBuilder(
@@ -475,9 +424,9 @@ class SessionScreen extends StatelessWidget {
             );
           }
 
-          if (member.role == Role.PERFORMER) {
+          if (widget.member.role == Role.PERFORMER) {
             return Text(
-              'Put on a good show, ${member.isGuest ? 'guest' : member.username}!',
+              'Put on a good show, ${widget.member.isGuest ? 'guest' : widget.member.username}!',
               style: Theme.of(context).textTheme.bodyText1,
               textAlign: TextAlign.center,
             );
@@ -485,7 +434,7 @@ class SessionScreen extends StatelessWidget {
           // Otherwise, your role is a Listener.
           else {
             return Text(
-              'Hope you enjoy this performance, ${member.isGuest ? 'guest' : member.username}!',
+              'Hope you enjoy this performance, ${widget.member.isGuest ? 'guest' : widget.member.username}!',
               style: Theme.of(context).textTheme.bodyText1,
               textAlign: TextAlign.center,
             );

@@ -9,11 +9,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc6f1dc0-ad42-4c76-9440-071ae4988754" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/constants/base_url.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/base_url.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server2/client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/client/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server2/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server2/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server2/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/howto.txt" beforeDir="false" afterPath="$PROJECT_DIR$/assets/howto.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jct.iml" beforeDir="false" afterPath="$PROJECT_DIR$/jct.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/blocs/auth/auth_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/auth/auth_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/blocs/auth/auth_validators.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/auth/auth_validators.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/room/room_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/blocs/search/search_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/blocs/search/search_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/constants/composition_durations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/composition_durations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/constants/role_limits.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/constants/role_limits.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/composition_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/composition_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/room_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/room_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/models/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/models/user_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/account_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/account_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/composition_info_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/composition_info_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/dashboard.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/dashboard.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/player_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/player_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/pre_room_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/screens/session_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/widgets/account/login_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/account/login_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/widgets/account/signup_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/account/signup_view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/widgets/composition_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/composition_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/widgets/start_session_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/widgets/start_session_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +60,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="dart.analysis.tool.window.visible" value="false" />
@@ -89,21 +115,25 @@
       <screen x="0" y="23" width="1792" height="1011" />
     </state>
     <state x="526" y="250" key="#main.dart/0.23.1792.1011@0.23.1792.1011" timestamp="1604139087542" />
-    <state width="1750" height="274" key="GridCell.Tab.0.bottom" timestamp="1604205473649">
-      <screen x="0" y="23" width="1792" height="1011" />
+    <state width="1750" height="272" key="GridCell.Tab.0.bottom" timestamp="1606781801833">
+      <screen x="0" y="23" width="1792" height="1007" />
     </state>
+    <state width="1750" height="272" key="GridCell.Tab.0.bottom/0.23.1792.1007@0.23.1792.1007" timestamp="1606781801833" />
     <state width="1750" height="274" key="GridCell.Tab.0.bottom/0.23.1792.1011@0.23.1792.1011" timestamp="1604205473649" />
-    <state width="1750" height="274" key="GridCell.Tab.0.center" timestamp="1604205473649">
-      <screen x="0" y="23" width="1792" height="1011" />
+    <state width="1750" height="272" key="GridCell.Tab.0.center" timestamp="1606781801832">
+      <screen x="0" y="23" width="1792" height="1007" />
     </state>
+    <state width="1750" height="272" key="GridCell.Tab.0.center/0.23.1792.1007@0.23.1792.1007" timestamp="1606781801832" />
     <state width="1750" height="274" key="GridCell.Tab.0.center/0.23.1792.1011@0.23.1792.1011" timestamp="1604205473649" />
-    <state width="1750" height="274" key="GridCell.Tab.0.left" timestamp="1604205473649">
-      <screen x="0" y="23" width="1792" height="1011" />
+    <state width="1750" height="272" key="GridCell.Tab.0.left" timestamp="1606781801832">
+      <screen x="0" y="23" width="1792" height="1007" />
     </state>
+    <state width="1750" height="272" key="GridCell.Tab.0.left/0.23.1792.1007@0.23.1792.1007" timestamp="1606781801832" />
     <state width="1750" height="274" key="GridCell.Tab.0.left/0.23.1792.1011@0.23.1792.1011" timestamp="1604205473649" />
-    <state width="1750" height="274" key="GridCell.Tab.0.right" timestamp="1604205473649">
-      <screen x="0" y="23" width="1792" height="1011" />
+    <state width="1750" height="272" key="GridCell.Tab.0.right" timestamp="1606781801833">
+      <screen x="0" y="23" width="1792" height="1007" />
     </state>
+    <state width="1750" height="272" key="GridCell.Tab.0.right/0.23.1792.1007@0.23.1792.1007" timestamp="1606781801833" />
     <state width="1750" height="274" key="GridCell.Tab.0.right/0.23.1792.1011@0.23.1792.1011" timestamp="1604205473649" />
     <state x="687" y="176" key="SettingsEditor" timestamp="1604139623735">
       <screen x="0" y="23" width="1792" height="1011" />

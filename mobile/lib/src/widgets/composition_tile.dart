@@ -77,7 +77,7 @@ class CompositionTile extends StatelessWidget {
     final int compMinutes =
         composition.isProcessing() ? 0 : composition.time ~/ 60;
     final int compSeconds =
-        composition.isProcessing() ? 0 : (composition.time % 60).floor();
+        composition.isProcessing() ? 0 : (composition.time % 60).ceil();
 
     final bool addMinZero = (compMinutes < 10);
     final bool addSecZero = (compSeconds < 10);
