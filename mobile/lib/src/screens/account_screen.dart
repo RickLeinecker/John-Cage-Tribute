@@ -305,7 +305,7 @@ class AccountScreen extends StatelessWidget {
                       stream: bloc.deletingAccount,
                       builder:
                           (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                        if (snapshot.data == true) {
+                        if (snapshot.hasData && snapshot.data == true) {
                           return CircularProgressIndicator(
                             backgroundColor: Colors.white,
                           );

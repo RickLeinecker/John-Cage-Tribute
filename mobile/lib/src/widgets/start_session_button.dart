@@ -37,8 +37,9 @@ class _StartSessionButtonState extends State<StartSessionButton> {
         return StreamBuilder(
           stream: toggleSession,
           builder: (context, AsyncSnapshot<bool> timeSnap) {
-            final sessionHasBegun = startedSnap.data == true;
-            final canStartOrEnd = timeSnap.data == true;
+            final sessionHasBegun =
+                startedSnap.hasData && startedSnap.data == true;
+            final canStartOrEnd = timeSnap.hasData && timeSnap.data == true;
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -54,7 +55,9 @@ class _StartSessionButtonState extends State<StartSessionButton> {
                         color: Theme.of(context).textTheme.bodyText2.color,
                         textColor: Theme.of(context).primaryColor,
                         child: Text(
-                          (!startedSnap.data == true) ? 'Begin' : 'End',
+                          (!startedSnap.hasData || !startedSnap.data == true)
+                              ? 'Begin'
+                              : 'End',
                           textAlign: TextAlign.center,
                         ),
                       )
