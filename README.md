@@ -21,6 +21,3 @@ The performers are akin to real musical performers, using their music to form a 
 Those who opt as listeners can lend an ear to the musical piece as it is crafted in a near real-time fashion.
 During the duration of the session, the audio from each performer is blended together. Segments of the final piece are
 constructed, being passed to each listener in the form of a buffer.
-
-## Web
-// -UPDATE!-
